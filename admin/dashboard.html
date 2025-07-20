@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWWA Scholarship</title>
+
+    <link rel="stylesheet" href="/assets/css/style.css"/>
+    <link rel="icon" type="image/png" href="/assets/images/owwa-bg-remove.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <!-- header -->
+    <header>
+        <div class="left-header">
+            <div class="brand-header">
+                <img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
+                <div class="title-header">
+                    <h4>OWWA</h4>
+                    <p>Scholarship & Monitoring</p>
+                </div>
+            </div>
+
+            <div class="header-search">
+                <input type="text" class="search-bar" placeholder="Search..." />
+                <i data-lucide="search" class="input-icon"></i>
+            </div>
+        </div>
+
+        <div class="right-header">
+            <div class="admin-profile">
+                <!-- Click to preview or change profile picture -->
+                <img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
+            
+                <!-- Click to go to profile settings -->
+                <div class="profile-details" id="profileDetails">
+                    <span class="admin-name">Samrin Jaji</span>
+                    <span class="admin-role">Administrator</span>
+                </div>
+            
+                <!-- Click to toggle dropdown -->
+                <i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
+            
+                <!-- Dropdown menu -->
+                <ul class="profile-dropdown" id="profileDropdown">
+                    <li>
+                        <a href="#">
+                            <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
+                            <span>Profile Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i data-lucide="log-out" class="dropdown-icon-left"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+
+            <span class="menu-label">Menu</span>
+
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li>
+                        <a href="#" class="active">
+                          <i data-lucide="layout-grid"></i>
+                          <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle">
+                        <div class="toggle-left">
+                          <i data-lucide="users"></i>
+                          <span>Scholars</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                      </a>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">EDSP</a></li>
+                        <li><a href="#">ODSP</a></li>
+                        <li><a href="#">ELAP</a></li>
+                      </ul>
+                    </li>
+
+                    <li>
+                      <a href="#">
+                        <i data-lucide="wallet"></i>
+                        <span>Disbursement</span>
+                      </a>
+                  </li>
+
+                  <li>
+                    <a href="#">
+                      <i data-lucide="graduation-cap"></i>
+                      <span>Graduates</span>
+                    </a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                  </a>
+              </li>
+                </ul>
+            </nav>
+
+            <div class="logout-section">
+              <a href="logout.php" class="logout-link">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+        </aside>
+
+        <h3>Welcome back! Samrin Jaji</h3>
+
+        <main class="main-content">
+            <section class="dashboard-overview">
+                <div class="dashboard-cards">
+                    <div class="card scholars-card">
+                        <div class="card-content">
+                            <h4>Total Scholars</h4>
+                            <p>120</p>
+                        </div>
+                        <i data-lucide="users" class="card-icon"></i>
+                    </div>
+                
+                    <div class="card fund-card">
+                        <div class="card-content">
+                            <h4>Total Disbursement Fund</h4>
+                            <p>₱1,5M</p>
+                        </div>
+                        <i data-lucide="wallet" class="card-icon"></i>
+                    </div>
+                
+                    <div class="card graduates-card">
+                        <div class="card-content">
+                            <h4>Total Graduates</h4>
+                            <p>34</p>
+                        </div>
+                        <i data-lucide="graduation-cap" class="card-icon"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bar Chart Section -->
+            <!-- Dashboard Chart Section -->
+            <section class="dashboard-chart">
+                <!-- Disbursement Statistics (2-card width) -->
+                <div class="card chart-card wide">
+                    <div class="chart-header">
+                        <h3>Disbursement (Statistic)</h3>
+                
+                        <div class="year-selector">
+                            <label for="year">Year:</label>
+                            <select id="year">
+                                <option value="2023">2023</option>
+                                <option value="2024" selected>2024</option>
+                                <option value="2025">2025</option>
+                            </select>
+                        </div>
+                
+                        <div class="legend">
+                            <span><span class="dot dot-edsp"></span>EDSP</span>
+                            <span><span class="dot dot-odsp"></span>ODSP</span>
+                            <span><span class="dot dot-elap"></span>ELAP</span>
+                        </div>
+                    </div>
+                
+                    <canvas id="barChart"></canvas>
+                </div>
+                
+
+                <!-- Gender Distribution (1-card width) -->
+                <div class="chart-card">
+                    <h3>Gender Distribution</h3>
+                  
+                    <div class="pie-chart-wrapper">
+                      <canvas id="pieChart"></canvas>
+                    </div>
+                  
+                    <div class="legend pie-legend">
+                      <span><span class="dot dot-edsp"></span>EDSP</span>
+                      <span><span class="dot dot-odsp"></span>ODSP</span>
+                      <span><span class="dot dot-elap"></span>ELAP</span>
+                    </div>
+                  </div>
+                  
+                
+            </section>
+        </main>
+    </div>
+    </div>
+
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

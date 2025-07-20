@@ -1,0 +1,12 @@
+# Ignore database export files
+*.sql
+
+# Ignore sensitive environment configs
+.env
+
+# Ignore log files
+*.log
+
+# Ignore OS junk files
+.DS_Store
+Thumbs.db
