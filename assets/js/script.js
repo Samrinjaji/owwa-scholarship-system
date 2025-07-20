@@ -1,5 +1,148 @@
 lucide.createIcons();
 
+
+// barchart
+
+const ctx = document.getElementById('barChart').getContext('2d');
+
+const barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        datasets: [
+            {
+                label: 'EDSP',
+                data: [12, 15, 10, 18, 14, 17, 10, 11, 12, 13, 14, 15],
+                backgroundColor: '#1E3A8A',
+                borderRadius: 6
+            },
+            {
+                label: 'ODSP',
+                data: [8, 7, 9, 11, 9.5, 10, 11, 8, 9, 10, 12, 13],
+                backgroundColor: '#DC2626',
+                borderRadius: 6
+            },
+            {
+                label: 'ELAP',
+                data: [5, 6, 4.5, 7, 7.5, 6.8, 5, 4, 6, 5, 7, 8],
+                backgroundColor: '#0F766E',
+                borderRadius: 6
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: {
+                bottom: 20
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                title: function (tooltipItems) {
+                  return `Month: ${tooltipItems[0].label}`;
+                },
+                label: function (tooltipItem) {
+                  const amount = tooltipItem.raw.toLocaleString('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP'
+                  });
+                  return `${tooltipItem.dataset.label}: ${amount}`;
+                }
+              }
+            }
+        },
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        scales: {
+          y: {
+            display: true, //  show the y-axis again
+            grid: {
+                display: true, //  show horizontal lines
+                color: '#e0e0e0' // optional: subtle line color
+            },
+            ticks: {
+                display: false // optional: hide the number labels
+            }
+        }
+        
+        }
+    }
+});
+
+// piechart
+
+const genderCtx = document.getElementById('pieChart').getContext('2d');
+
+  // Replace with your real data
+  const programGenderData = {
+    EDSP: { male: 30, female: 20 },
+    ODSP: { male: 15, female: 15 },
+    ELAP: { male: 8, female: 12 }
+  };
+
+  const programLabels = Object.keys(programGenderData);
+  const totalPerProgram = programLabels.map(label => {
+    const data = programGenderData[label];
+    return data.male + data.female;
+  });
+
+  const totalAll = totalPerProgram.reduce((a, b) => a + b, 0);
+
+  const genderChart = new Chart(genderCtx, {
+    type: 'doughnut',
+    data: {
+      labels: programLabels,
+      datasets: [{
+        label: 'Scholars',
+        data: totalPerProgram,
+        backgroundColor: ['#1E3A8A', '#DC2626', '#0F766E'],
+        borderWidth: 1
+        // Removed hoverOffset
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const program = context.label;
+              const data = programGenderData[program];
+              const total = data.male + data.female;
+              const percentageOfAll = ((total / totalAll) * 100).toFixed(1);
+
+              return [
+                `${program}:`,
+                `- Male: ${data.male}`,
+                `- Female: ${data.female}`,
+                `- Total: ${total} scholars (${percentageOfAll}%)`
+              ];
+            }
+          }
+        },
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+
+
+/*
 const allLinks = document.querySelectorAll('.nav-links a');
 const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
 
@@ -232,3 +375,5 @@ const genderCtx = document.getElementById('pieChart').getContext('2d');
       }
     }
   });
+
+  */

@@ -14,65 +14,68 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-
+<body> 
     <div class="container">
-        <!-- header -->
-    <header>
-        <div class="left-header">
-            <div class="brand-header">
-                <img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
-                <div class="title-header">
-                    <h4>OWWA</h4>
-                    <p>Scholarship & Monitoring</p>
+
+        <!-- top bar section -->
+        <header>
+            <!-- left section topbar -->
+            <div class="left-section">
+                <div class="left-wrapper">
+                    <img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
+
+                    <div class="title-header">
+                        <h4>OWWA</h4>
+                        <p>Scholarship & Monitoring</p>
+                    </div>
+                </div>
+
+                <div class="header-search">
+                    <input type="text" class="search-bar" placeholder="Search..." />
+                    <i data-lucide="search" class="input-icon"></i>
                 </div>
             </div>
 
-            <div class="header-search">
-                <input type="text" class="search-bar" placeholder="Search..." />
-                <i data-lucide="search" class="input-icon"></i>
-            </div>
-        </div>
-
-        <div class="right-header">
-            <div class="admin-profile">
-                <!-- Click to preview or change profile picture -->
-                <img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
-            
-                <!-- Click to go to profile settings -->
-                <div class="profile-details" id="profileDetails">
-                    <span class="admin-name">Samrin Jaji</span>
-                    <span class="admin-role">Administrator</span>
+            <!-- right section topbar-->
+            <div class="right-section">
+                <div class="admin-profile">
+                    <!-- Click to preview or change profile picture -->
+                    <img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
+                
+                    <!-- Click to go to profile settings -->
+                    <div class="profile-details" id="profileDetails">
+                        <span class="admin-name">Samrin Jaji</span>
+                        <span class="admin-role">Administrator</span>
+                    </div>
+                
+                    <!-- Click to toggle dropdown -->
+                    <i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
+                
+                    <!-- Dropdown menu -->
+                    <ul class="profile-dropdown" id="profileDropdown">
+                        <li>
+                            <a href="#">
+                                <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
+                                <span>Profile Settings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i data-lucide="log-out" class="dropdown-icon-left"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-            
-                <!-- Click to toggle dropdown -->
-                <i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
-            
-                <!-- Dropdown menu -->
-                <ul class="profile-dropdown" id="profileDropdown">
-                    <li>
-                        <a href="#">
-                            <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
-                            <span>Profile Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i data-lucide="log-out" class="dropdown-icon-left"></i>
-                            <span>Logout</span>
-                        </a>
-                    </li>
-                </ul>
             </div>
-        </div>
-    </header>
 
-    <div class="main-layout">
+        </header>
+
         <aside class="sidebar">
 
-            <span class="menu-label">Menu</span>
-
             <nav class="navbar">
+              <span class="menu-label">Menu</span>
+
                 <ul class="nav-links">
                     <li>
                         <a href="#" class="active">
@@ -82,7 +85,7 @@
                     </li>
 
                     <li class="dropdown">
-                      <a href="#" class="dropdown-toggle">
+                      <a href="#" class="dropdown-toggle" data-page="scholars-content.php">
                         <div class="toggle-left">
                           <i data-lucide="users"></i>
                           <span>Scholars</span>
@@ -125,11 +128,15 @@
                 <span>Logout</span>
               </a>
             </div>
+
         </aside>
 
-        <h3>Welcome back! Samrin Jaji</h3>
+        
 
         <main class="main-content">
+
+            <h3>Welcome back! Samrin Jaji</h3>
+
             <section class="dashboard-overview">
                 <div class="dashboard-cards">
                     <div class="card scholars-card">
@@ -244,12 +251,10 @@
                   </li>
                 </ul>
               </section>
-              
-  
-        </main>
-    </div>
-    </div>
 
+        </main>
+
+    </div>
     <script src="/assets/js/script.js"></script>
 </body>
 </html>

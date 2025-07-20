@@ -20,6 +20,7 @@
 
 body{
   background-color: #f0f4ff;
+  font-family: var(--font-inter);
 }
 
 /* Container layout */
@@ -31,6 +32,8 @@ body{
   background-color: #ffffff;
 }
 
+
+/* login styles */
 .section-wrapper{
   width: 100%;
   height: 70vh;
@@ -136,7 +139,6 @@ body{
   color: #666;
   pointer-events: none;
   background: #fff; /* match input bg to create cut effect */
-  padding: 0 4px;
   transition: 0.2s ease all;
 }
 
@@ -153,6 +155,12 @@ body{
   border: 1px solid var(--primary-color); /* your blue color */
   outline: none; /* removes default black/blue outline */
   box-shadow: 0 0 4px rgba(40, 0, 220, 0.3); /* optional soft glow */
+}
+
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #fff inset !important; /* match your input background */
+  -webkit-text-fill-color: #000 !important; /* match your input text color */
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .action{
@@ -196,11 +204,13 @@ body{
   text-decoration: underline;
 }
 
+/* dashboard styles */
 .container{
-  height: 100svh;
+  height: calc(100vh - 60px);
   margin-top: 60px;
   margin-left: 260px;
-  padding: 10px 20px;
+  padding: 15px;
+  overflow-y: auto;
 }
 
 header{
@@ -216,12 +226,12 @@ header{
   top: 0;
 }
 
-.left-header{
+.left-section{
   display: flex;
   gap: 1.5rem;
 }
 
-.brand-header{
+.left-wrapper{
   border-right: 1px solid var(--primary-color-light);
   display: flex;
   align-items: center;
@@ -229,6 +239,7 @@ header{
   padding: 10px 20px;
   gap: 10px;
   width: 260px;
+  cursor: pointer;
 }
 
 .title-header h4{
@@ -265,7 +276,7 @@ header{
   box-shadow: 0 0 4px rgba(40, 0, 220, 0.3); /* optional soft glow */
 }
 
-.right-header{
+.right-section{
   display: flex;
   align-items: center;
   padding: 10px 10px 10px 20px;
@@ -386,19 +397,18 @@ header{
   color: #a82317;
 }
 
-.main-layout{
-
-}
-
+/* Sidebar styles */
 .sidebar{
   width: 260px;
-  height: 100%;
+  min-height: calc(100vh - 60px);
   border-right:  1px solid var(--primary-color-light);
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* Push logout to bottom */
   position: fixed;
   left: 0;
   top: 60px;
+  background-color: #fff;
 }
 
 .menu-label {
@@ -407,10 +417,10 @@ header{
   text-transform: uppercase;
   color: #ccc;
   letter-spacing: 1px;
-  padding: 20px 0 10px 35px;
+  padding: 20px 0 20px 12px;
 }
 
-/* ========== Navbar Container ========== */
+/* navbar styles */
 .navbar {
   padding: 0 20px 20px 20px;
 }
@@ -489,7 +499,6 @@ header{
   margin-top: 20px; /* now animates smoothly */
 }
 
-
 .dropdown-menu li a {
   padding: 12px;
   font-size: 14px;
@@ -506,8 +515,7 @@ header{
 }
 
 .logout-section {
-  margin-top: auto;
-  border-top: 1px solid var(--primary-color-light); /* Match logo border */
+  border-top: 1px solid var(--primary-color-light);
   padding: 5px 20px;
 }
 
@@ -516,304 +524,7 @@ header{
   align-items: center;
   gap: 15px;
   text-decoration: none;
-  padding: 12px 20px 12px 25px;
-  border-radius: 8px;
-  transition: background 0.3s ease;
-  color: #ff1f1f;
-  font-size: 14px;
-}
-
-.logout-link:hover {
-  background-color: #fee2e2;
-}
-
-/* ========== TOPBAR ========== */
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 260px; /* adjust if your sidebar width differs */
-  right: 0;
-  height: 61px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 1000;
-}
-
-/* Left header - search area */
-.left-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.header-search {
-  position: relative;
-}
-
-.search-bar {
-  padding: 8px 32px 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  width: 300px;
-}
-
-.search-bar:focus {
-  border: 1px solid var(--primary-color); /* your blue color */
-  outline: none; /* removes default black/blue outline */
-  box-shadow: 0 0 4px rgba(40, 0, 220, 0.3); /* optional soft glow */
-}
-
-.input-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  color: #888;
-}
-
-.admin-profile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  cursor: pointer;
-}
-
-.profile-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-}
-
-.profile-details {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.admin-name {
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.admin-role {
-  font-size: 10px;
-  color: #888;
-}
-
-.dropdown-icon {
-  width: 16px;
-  height: 16px;
-  color: #666;
-}
-
-.profile-dropdown {
-  position: absolute;
-  top: 70px;
-  right: 15px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  display: none;
-  flex-direction: column;
-  list-style: none;
-  min-width: 160px; /* increased width for better spacing */
-  z-index: 1000;
-}
-
-/* Each dropdown item (li) */
-.profile-dropdown li {
-  width: 100%;
-}
-
-/* Dropdown links */
-.profile-dropdown li a {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* space between icon and text */
-  padding: 12px 16px;
-  text-decoration: none;
-  color: #333;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
-  border-bottom: 1px solid #eee;
-}
-
-/* Remove border on last item */
-.profile-dropdown li:last-child a {
-  border-bottom: none;
-}
-
-/* Hover effect */
-.profile-dropdown li a:hover {
-  background-color: #f0f4ff;
-}
-
-/* Icon on left side */
-.dropdown-icon-left {
-  width: 16px;
-  height: 16px;
-  color: #555;
-  flex-shrink: 0;
-}
-
-/* Make the Logout item red */
-.profile-dropdown li:last-child a {
-  color: #d93025; /* Google-style red */
-  border-bottom: none;
-}
-
-/* Hover effect for Logout */
-.profile-dropdown li:last-child a:hover {
-  background-color: #fbeaea; /* light red background */
-  color: #a82317; /* darker red text on hover */
-}
-
-/* Red icon for Logout */
-.profile-dropdown li:last-child a .dropdown-icon-left {
-  color: #d93025;
-}
-
-.profile-dropdown li:last-child a:hover i {
-  color: #a82317;
-}
-
-.sidebar{
-  width: 260px;
-  height: calc(100vh - 60px);
-  border-right:  1px solid var(--primary-color-light);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 60px;
-  background-color: #fff;
-}
-
-.menu-label {
-  display: block;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #ccc;
-  letter-spacing: 1px;
-  padding: 20px 0 10px 35px;
-}
-
-/* ========== Navbar Container ========== */
-.navbar {
-  padding: 0 20px 20px 20px;
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  list-style: none;
-}
-
-.nav-links li a{
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-size: 14px;
   padding: 12px 20px;
-  text-decoration: none;
-  color: #666;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.nav-links li a:hover,
-.nav-links li a.active {
-  background-color: #f0f4ff;
-  color: #1d4ed8;
-  font-weight: 800;
-}
-
-/* ========== Dropdown ========== */
-.dropdown-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.toggle-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.chevron-icon {
-  transition: transform 0.3s ease;
-}
-.chevron-icon.rotate {
-  transform: rotate(180deg);
-}
-
-
-/* ========== Dropdown Menu ========== */
-.dropdown-menu {
-  visibility: hidden;
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: 
-    opacity 0.5s ease,
-    max-height 0.5s ease,
-    visibility 0.5s ease,
-    margin-top 0.5s ease;
-  flex-direction: column;
-  padding-left: 20px;
-  border-left: 2px solid var(--primary-color-light);
-  list-style: none;
-  margin-left: 1.9rem;
-  margin-top: 0; /* default margin to avoid jump */
-  display: flex;
-}
-
-.dropdown-menu.show {
-  visibility: visible;
-  opacity: 1;
-  max-height: 200px;
-  margin-top: 20px; /* now animates smoothly */
-}
-
-
-.dropdown-menu li a {
-  padding: 12px;
-  font-size: 14px;
-  color: #555;
-}
-
-.dropdown-menu li a:hover {
-  color: #1d4ed8;
-}
-
-.dropdown-menu a.active {
-  background-color: var(--primary-color-light); /* or any highlight color */
-  color: var(--primary-color); /* optional */
-}
-
-.logout-section {
-  margin-top: auto;
-  border-top: 1px solid var(--primary-color-light); /* Match logo border */
-  padding: 5px 20px;
-}
-
-.logout-link {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  text-decoration: none;
-  padding: 12px 20px 12px 25px;
   border-radius: 8px;
   transition: background 0.3s ease;
   color: #ff1f1f;
@@ -823,6 +534,8 @@ header{
 .logout-link:hover {
   background-color: #fee2e2;
 }
+
+/* main content styles */
 
 .container h3 {
   font-size: 14px;
@@ -993,6 +706,7 @@ header{
   width: 100% !important;
   height: 200px !important;
   display: block;
+  cursor: pointer;
 }
 
 .chart-header {
@@ -1109,7 +823,6 @@ header{
   transition: box-shadow 0.3s ease;
 }
 
-
 .recent-scholars h3 {
   font-size: 14px;
   font-weight: 600;
@@ -1172,98 +885,5 @@ header{
   font-size: 12px;
   color: #9ca3af;
 }
-
-
-
-
-/* ===========================
-   Tablet and below (≤768px)
-=========================== */
-@media (max-width: 768px) {
-  .section-wrapper {
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    gap: 2rem;
-    padding: 2rem;
-  }
-
-  .left .logo {
-    width: 120px;
-  }
-
-  .left {
-    margin-left: 0;
-  }
-
-  .divider {
-    display: none;
-  }
-
-  .right {
-    gap: 4rem;
-    align-items: center;
-  }
-  
-  .right h2 {
-    text-align: center;
-  }
-
-  #loginForm {
-    width: 100%;
-    max-width: 350px;
-  }
-
-  .action button {
-    max-width: 350px;
-  }
-}
-
-@media(max-width: 480px){
-  .left .logo {
-    width: 80px;
-  }
-
-  .left h1 {
-    display: none;
-  }
-
-  .left p {
-    display: none;
-  }
-
-  .right h2 {
-    font-size: 1.1rem;
-    text-align: center;
-  }
-
-  .right p {
-    font-size: 0.65rem;
-  }
-
-  .form-group input {
-    font-size: 0.95rem;
-    padding: 1rem 0.75rem 0.5rem;
-  }
-
-  .form-group label {
-    font-size: 0.8rem;
-  }
-
-  .action button {
-    font-size: 0.9rem;
-    padding: 0.7rem 1.2rem;
-  }
-
-  .forgot {
-    font-size: 0.7rem;
-  }
-}
-
-
-
-
-
-
 
 
