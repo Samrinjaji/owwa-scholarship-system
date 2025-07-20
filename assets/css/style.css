@@ -18,12 +18,17 @@
   border: none;
 }
 
+body{
+  background-color: #f0f4ff;
+}
+
 /* Container layout */
 .login-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #ffffff;
 }
 
 .section-wrapper{
@@ -192,11 +197,10 @@
 }
 
 .container{
-  height: 200svh;
+  height: 100svh;
   margin-top: 60px;
   margin-left: 260px;
   padding: 10px 20px;
-  background-color: #f9f9f9;
 }
 
 header{
@@ -555,7 +559,7 @@ header{
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 0.9rem;
-  width: 220px;
+  width: 300px;
 }
 
 .search-bar:focus {
@@ -1092,6 +1096,86 @@ header{
   margin: 0 auto; /* centers the chart */
   position: relative;
 }
+
+/* Recent added scholar style */
+
+.dashboard-card.recent-scholars {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 -2px 4px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  margin-top: 15px;
+  transition: box-shadow 0.3s ease;
+}
+
+
+.recent-scholars h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.dashboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dashboard-list li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-list li:hover {
+  background-color: #f0f4ff;
+  cursor: pointer;
+  border-radius: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.dashboard-list li:hover .scholar-info strong {
+  color: #1d4ed8; /* Optional: make the name more vivid on hover */
+}
+
+.dashboard-list li:hover .scholar-info span,
+.dashboard-list li:hover .date {
+  color: #4b5563; /* Darker shade on hover for clarity */
+}
+
+
+.scholar-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.scholar-info strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+.scholar-info span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+
+
+
 /* ===========================
    Tablet and below (≤768px)
 =========================== */
