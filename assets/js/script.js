@@ -141,6 +141,72 @@ const genderCtx = document.getElementById('pieChart').getContext('2d');
     }
   });
 
+  function showSection(sectionId, el) {
+    // Remove active states
+    document.querySelectorAll('.nav-link, .dropdown-toggle, .dropdown-menu a').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // Remove dropdown open state
+    document.querySelectorAll('.dropdown').forEach(d => {
+        d.classList.remove('open');
+        d.querySelector('.dropdown-menu')?.classList.remove('show'); // ✅ hide dropdown
+        d.querySelector('.chevron-icon')?.classList.remove('rotate'); // ✅ reset icon
+        d.querySelector('.dropdown-toggle')?.classList.remove('active'); // remove highlight
+    });
+
+    // Show the correct section
+    document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    document.getElementById(sectionId)?.classList.remove('hidden');
+
+    // Highlight active item
+    if (el) {
+        el.classList.add('active');
+
+        // If inside dropdown, make parent dropdown active too
+        const dropdown = el.closest('.dropdown');
+        if (dropdown) {
+            dropdown.classList.add('open');
+            dropdown.querySelector('.dropdown-toggle')?.classList.add('active');
+            dropdown.querySelector('.dropdown-menu')?.classList.add('show');
+            dropdown.querySelector('.chevron-icon')?.classList.add('rotate');
+        }
+    }
+}
+
+
+function handleScholarsClick(e, el) {
+  e.preventDefault();
+
+  const dropdown = el.closest('.dropdown');
+  const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+  const chevron = el.querySelector('.chevron-icon');
+
+  const isOpen = dropdown.classList.contains('open');
+
+  // Close all dropdowns and reset icons
+  document.querySelectorAll('.dropdown').forEach(d => {
+      d.classList.remove('open');
+      d.querySelector('.dropdown-menu')?.classList.remove('show');
+      d.querySelector('.chevron-icon')?.classList.remove('rotate');
+      d.querySelector('.dropdown-toggle')?.classList.remove('active');
+  });
+
+  if (!isOpen) {
+      // Show section
+      showSection('scholars-section', el);
+
+      // Open dropdown
+      dropdown.classList.add('open');
+      dropdownMenu?.classList.add('show');
+      chevron?.classList.add('rotate');
+      el.classList.add('active');
+  }
+}
+
+
 
 /*
 const allLinks = document.querySelectorAll('.nav-links a');

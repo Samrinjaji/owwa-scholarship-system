@@ -78,47 +78,52 @@
 
                 <ul class="nav-links">
                     <li>
-                        <a href="#" class="active">
+                        <a href="#" class="nav-link active" onclick="showSection('dashboard-section', this)">
                           <i data-lucide="layout-grid"></i>
                           <span>Dashboard</span>
                         </a>
                     </li>
 
                     <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-page="scholars-content.php">
+                      <a href="#" class="dropdown-toggle" onclick="handleScholarsClick(event, this)">
                         <div class="toggle-left">
                           <i data-lucide="users"></i>
                           <span>Scholars</span>
                         </div>
                         <i data-lucide="chevron-down" class="chevron-icon"></i>
                       </a>
+                      
                       <ul class="dropdown-menu">
-                        <li><a href="#">EDSP</a></li>
-                        <li><a href="#">ODSP</a></li>
-                        <li><a href="#">ELAP</a></li>
+                        <li><a href="#" onclick="showSection('edsp-section', this)">EDSP</a></li>
+                        <li><a href="#" onclick="showSection('odsp-section', this)">ODSP</a></li>
+                        <li><a href="#" onclick="showSection('elap-section', this)">ELAP</a></li>
                       </ul>
+                    </li>
+                    
+                    
+                    
+
+                    <li>
+                        <a href="#" class="nav-link" onclick="showSection('disbursement-section', this)">
+                          <i data-lucide="wallet"></i>
+                          <span>Disbursement</span>
+                        </a>
                     </li>
 
                     <li>
-                      <a href="#">
-                        <i data-lucide="wallet"></i>
-                        <span>Disbursement</span>
-                      </a>
-                  </li>
+                        <a href="#" class="nav-link" onclick="showSection('graduates-section', this)">
+                          <i data-lucide="graduation-cap"></i>
+                          <span>Graduates</span>
+                        </a>
+                    </li>
+                      
 
-                  <li>
-                    <a href="#">
-                      <i data-lucide="graduation-cap"></i>
-                      <span>Graduates</span>
-                    </a>
-                </li>
-
-                <li>
-                  <a href="#">
-                    <i data-lucide="settings"></i>
-                    <span>Settings</span>
-                  </a>
-              </li>
+                    <li>
+                        <a href="#" class="nav-link" onclick="showSection('settings-section', this)">
+                          <i data-lucide="settings"></i>
+                          <span>Settings</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
 
@@ -135,81 +140,83 @@
 
         <main class="main-content">
 
-            <h3>Welcome back! Samrin Jaji</h3>
-
-            <section class="dashboard-overview">
-                <div class="dashboard-cards">
-                    <div class="card scholars-card">
-                        <div class="card-content">
-                            <h4>Total Scholars</h4>
-                            <p>120</p>
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard-section" class="page-section">
+                <h3>Welcome back! Samrin Jaji</h3>
+            
+                <!-- existing dashboard content goes here, unchanged -->
+                <section class="dashboard-overview">
+                    <div class="dashboard-cards">
+                        <div class="card scholars-card">
+                            <div class="card-content">
+                                <h4>Total Scholars</h4>
+                                <p>120</p>
+                            </div>
+                            <i data-lucide="users" class="card-icon"></i>
                         </div>
-                        <i data-lucide="users" class="card-icon"></i>
-                    </div>
-                
-                    <div class="card fund-card">
-                        <div class="card-content">
-                            <h4>Total Disbursement Fund</h4>
-                            <p>₱1,5M</p>
+                    
+                        <div class="card fund-card">
+                            <div class="card-content">
+                                <h4>Total Disbursement Fund</h4>
+                                <p>₱1,5M</p>
+                            </div>
+                            <i data-lucide="wallet" class="card-icon"></i>
                         </div>
-                        <i data-lucide="wallet" class="card-icon"></i>
-                    </div>
-                
-                    <div class="card graduates-card">
-                        <div class="card-content">
-                            <h4>Total Graduates</h4>
-                            <p>34</p>
+                    
+                        <div class="card graduates-card">
+                            <div class="card-content">
+                                <h4>Total Graduates</h4>
+                                <p>34</p>
+                            </div>
+                            <i data-lucide="graduation-cap" class="card-icon"></i>
                         </div>
-                        <i data-lucide="graduation-cap" class="card-icon"></i>
                     </div>
-                </div>
-            </section>
-
-            <!-- Bar Chart Section -->
-            <!-- Dashboard Chart Section -->
-            <section class="dashboard-chart">
+                </section>
+                <!-- Bar Chart Section -->
+                <!-- Dashboard Chart Section -->
+                <section class="dashboard-chart">
                 <!-- Disbursement Statistics (2-card width) -->
-                <div class="card chart-card wide">
-                    <div class="chart-header">
-                        <h3>Disbursement (Statistic)</h3>
-                
-                        <div class="year-selector">
-                            <label for="year">Year:</label>
-                            <select id="year">
-                                <option value="2023">2023</option>
-                                <option value="2024" selected>2024</option>
-                                <option value="2025">2025</option>
-                            </select>
+                    <div class="card chart-card wide">
+                        <div class="chart-header">
+                            <h3>Disbursement (Statistic)</h3>
+                    
+                            <div class="year-selector">
+                                <label for="year">Year:</label>
+                                <select id="year">
+                                    <option value="2023">2023</option>
+                                    <option value="2024" selected>2024</option>
+                                    <option value="2025">2025</option>
+                                </select>
+                            </div>
+                    
+                            <div class="legend">
+                                <span><span class="dot dot-edsp"></span>EDSP</span>
+                                <span><span class="dot dot-odsp"></span>ODSP</span>
+                                <span><span class="dot dot-elap"></span>ELAP</span>
+                            </div>
                         </div>
-                
-                        <div class="legend">
-                            <span><span class="dot dot-edsp"></span>EDSP</span>
-                            <span><span class="dot dot-odsp"></span>ODSP</span>
-                            <span><span class="dot dot-elap"></span>ELAP</span>
+                    
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    
+
+                    <!-- Gender Distribution (1-card width) -->
+                    <div class="chart-card">
+                        <h3>Gender Distribution</h3>
+                    
+                        <div class="pie-chart-wrapper">
+                        <canvas id="pieChart"></canvas>
+                        </div>
+                    
+                        <div class="legend pie-legend">
+                        <span><span class="dot dot-edsp"></span>EDSP</span>
+                        <span><span class="dot dot-odsp"></span>ODSP</span>
+                        <span><span class="dot dot-elap"></span>ELAP</span>
                         </div>
                     </div>
-                
-                    <canvas id="barChart"></canvas>
-                </div>
-                
+                </section>
 
-                <!-- Gender Distribution (1-card width) -->
-                <div class="chart-card">
-                    <h3>Gender Distribution</h3>
-                  
-                    <div class="pie-chart-wrapper">
-                      <canvas id="pieChart"></canvas>
-                    </div>
-                  
-                    <div class="legend pie-legend">
-                      <span><span class="dot dot-edsp"></span>EDSP</span>
-                      <span><span class="dot dot-odsp"></span>ODSP</span>
-                      <span><span class="dot dot-elap"></span>ELAP</span>
-                    </div>
-                  </div>
-            </section>
-
-            <!-- Recently Added Scholars Section -->
+                <!-- Recently Added Scholars Section -->
             <!-- Recently Added Scholars -->
             <section class="dashboard-card recent-scholars">
                 <h3>Recently Added Scholars</h3>
@@ -251,6 +258,31 @@
                   </li>
                 </ul>
               </section>
+            </section>
+            
+            <!-- SCHOLARS SECTION (Hidden by default) -->
+            <section id="scholars-section" class="page-section hidden">
+                <h3>Scholars</h3>
+                <p>This is the Scholars section. You can display scholar-related content here.</p>
+            </section>
+            
+            <!-- You can add more sections like this later: -->
+            <section id="disbursement-section" class="page-section hidden">
+                <h3>Disbursement</h3>
+                <p>Disbursement data will be shown here.</p>
+            </section>
+
+            <!-- You can add more sections like this later: -->
+            <section id="graduates-section" class="page-section hidden">
+                <h3>Graduates</h3>
+                <p>Graduates content goes here.</p>
+            </section>
+            
+            <section id="settings-section" class="page-section hidden">
+                <h3>Settings</h3>
+                <p>System and profile settings here.</p>
+            </section>
+  
 
         </main>
 

@@ -209,7 +209,7 @@ input:-webkit-autofill {
   height: calc(100vh - 60px);
   margin-top: 60px;
   margin-left: 260px;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
 }
 
@@ -513,6 +513,7 @@ header{
   background-color: var(--primary-color-light); /* or any highlight color */
   color: var(--primary-color); /* optional */
 }
+
 
 .logout-section {
   border-top: 1px solid var(--primary-color-light);
@@ -885,5 +886,11 @@ header{
   font-size: 12px;
   color: #9ca3af;
 }
+
+.hidden {
+  display: none;
+}
+
+
 
 
