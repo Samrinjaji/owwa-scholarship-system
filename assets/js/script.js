@@ -206,6 +206,25 @@ function handleScholarsClick(e, el) {
   }
 }
 
+const dropdownToggle = document.getElementById('dropdownToggle');
+const profileDropdown = document.getElementById('profileDropdown');
+
+// Toggle dropdown on arrow click
+dropdownToggle.addEventListener('click', function (e) {
+  e.stopPropagation(); // Prevent closing immediately
+  const isVisible = profileDropdown.style.display === 'block';
+  profileDropdown.style.display = isVisible ? 'none' : 'block';
+});
+
+// Hide dropdown when clicking outside
+document.addEventListener('click', function () {
+  profileDropdown.style.display = 'none';
+});
+
+// Prevent closing dropdown when clicking inside it
+profileDropdown.addEventListener('click', function (e) {
+  e.stopPropagation();
+});
 
 
 /*

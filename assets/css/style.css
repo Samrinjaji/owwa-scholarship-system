@@ -466,6 +466,8 @@ header{
 
 .chevron-icon {
   transition: transform 0.3s ease;
+  width: 16px;
+  height: 16px;
 }
 .chevron-icon.rotate {
   transform: rotate(180deg);
