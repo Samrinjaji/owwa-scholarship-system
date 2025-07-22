@@ -777,42 +777,17 @@ header{
   background-color: #0F766E;
 }
 
-
-.pie-legend {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-size: 14px;
-  color: #444;
+.gender-chart-select {
+  padding: 6px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;   /* Light gray border */
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.pie-legend .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.dot-edsp {
-  background-color: #1E3A8A; /* Blue */
-}
-
-.dot-odsp {
-  background-color: #DC2626; /* Green */
-}
-
-.dot-elap {
-  background-color: #0F766E; /* Amber */
-}
-
-.pie-chart-wrapper {
-  width: 180px;
-  margin: 0 auto; /* centers the chart */
-  position: relative;
-}
 
 /* Recent added scholar style */
 
@@ -892,6 +867,15 @@ header{
 .hidden {
   display: none;
 }
+
+
+.section-title-bar {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+
+
 
 
 

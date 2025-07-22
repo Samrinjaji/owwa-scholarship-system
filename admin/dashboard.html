@@ -30,10 +30,18 @@
                     </div>
                 </div>
 
-                <div class="header-search">
-                    <input type="text" class="search-bar" placeholder="Search..." />
-                    <i data-lucide="search" class="input-icon"></i>
-                </div>
+                <!-- Search bar (for Dashboard only) -->
+				<div class="header-search" id="searchBar" style="display: flex;">
+					<input type="text" class="search-bar" placeholder="Search..." />
+					<i data-lucide="search" class="input-icon"></i>
+				</div>
+				
+				<!-- Dynamic section title bar (for other sections) -->
+				<div class="section-title-bar" id="sectionTitleBar" style="display: none; align-items: center; gap: 8px;">
+					<i id="sectionIcon" data-lucide="layout-grid"></i>
+					<span id="sectionTitleText">Dashboard</span>
+				</div>
+				
             </div>
 
             <!-- right section topbar-->
@@ -147,7 +155,7 @@
                 <!-- existing dashboard content goes here, unchanged -->
                 <section class="dashboard-overview">
                     <div class="dashboard-cards">
-                        <div class="card scholars-card">
+                        <div class="card scholars-card" onclick="navigateToScholarsFromCard()">
                             <div class="card-content">
                                 <h4>Total Scholars</h4>
                                 <p>120</p>
@@ -155,7 +163,7 @@
                             <i data-lucide="users" class="card-icon"></i>
                         </div>
                     
-                        <div class="card fund-card">
+                        <div class="card fund-card" onclick="navigateToDisbursementFromCard()">
                             <div class="card-content">
                                 <h4>Total Disbursement Fund</h4>
                                 <p>₱1,5M</p>
@@ -163,7 +171,7 @@
                             <i data-lucide="wallet" class="card-icon"></i>
                         </div>
                     
-                        <div class="card graduates-card">
+                        <div class="card graduates-card" onclick="navigateToGraduatesFromCard()">
                             <div class="card-content">
                                 <h4>Total Graduates</h4>
                                 <p>34</p>
@@ -182,7 +190,7 @@
                     
                             <div class="year-selector">
                                 <label for="year">Year:</label>
-                                <select id="year">
+                                <select id="year" onchange="updateBarChartData()">
                                     <option value="2023">2023</option>
                                     <option value="2024" selected>2024</option>
                                     <option value="2025">2025</option>
@@ -200,20 +208,28 @@
                     </div>
                     
 
-                    <!-- Gender Distribution (1-card width) -->
-                    <div class="chart-card">
-                        <h3>Gender Distribution</h3>
+                   <!-- Gender Distribution (1-card width) -->
+                  <div class="chart-card">
+
+                    <!-- Title + Dropdown Row -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                      <h3 class="gender-chart-title">Gender Distribution</h3>
                     
-                        <div class="pie-chart-wrapper">
-                        <canvas id="pieChart"></canvas>
-                        </div>
-                    
-                        <div class="legend pie-legend">
-                        <span><span class="dot dot-edsp"></span>EDSP</span>
-                        <span><span class="dot dot-odsp"></span>ODSP</span>
-                        <span><span class="dot dot-elap"></span>ELAP</span>
-                        </div>
+                      <select id="programSelect" onchange="updateGenderChart()" class="gender-chart-select">
+                        <option value="ALL">All Programs</option>
+                        <option value="EDSP">EDSP</option>
+                        <option value="ODSP">ODSP</option>
+                        <option value="ELAP">ELAP</option>
+                      </select>
                     </div>
+                    
+
+                    <!-- Chart Canvas -->
+                    <div class="pie-chart-wrapper">
+                      <canvas id="pieChart"></canvas>
+                    </div>
+
+                  </div>
                 </section>
 
                 <!-- Recently Added Scholars Section -->
@@ -263,7 +279,7 @@
             <!-- SCHOLARS SECTION (Hidden by default) -->
             <section id="scholars-section" class="page-section hidden">
                 <h3>Scholars</h3>
-                <p>This is the Scholars section. You can display scholar-related content here.</p>
+                <p>View and manage scholar information.</p>
             </section>
             
             <!-- You can add more sections like this later: -->
