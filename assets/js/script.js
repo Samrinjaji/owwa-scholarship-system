@@ -1,28 +1,43 @@
 lucide.createIcons();
 
-// header profile dropdown
-const dropdownToggle = document.getElementById('dropdownToggle');
-const profileDropdown = document.getElementById('profileDropdown');
+function bindProfileDropdown() {
+  const dropdownToggle = document.getElementById('dropdownToggle');
+  const profileDropdown = document.getElementById('profileDropdown');
 
-// Toggle dropdown on arrow click
-dropdownToggle.addEventListener('click', function (e) {
-  e.stopPropagation(); // Prevent closing immediately
-  const isVisible = profileDropdown.style.display === 'block';
-  profileDropdown.style.display = isVisible ? 'none' : 'block';
-});
+  if (!dropdownToggle || !profileDropdown) return;
 
-// Hide dropdown when clicking outside
-document.addEventListener('click', function () {
-  profileDropdown.style.display = 'none';
-});
+  // Clean up existing click handlers if any
+  dropdownToggle.onclick = null;
+  profileDropdown.onclick = null;
 
-// Prevent closing dropdown when clicking inside it
-profileDropdown.addEventListener('click', function (e) {
-  e.stopPropagation();
+  dropdownToggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const isVisible = profileDropdown.style.display === 'block';
+    profileDropdown.style.display = isVisible ? 'none' : 'block';
+  });
+
+  // Prevent dropdown from closing when clicked inside
+  profileDropdown.addEventListener('click', function (e) {
+    e.stopPropagation();
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function handler() {
+    profileDropdown.style.display = 'none';
+  }, { once: true });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  bindProfileDropdown();
+  updateGenderChart();
 });
 
 // nav interaction
 function showSection(sectionId, el) {
+
+  // Always hide profile dropdown when switching sections
+if (profileDropdown) profileDropdown.style.display = 'none';
+
   // Remove all active states
   document.querySelectorAll('.nav-link, .dropdown-toggle, .dropdown-menu a').forEach(link => {
       link.classList.remove('active');
@@ -95,6 +110,8 @@ function showSection(sectionId, el) {
         sectionIcon.setAttribute("data-lucide", iconName);
         sectionTitleText.textContent = label;
         lucide.createIcons(); // re-render icon
+        bindProfileDropdown();
+
     }
 }
 
@@ -288,8 +305,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-document.getElementById('year').addEventListener('change', updateBarChartData);
-
 function updateBarChartData() {
   const selectedYear = document.getElementById('year').value;
   const data = yearlyData[selectedYear];
@@ -412,30 +427,8 @@ function updateGenderChart() {
   });
 }
 
-window.addEventListener('DOMContentLoaded', updateGenderChart);
-
-
-
-/*
-
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
 
 // barchart
-
-
 /* this is when no data display for the year
 const yearSelect = document.getElementById('year');
 if (yearSelect) {
