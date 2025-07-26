@@ -11,4 +11,4 @@
 .DS_Store
 Thumbs.db
 
-.db.conn.php
+includes/db.conn.php
