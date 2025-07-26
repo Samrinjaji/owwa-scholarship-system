@@ -6,303 +6,347 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OWWA Scholarship</title>
 
+	<link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/style.css"/>
     <link rel="icon" type="image/png" href="/assets/images/owwa-bg-remove.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body> 
-    <div class="container">
+	 <!-- top bar section -->
+	 <header>
+		<!-- left section topbar -->
+		<div class="left-section">
+			<div class="left-wrapper">
+				<img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
 
-        <!-- top bar section -->
-        <header>
-            <!-- left section topbar -->
-            <div class="left-section">
-                <div class="left-wrapper">
-                    <img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
-
-                    <div class="title-header">
-                        <h4>OWWA</h4>
-                        <p>Scholarship & Monitoring</p>
-                    </div>
-                </div>
-
-                <!-- Search bar (for Dashboard only) -->
-				<div class="header-search" id="searchBar" style="display: flex;">
-					<input type="text" class="search-bar" placeholder="Search..." />
-					<i data-lucide="search" class="input-icon"></i>
+				<div class="title-header">
+					<h4>OWWA</h4>
+					<p>Scholarship & Monitoring</p>
 				</div>
-				
-				<!-- Dynamic section title bar (for other sections) -->
-				<div class="section-title-bar" id="sectionTitleBar" style="display: none; align-items: center; gap: 8px;">
-					<i id="sectionIcon" data-lucide="layout-grid"></i>
-					<span id="sectionTitleText">Dashboard</span>
+			</div>
+
+			<!-- Search bar (for Dashboard only) -->
+			<div class="header-search" id="searchBar" >
+				<input type="text" class="search-bar" placeholder="Search..." />
+				<i data-lucide="search" class="input-icon"></i>
+			</div>
+			
+			<!-- Dynamic section title bar (for other sections) -->
+			<div class="section-title-bar" id="sectionTitleBar" style="display: none; align-items: center; gap: 8px;">
+				<i id="sectionIcon" data-lucide="layout-grid"></i>
+				<span id="sectionTitleText">Dashboard</span>
+			</div>
+			
+		</div>
+
+		<!-- right section topbar-->
+		<div class="right-section">
+			<div class="admin-profile">
+				<!-- Click to preview or change profile picture -->
+				<img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
+			
+				<!-- Click to go to profile settings -->
+				<div class="profile-details" id="profileDetails">
+					<span class="admin-name">Samrin Jaji</span>
+					<span class="admin-role">Administrator</span>
 				</div>
+			
+				<!-- Click to toggle dropdown -->
+				<i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
+			
+				<!-- Dropdown menu -->
+				<ul class="profile-dropdown" id="profileDropdown">
+					<li>
+						<a href="#">
+							<i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
+							<span>Profile Settings</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<i data-lucide="log-out" class="dropdown-icon-left"></i>
+							<span>Logout</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</header>
+
+	<aside class="sidebar">
+
+		<nav class="navbar">
+		  <span class="menu-label">Menu</span>
+
+			<ul class="nav-links">
+				<li>
+					<a href="#" class="nav-link active" onclick="showSection('dashboard-section', this)">
+					  <i data-lucide="layout-grid"></i>
+					  <span>Dashboard</span>
+					</a>
+				</li>
+
+				<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" onclick="handleScholarsClick(event, this)">
+					<div class="toggle-left">
+					  <i data-lucide="users"></i>
+					  <span>Scholars</span>
+					</div>
+					<i data-lucide="chevron-down" class="chevron-icon"></i>
+				  </a>
+				  
+				  <ul class="dropdown-menu">
+					<li><a href="#" onclick="showSection('edsp-section', this)">EDSP</a></li>
+					<li><a href="#" onclick="showSection('odsp-section', this)">ODSP</a></li>
+					<li><a href="#" onclick="showSection('elap-section', this)">ELAP</a></li>
+				  </ul>
+				</li>
 				
-            </div>
+				
+				
 
-            <!-- right section topbar-->
-            <div class="right-section">
-                <div class="admin-profile">
-                    <!-- Click to preview or change profile picture -->
-                    <img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
-                
-                    <!-- Click to go to profile settings -->
-                    <div class="profile-details" id="profileDetails">
-                        <span class="admin-name">Samrin Jaji</span>
-                        <span class="admin-role">Administrator</span>
-                    </div>
-                
-                    <!-- Click to toggle dropdown -->
-                    <i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
-                
-                    <!-- Dropdown menu -->
-                    <ul class="profile-dropdown" id="profileDropdown">
-                        <li>
-                            <a href="#">
-                                <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
-                                <span>Profile Settings</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i data-lucide="log-out" class="dropdown-icon-left"></i>
-                                <span>Logout</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+				<li>
+					<a href="#" class="nav-link" onclick="showSection('disbursement-section', this)">
+					  <i data-lucide="wallet"></i>
+					  <span>Disbursement</span>
+					</a>
+				</li>
 
-        </header>
+				<li>
+					<a href="#" class="nav-link" onclick="showSection('graduates-section', this)">
+					  <i data-lucide="graduation-cap"></i>
+					  <span>Graduates</span>
+					</a>
+				</li>
+				  
 
-        <aside class="sidebar">
+				<li>
+					<a href="#" class="nav-link" onclick="showSection('settings-section', this)">
+					  <i data-lucide="settings"></i>
+					  <span>Settings</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
 
-            <nav class="navbar">
-              <span class="menu-label">Menu</span>
+		<div class="logout-section">
+		  <a href="logout.php" class="logout-link">
+			<i data-lucide="log-out"></i>
+			<span>Logout</span>
+		  </a>
+		</div>
+	</aside>
 
-                <ul class="nav-links">
-                    <li>
-                        <a href="#" class="nav-link active" onclick="showSection('dashboard-section', this)">
-                          <i data-lucide="layout-grid"></i>
-                          <span>Dashboard</span>
-                        </a>
-                    </li>
+	<main class="main-content">
+		<!-- DASHBOARD SECTION -->
+		<section id="dashboard-section" class="page-section">
+			<h3>Welcome back! Samrin Jaji</h3>
 
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" onclick="handleScholarsClick(event, this)">
-                        <div class="toggle-left">
-                          <i data-lucide="users"></i>
-                          <span>Scholars</span>
-                        </div>
-                        <i data-lucide="chevron-down" class="chevron-icon"></i>
-                      </a>
-                      
-                      <ul class="dropdown-menu">
-                        <li><a href="#" onclick="showSection('edsp-section', this)">EDSP</a></li>
-                        <li><a href="#" onclick="showSection('odsp-section', this)">ODSP</a></li>
-                        <li><a href="#" onclick="showSection('elap-section', this)">ELAP</a></li>
-                      </ul>
-                    </li>
-                    
-                    
-                    
+			 <!-- existing dashboard content goes here, unchanged -->
+			 <div class="dashboard-cards">
+				<div class="card scholars-card" onclick="navigateToScholarsFromCard()">
+					<div class="card-content">
+						<h4>Total Scholars</h4>
+						<p>120</p>
+					</div>
+					<i data-lucide="users" class="card-icon"></i>
+				</div>
+			
+				<div class="card fund-card" onclick="navigateToDisbursementFromCard()">
+					<div class="card-content">
+						<h4>Total Disbursement Fund</h4>
+						<p>₱1,5M</p>
+					</div>
+					<i data-lucide="wallet" class="card-icon"></i>
+				</div>
+			
+				<div class="card graduates-card" onclick="navigateToGraduatesFromCard()">
+					<div class="card-content">
+						<h4>Total Graduates</h4>
+						<p>34</p>
+					</div>
+					<i data-lucide="graduation-cap" class="card-icon"></i>
+				</div>
+			</div>
 
-                    <li>
-                        <a href="#" class="nav-link" onclick="showSection('disbursement-section', this)">
-                          <i data-lucide="wallet"></i>
-                          <span>Disbursement</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#" class="nav-link" onclick="showSection('graduates-section', this)">
-                          <i data-lucide="graduation-cap"></i>
-                          <span>Graduates</span>
-                        </a>
-                    </li>
-                      
-
-                    <li>
-                        <a href="#" class="nav-link" onclick="showSection('settings-section', this)">
-                          <i data-lucide="settings"></i>
-                          <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="logout-section">
-              <a href="logout.php" class="logout-link">
-                <i data-lucide="log-out"></i>
-                <span>Logout</span>
-              </a>
-            </div>
-
-        </aside>
-
-        
-
-        <main class="main-content">
-
-            <!-- DASHBOARD SECTION -->
-            <section id="dashboard-section" class="page-section">
-                <h3>Welcome back! Samrin Jaji</h3>
-            
-                <!-- existing dashboard content goes here, unchanged -->
-                <section class="dashboard-overview">
-                    <div class="dashboard-cards">
-                        <div class="card scholars-card" onclick="navigateToScholarsFromCard()">
-                            <div class="card-content">
-                                <h4>Total Scholars</h4>
-                                <p>120</p>
-                            </div>
-                            <i data-lucide="users" class="card-icon"></i>
-                        </div>
-                    
-                        <div class="card fund-card" onclick="navigateToDisbursementFromCard()">
-                            <div class="card-content">
-                                <h4>Total Disbursement Fund</h4>
-                                <p>₱1,5M</p>
-                            </div>
-                            <i data-lucide="wallet" class="card-icon"></i>
-                        </div>
-                    
-                        <div class="card graduates-card" onclick="navigateToGraduatesFromCard()">
-                            <div class="card-content">
-                                <h4>Total Graduates</h4>
-                                <p>34</p>
-                            </div>
-                            <i data-lucide="graduation-cap" class="card-icon"></i>
-                        </div>
-                    </div>
-                </section>
-                <!-- Bar Chart Section -->
+			<!-- Bar Chart Section -->
                 <!-- Dashboard Chart Section -->
-                <section class="dashboard-chart">
-                <!-- Disbursement Statistics (2-card width) -->
-                    <div class="card chart-card wide">
-                        <div class="chart-header">
-                            <h3>Disbursement (Statistic)</h3>
-                    
-                            <div class="year-selector">
-                                <label for="year">Year:</label>
-                                <select id="year" onchange="updateBarChartData()">
-                                    <option value="2023">2023</option>
-                                    <option value="2024" selected>2024</option>
-                                    <option value="2025">2025</option>
-                                </select>
-                            </div>
-                    
-                            <div class="legend">
-                                <span><span class="dot dot-edsp"></span>EDSP</span>
-                                <span><span class="dot dot-odsp"></span>ODSP</span>
-                                <span><span class="dot dot-elap"></span>ELAP</span>
-                            </div>
-                        </div>
-                    
-                        <canvas id="barChart"></canvas>
-                    </div>
-                    
+                <div class="dashboard-chart">
+					<!-- Disbursement Statistics (2-card width) -->
+						<div class="card chart-card wide">
+							<div class="chart-header">
+								<h3>Disbursement (Statistic)</h3>
+						
+								<div class="year-selector">
+									<label for="year">Year:</label>
+									<select id="year" onchange="updateBarChartData()">
+										<option value="2023">2023</option>
+										<option value="2024" selected>2024</option>
+										<option value="2025">2025</option>
+									</select>
+								</div>
+						
+								<div class="legend">
+									<span><span class="dot dot-edsp"></span>EDSP</span>
+									<span><span class="dot dot-odsp"></span>ODSP</span>
+									<span><span class="dot dot-elap"></span>ELAP</span>
+								</div>
+							</div>
+						
+							<canvas id="barChart"></canvas>
+						</div>
+						
+	
+					   <!-- Gender Distribution (1-card width) -->
+					  <div class="chart-card">
+	
+						<!-- Title + Dropdown Row -->
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+						  <h3 class="gender-chart-title">Gender Distribution</h3>
+						
+						  <select id="programSelect" onchange="updateGenderChart()" class="gender-chart-select">
+							<option value="ALL">All Programs</option>
+							<option value="EDSP">EDSP</option>
+							<option value="ODSP">ODSP</option>
+							<option value="ELAP">ELAP</option>
+						  </select>
+						</div>
+						
+	
+						<!-- Chart Canvas -->
+						<div class="pie-chart-wrapper">
+						  <canvas id="pieChart"></canvas>
+						</div>
+	
+					  </div>
+					</div>
 
-                   <!-- Gender Distribution (1-card width) -->
-                  <div class="chart-card">
+					<!-- Recently Added Scholars -->
+					<div class="dashboard-card recent-scholars">
+						<h3>Recently Added Scholars</h3>
+						<ul class="dashboard-list" id="recent-scholars-list">
+						  <li>
+							<div class="scholar-info">
+							  <strong>Juan Dela Cruz</strong>
+							  <span>EDSP</span>
+							</div>
+							<span class="date">July 19, 2025</span>
+						  </li>
+						  <li>
+							<div class="scholar-info">
+							  <strong>Maria Santos</strong>
+							  <span>ODSP</span>
+							</div>
+							<span class="date">July 18, 2025</span>
+						  </li>
+						  <li>
+							<div class="scholar-info">
+							  <strong>Carlos Rivera</strong>
+							  <span>ELAP</span>
+							</div>
+							<span class="date">July 17, 2025</span>
+						  </li>
+						  <li>
+							<div class="scholar-info">
+							  <strong>Angela Reyes</strong>
+							  <span>ODSP</span>
+							</div>
+							<span class="date">July 16, 2025</span>
+						  </li>
+						  <li>
+							<div class="scholar-info">
+							  <strong>Mark Navarro</strong>
+							  <span>EDSP</span>
+							</div>
+							<span class="date">July 15, 2025</span>
+						  </li>
+						</ul>
+					  </div>
+		</section>
 
-                    <!-- Title + Dropdown Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                      <h3 class="gender-chart-title">Gender Distribution</h3>
-                    
-                      <select id="programSelect" onchange="updateGenderChart()" class="gender-chart-select">
-                        <option value="ALL">All Programs</option>
-                        <option value="EDSP">EDSP</option>
-                        <option value="ODSP">ODSP</option>
-                        <option value="ELAP">ELAP</option>
-                      </select>
-                    </div>
-                    
+		<!-- SCHOLARS SECTION (Hidden by default) -->
+		<section id="scholars-section" class="page-section">
+			<h3>Scholars</h3>
+			<p>View and manage scholar information.</p>
 
-                    <!-- Chart Canvas -->
-                    <div class="pie-chart-wrapper">
-                      <canvas id="pieChart"></canvas>
-                    </div>
+			<div class="scholar-top">
+				<div class="label">
+					<h4>All</h4>
+				</div>
 
-                  </div>
-                </section>
+				<div class="right-side">
+					<div class="header-search" id="searchBar" style="display: flex;">
+						<input type="text" class="search-bar" placeholder="Search..." />
+						<i data-lucide="search" class="input-icon"></i>
+					</div>
 
-                <!-- Recently Added Scholars Section -->
-            <!-- Recently Added Scholars -->
-            <section class="dashboard-card recent-scholars">
-                <h3>Recently Added Scholars</h3>
-                <ul class="dashboard-list" id="recent-scholars-list">
-                  <li>
-                    <div class="scholar-info">
-                      <strong>Juan Dela Cruz</strong>
-                      <span>EDSP</span>
-                    </div>
-                    <span class="date">July 19, 2025</span>
-                  </li>
-                  <li>
-                    <div class="scholar-info">
-                      <strong>Maria Santos</strong>
-                      <span>ODSP</span>
-                    </div>
-                    <span class="date">July 18, 2025</span>
-                  </li>
-                  <li>
-                    <div class="scholar-info">
-                      <strong>Carlos Rivera</strong>
-                      <span>ELAP</span>
-                    </div>
-                    <span class="date">July 17, 2025</span>
-                  </li>
-                  <li>
-                    <div class="scholar-info">
-                      <strong>Angela Reyes</strong>
-                      <span>ODSP</span>
-                    </div>
-                    <span class="date">July 16, 2025</span>
-                  </li>
-                  <li>
-                    <div class="scholar-info">
-                      <strong>Mark Navarro</strong>
-                      <span>EDSP</span>
-                    </div>
-                    <span class="date">July 15, 2025</span>
-                  </li>
-                </ul>
-              </section>
-            </section>
-            
-            <!-- SCHOLARS SECTION (Hidden by default) -->
-            <section id="scholars-section" class="page-section hidden">
-                <h3>Scholars</h3>
-                <p>View and manage scholar information.</p>
-            </section>
-            
-            <!-- You can add more sections like this later: -->
-            <section id="disbursement-section" class="page-section hidden">
-                <h3>Disbursement</h3>
-                <p>Disbursement data will be shown here.</p>
-            </section>
+					<button class="btn filter-btn">
+						<i data-lucide="filter" class="btn-icon"></i>
+						Filter
+					</button>
+					
+					<button class="btn add-btn">
+						<i data-lucide="plus" class="btn-icon"></i>
+						Add
+					</button>
+				</div>
+			</div>
 
-            <!-- You can add more sections like this later: -->
-            <section id="graduates-section" class="page-section hidden">
-                <h3>Graduates</h3>
-                <p>Graduates content goes here.</p>
-            </section>
-            
-            <section id="settings-section" class="page-section hidden">
-                <h3>Settings</h3>
-                <p>System and profile settings here.</p>
-            </section>
-  
+				<div class="container">
+					<table class="scholar-table">
+						<thead>
+							<tr>
+								<th><input type="checkbox" id="select-all-scholars"></th>
+								<th>No.</th>
+								<th>Batch</th>
+								<th>Name of Scholar</th>
+								<th>Home Address</th>
+								<th>Program</th>
+								<th>Birth Date</th>
+								<th>Contact</th>
+								<th>Sex</th>
+								<th>Status</th>
+								<th>Bank Details</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="scholar-table-body">
+							<tr>
+								<td><input type="checkbox" /></td>
+								<td>1</td>
+								<td>2023</td>
+								<td>Juan Dela Cruz</td>
+								<td>Zamboanga City</td>
+								<td>ODSP</td>
+								<td>April 15 2001</td>
+								<td>00000000000</td>
+								<td>Male</td>
+								<td><span class="status done">Done</span></td>
+								<td><span class="bank">LNB - 123456789</span></td>
 
-        </main>
-
-    </div>
+								<td>
+									<button class="action-menu-btn">
+									  <i data-lucide="more-vertical"></i>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<div class="pagination">
+					<span class="pagination-left" id="pagination-showing">Showing: 0 of 0</span>
+					<div class="pagination-right">
+					  <button onclick="prevPage()" id="prev-btn" disabled>&lsaquo;</button>
+					  <span id="page-info">1 / 1</span>
+					  <button onclick="nextPage()" id="next-btn">&rsaquo;</button>
+					</div>
+				</div>
+		</section>
+	</main>
     <script src="/assets/js/script.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 lucide.createIcons();
-
+/*
 function bindProfileDropdown() {
   const dropdownToggle = document.getElementById('dropdownToggle');
   const profileDropdown = document.getElementById('profileDropdown');
@@ -427,6 +427,74 @@ function updateGenderChart() {
   });
 }
 
+function toggleDropdown(btn) {
+  // Close all other dropdowns
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    if (menu !== btn.nextElementSibling) {
+      menu.classList.add('hidden');
+    }
+  });
+
+  const dropdown = btn.nextElementSibling;
+  dropdown.classList.toggle('hidden');
+
+  // Optional: Close dropdown when clicking outside
+  document.addEventListener('click', function handler(e) {
+    if (!btn.parentNode.contains(e.target)) {
+      dropdown.classList.add('hidden');
+      document.removeEventListener('click', handler);
+    }
+  });
+}
+
+const rowsPerPage = 10;
+let currentPage = 1;
+
+function paginateTable() {
+  const tableBody = document.getElementById("scholar-table-body");
+  const rows = tableBody.querySelectorAll("tr");
+  const totalRows = rows.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+  // Show/hide rows
+  rows.forEach((row, index) => {
+    if (index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+
+  // Update display info
+  const showingStart = (currentPage - 1) * rowsPerPage + 1;
+  const showingEnd = Math.min(currentPage * rowsPerPage, totalRows);
+
+  document.getElementById("pagination-showing").textContent = `Showing: ${showingEnd} of ${totalRows}`;
+  document.getElementById("page-info").textContent = `${currentPage} / ${totalPages}`;
+
+  // Disable/enable buttons
+  document.getElementById("prev-btn").disabled = currentPage === 1;
+  document.getElementById("next-btn").disabled = currentPage === totalPages;
+}
+
+function nextPage() {
+  const totalRows = document.querySelectorAll("#scholar-table-body tr").length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    paginateTable();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    paginateTable();
+  }
+}
+
+// Initialize pagination
+window.onload = paginateTable;
 
 // barchart
 /* this is when no data display for the year
