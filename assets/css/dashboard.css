@@ -1,673 +1,662 @@
 header{
-    border-bottom: 1px solid var(--primary-color-light);
-    display: flex;
-    justify-content: space-between;
-    height: 60px;
-    width: 100%;
-    background-color: #fff;
-    z-index: 1000;
-    position: fixed;
-    left: 0;
-    top: 0;
+  border-bottom: 1px solid var(--primary-color-light);
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  width: 100%;
+  background-color: #fff;
+  z-index: 1000;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
 
 .left-section{
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .left-wrapper{
-    border-right: 1px solid var(--primary-color-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    gap: 10px;
-    width: 260px;
-    cursor: pointer;
-  }
-  
-  .title-header h4{
-    font-size: 1rem;
-    letter-spacing: 3px;
-    font-family: var(--font-lora);
-    color: var(--primary-color);
-  }
-  
-  .title-header p{
-    color: #777;
-    font-size: 12px;
-  }
-  
-  .header-search{
-    width: 300px;
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
+  display: flex;
+  gap: 1.5rem;
+}
 
-  .header-search .input-icon {
-    position: absolute;
-    right: 10px; /* spacing from the right edge */
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: #777;
-    pointer-events: none; /* icon won't block clicks */
-  }
-  .search-bar {
-    width: 100%;
-    padding: 8px 40px 10px 12px; /* make space on the right */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
-  }
-  
-  .search-bar:focus {
-    border: 1px solid var(--primary-color); /* your blue color */
-    outline: none; /* removes default black/blue outline */
-    box-shadow: 0 0 4px rgba(40, 0, 220, 0.3); /* optional soft glow */
-  }
-  
-  .right-section{
-    display: flex;
-    align-items: center;
-    padding: 10px 10px 10px 20px;
-  }
-  
-  .admin-profile {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-    border-radius: 8px;
-    padding: 5px 10px;
-  }
-  
-  .admin-profile:hover{
-    background-color: #f0f4ff;
-  }
-  
-  .profile-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ccc;
-  }
-  
-  .profile-details {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-  
-  .admin-name {
-    font-weight: 600;
-    font-size: 12px;
-  }
-  
-  .admin-role {
-    font-size: 10px;
-    color: #888;
-  }
-  
-  .dropdown-icon {
-    width: 16px;
-    height: 16px;
-    color: #666;
-  }
-  
-  .profile-dropdown {
-    position: absolute;
-    top: 70px;
-    right: 15px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    display: none;
-    flex-direction: column;
-    list-style: none;
-    min-width: 160px; /* increased width for better spacing */
-    z-index: 1000;
-  }
-  
-  
-  /* Each dropdown item (li) */
-  .profile-dropdown li {
-    width: 100%;
-  }
-  
-  /* Dropdown links */
-  .profile-dropdown li a {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* space between icon and text */
-    padding: 12px 16px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-    border-bottom: 1px solid #eee;
-  }
-  
-  /* Remove border on last item */
-  .profile-dropdown li:last-child a {
-    border-bottom: none;
-  }
-  
-  /* Hover effect */
-  .profile-dropdown li a:hover {
-    background-color: #f0f4ff;
-  }
-  
-  /* Icon on left side */
-  .dropdown-icon-left {
-    width: 16px;
-    height: 16px;
-    color: #555;
-    flex-shrink: 0;
-  }
-  
-  /* Make the Logout item red */
-  .profile-dropdown li:last-child a {
-    color: #d93025; /* Google-style red */
-    border-bottom: none;
-  }
-  
-  /* Hover effect for Logout */
-  .profile-dropdown li:last-child a:hover {
-    background-color: #fbeaea; /* light red background */
-    color: #a82317; /* darker red text on hover */
-  }
-  
-  /* Red icon for Logout */
-  .profile-dropdown li:last-child a .dropdown-icon-left {
-    color: #d93025;
-  }
-  
-  .profile-dropdown li:last-child a:hover i {
-    color: #a82317;
-  }
+.left-wrapper{
+  border-right: 1px solid var(--primary-color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  gap: 10px;
+  width: 260px;
+  cursor: pointer;
+}
 
-  /* Sidebar styles */
+.title-header h4{
+  font-size: 1rem;
+  letter-spacing: 3px;
+  font-family: var(--font-lora);
+  color: var(--primary-color);
+}
+
+.title-header p{
+  color: #777;
+  font-size: 12px;
+}
+
+.header-search{
+  width: 300px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.header-search .input-icon {
+  position: absolute;
+  right: 10px; 
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #777;
+  pointer-events: none; 
+}
+.search-bar {
+  width: 100%;
+  padding: 8px 40px 10px 12px; 
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.search-bar:focus {
+  border: 1px solid var(--primary-color);
+  outline: none; 
+  box-shadow: 0 0 4px rgba(40, 0, 220, 0.3); 
+}
+
+.right-section{
+  display: flex;
+  align-items: center;
+  padding: 10px 10px 10px 20px;
+}
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+
+.admin-profile:hover{
+  background-color: #f0f4ff;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.admin-name {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.admin-role {
+  font-size: 10px;
+  color: #888;
+}
+
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  color: #666;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 70px;
+  right: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  list-style: none;
+  min-width: 160px; 
+  z-index: 1000;
+}
+
+
+
+.profile-dropdown li {
+  width: 100%;
+}
+
+
+.profile-dropdown li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #eee;
+}
+
+
+.profile-dropdown li:last-child a {
+  border-bottom: none;
+}
+
+
+.profile-dropdown li a:hover {
+  background-color: #f0f4ff;
+}
+
+
+.dropdown-icon-left {
+  width: 16px;
+  height: 16px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+
+.profile-dropdown li:last-child a {
+  color: #d93025; 
+  border-bottom: none;
+}
+
+
+.profile-dropdown li:last-child a:hover {
+  background-color: #fbeaea; 
+  color: #a82317; 
+}
+
+
+.profile-dropdown li:last-child a .dropdown-icon-left {
+  color: #d93025;
+}
+
+.profile-dropdown li:last-child a:hover i {
+  color: #a82317;
+}
+
+
 .sidebar{
-    width: 260px;
-    min-height: calc(100vh - 60px);
-    border-right:  1px solid var(--primary-color-light);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Push logout to bottom */
-    position: fixed;
-    left: 0;
-    top: 60px;
-    background-color: #fff;
-  }
-  
-  .menu-label {
-    display: block;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: #ccc;
-    letter-spacing: 1px;
-    padding: 20px 0 20px 12px;
-  }
-  
-  /* navbar styles */
-  .navbar {
-    padding: 0 20px 20px 20px;
-  }
-  
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    list-style: none;
-  }
-  
-  .nav-links li a{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 14px;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: #666;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .nav-links li a:hover,
-  .nav-links li a.active {
-    background-color: #f0f4ff;
-    color: #1d4ed8;
-    font-weight: 800;
-  }
-  
-  /* ========== Dropdown ========== */
-  .dropdown-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .toggle-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .chevron-icon {
-    transition: transform 0.3s ease;
-    width: 16px;
-    height: 16px;
-  }
-  .chevron-icon.rotate {
-    transform: rotate(180deg);
-  }
-  
-  
-  /* ========== Dropdown Menu ========== */
-  .dropdown-menu {
-    visibility: hidden;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: 
-      opacity 0.5s ease,
-      max-height 0.5s ease,
-      visibility 0.5s ease,
-      margin-top 0.5s ease;
-    flex-direction: column;
-    padding-left: 20px;
-    border-left: 2px solid var(--primary-color-light);
-    list-style: none;
-    margin-left: 1.9rem;
-    margin-top: 0; /* default margin to avoid jump */
-    display: flex;
-  }
-  
-  .dropdown-menu.show {
-    visibility: visible;
-    opacity: 1;
-    max-height: 200px;
-    margin-top: 20px; /* now animates smoothly */
-  }
-  
-  .dropdown-menu li a {
-    padding: 12px;
-    font-size: 14px;
-    color: #555;
-  }
-  
-  .dropdown-menu li a:hover {
-    color: #1d4ed8;
-  }
-  
-  .dropdown-menu a.active {
-    background-color: var(--primary-color-light); /* or any highlight color */
-    color: var(--primary-color); /* optional */
-  }
-  
-  
-  .logout-section {
-    border-top: 1px solid var(--primary-color-light);
-    padding: 5px 20px;
-  }
-  
-  .logout-link {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    text-decoration: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    transition: background 0.3s ease;
-    color: #ff1f1f;
-    font-size: 14px;
-  }
-  
-  .logout-link:hover {
-    background-color: #fee2e2;
-  }
+  width: 260px;
+  min-height: calc(100vh - 60px);
+  border-right:  1px solid var(--primary-color-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  top: 60px;
+  background-color: #fff;
+}
 
-  main{
-    margin-top: 60px; /* height of topbar */
-    margin-left: 260px; /* width of sidebar */
-    padding: 20px;
-    min-height: calc(100vh - 60px);
-    overflow-y: auto;
-    background-color: #f0f4ff;
-  }
+.menu-label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #ccc;
+  letter-spacing: 1px;
+  padding: 20px 0 20px 12px;
+}
 
-#dashboard-section,
-#scholars-section{
-    display: none;
+
+.navbar {
+  padding: 0 20px 20px 20px;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.nav-links li a{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #666;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  background-color: #f0f4ff;
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+  width: 16px;
+  height: 16px;
+}
+.chevron-icon.rotate {
+  transform: rotate(180deg);
+}
+
+
+.dropdown-menu {
+  visibility: hidden;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: 
+    opacity 0.5s ease,
+    max-height 0.5s ease,
+    visibility 0.5s ease,
+    margin-top 0.5s ease;
+  flex-direction: column;
+  padding-left: 20px;
+  border-left: 2px solid var(--primary-color-light);
+  list-style: none;
+  margin-left: 1.9rem;
+  margin-top: 0; 
+  display: flex;
+}
+
+.dropdown-menu.show {
+  visibility: visible;
+  opacity: 1;
+  max-height: 200px;
+  margin-top: 20px; 
+}
+
+.dropdown-menu li a {
+  padding: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.dropdown-menu li a:hover {
+  color: #1d4ed8;
+}
+
+.dropdown-menu a.active {
+  background-color: var(--primary-color-light); 
+  color: var(--primary-color); 
+}
+
+
+.logout-section {
+  border-top: 1px solid var(--primary-color-light);
+  padding: 5px 20px;
+}
+
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  color: #ff1f1f;
+  font-size: 14px;
+}
+
+.logout-link:hover {
+  background-color: #fee2e2;
+}
+
+main{
+  margin-top: 60px; 
+  margin-left: 260px; 
+  padding: 20px;
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #f0f4ff;
 }
 
 .page-section h3 {
-    font-size: 14px;
-    color: var(--secondary-color);
-    margin-bottom: 10px;
-  }
+  font-size: 14px;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
 
-  .dashboard-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 15px; /* Reduced gap between cards as per your update */
-  }
-  
-  /* --- Card Styling (Compact adjustments) --- */
-  .dashboard-cards .card {
-    background-color: #FFFFFF;
-    border-radius: 14px; /* Slightly less rounded for a tighter feel */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03); /* Slightly softer initial shadow */
-    padding: 24px; /* Reduced padding */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 12px; /* Reduced gap between content and icon */
-    min-height: 20px; /* Keep minimum height for uniformity */
-    position: relative;
-    overflow: hidden;
-    /* Added border-color to transition for smoothness */
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out, background-color 0.3s ease-out;
-    border: 1px solid #EDEDED;
-    cursor: pointer; /* Added cursor pointer as per your update */
-  }
-  
-  /* --- Card Hover State (The "Pop" Effect) --- */
-  .dashboard-cards .card:hover {
-    transform: scale(1.02); /* Scales up the card */
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); /* More pronounced, widespread shadow */
-    border-color: #DCDCDC; /* Slightly darker border on hover */
-  }
-  
-  /* --- Subtle Gradient Edge --- */
-  .dashboard-cards .card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 6px; /* Keep height consistent */
-    border-radius: 14px 14px 0 0; /* Match card radius */
-    opacity: 1;
-    transition: background 0.3s ease-out, transform 0.3s ease-out;
-  }
-  
-  /* --- Gradient Interaction on Hover --- */
-  .dashboard-cards .card:hover::before {
-    transform: translateY(-2px); /* Shift up by 2px */
-  }
-  
-  /* --- Specific Gradient Colors for each card --- */
-  .scholars-card::before {
-    background: linear-gradient(to right, #6B9A89, #9DC3B4); /* Sage Green gradient */
-  }
-  
-  .fund-card::before {
-    background: linear-gradient(to right, #B88D9C, #D1B0BE); /* Dusty Rose gradient */
-  }
-  
-  .graduates-card::before {
-    background: linear-gradient(to right, #8BBCC7, #A3D4DF); /* Sky Blue gradient */
-  }
-  
-  /* --- Card Content - for text --- */
-  .dashboard-cards .card-content {
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-  }
-  
-  .dashboard-cards .card-content h4 {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; /* Smaller title font */
-    font-weight: 500;
-    color: #5A5A5A;
-    margin: 0; /* Ensures no default margin pushing it around */
-    letter-spacing: 0.02em;
-  }
-  
-  .dashboard-cards .card-content p {
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem; /* Smaller number font (~32px) */
-    font-weight: 800;
-    color: #1A1A1A; /* Default rich black */
-    margin: 0; /* Ensures no default margin pushing it around */
-    line-height: 1.5; /* Adjusted line-height as per your update */
-    transition: color 0.3s ease-out; /* KEY CHANGE: Added color transition for smooth change */
-  }
-  
-  /* --- KEY CHANGE: Number color change on hover to match accent --- */
-  .scholars-card:hover .card-content p {
-    color: #6B9A89; /* Sage Green */
-  }
-  
-  .fund-card:hover .card-content p {
-    color: #B88D9C; /* Dusty Rose */
-  }
-  
-  .graduates-card:hover .card-content p {
-    color: #8BBCC7; /* Sky Blue */
-  }
-  
-  /* --- Card Icons --- */
-  .dashboard-cards .card-icon {
-    font-size: 48px; /* Smaller icon */
-    position: absolute; /* Keep absolute for precise placement */
-    bottom: 18px; /* Fine-tune position from bottom */
-    right: 22px; /* Fine-tune position from right */
-    opacity: 0.5;
-    z-index: 0; /* Behind the text content for a 'ghost' effect */
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-  }
-  
-  /* --- Specific icon colors --- */
-  .scholars-card .card-icon { color: #6B9A89; }
-  .fund-card .card-icon { color: #B88D9C; }
-  .graduates-card .card-icon { color: #8BBCC7; }
-  
-  /* --- Icon Interaction on Hover --- */
-  .card:hover .card-icon {
-    opacity: 0.9;
-    transform: scale(1.08); /* Slightly reduced scale */
-  }
-  .scholars-card:hover .card-icon { color: #4B7A6C; } /* Example darker shade for icon */
-  .fund-card:hover .card-icon { color: #8E6B7A; }
-  .graduates-card:hover .card-icon { color: #6D9BA6; }
-  
-  /* Lucide icon initialization */
-  [data-lucide] {
-    stroke-width: 1.5;
-  }
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 15px; 
+}
 
-  /* chart styles */
-  .dashboard-chart {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.1rem;
-    margin-top: 10px;
-    color: #5A5A5A;
-  }
-  
-  /* Chart Card - Default (1 card width) */
-  .chart-card {
-    flex: 1 1 300px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 1rem;
-    min-width: 300px;
-  }
-  
-  /* Chart Card - Wide (2 card width) */
-  .chart-card.wide {
-    flex: 2 1 620px; /* Twice the size */
-  }
-  
-  /* Canvas Styling */
-  .chart-card canvas {
-    width: 100% !important;
-    height: 200px !important;
-    display: block;
-    cursor: pointer;
-  }
-  
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  
-  .chart-header, .chart-card h3{
-    color: #5A5A5A;
-    font-size: 12px;
-  }
-  
-  /* Year Selector */
-  .year-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: #5A5A5A;
-  }
-  
-  .year-selector select {
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 0.7rem;
-    color: #5A5A5A;
-  }
-  
-  /* Legend */
-  .legend {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .legend span {
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  
-  /* Dots for Program Colors */
-  .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px; 
-    border-radius: 50%;
-  }
-  
-  .dot-edsp {
-    background-color: #1E3A8A;
-  }
-  
-  .dot-odsp {
-    background-color: #DC2626;
-  }
-  
-  .dot-elap {
-    background-color: #0F766E;
-  }
-  
-  .gender-chart-select {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem;
-    border: 1px solid #d1d5db;   /* Light gray border */
-    border-radius: 6px;
-    background-color: #ffffff;
-    color: #111827;
-    outline: none;
-    transition: border-color 0.2s ease;
-  }
+.dashboard-cards .card {
+  background-color: #FFFFFF;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03); 
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px; 
+  min-height: 20px; 
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out, background-color 0.3s ease-out;
+  border: 1px solid #EDEDED;
+  cursor: pointer; 
+}
 
-  /* Recent added scholar style */
+
+.dashboard-cards .card:hover {
+  transform: scale(1.02); 
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); 
+  border-color: #DCDCDC; 
+}
+
+
+.dashboard-cards .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  border-radius: 14px 14px 0 0; 
+  opacity: 1;
+  transition: background 0.3s ease-out, transform 0.3s ease-out;
+}
+
+
+.dashboard-cards .card:hover::before {
+  transform: translateY(-2px); 
+}
+
+
+.scholars-card::before {
+  background: linear-gradient(to right, #6B9A89, #9DC3B4); 
+}
+
+.fund-card::before {
+  background: linear-gradient(to right, #B88D9C, #D1B0BE); 
+}
+
+.graduates-card::before {
+  background: linear-gradient(to right, #8BBCC7, #A3D4DF); 
+}
+
+
+.dashboard-cards .card-content {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.dashboard-cards .card-content h4 {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; 
+  font-weight: 500;
+  color: #5A5A5A;
+  margin: 0; 
+  letter-spacing: 0.02em;
+}
+
+.dashboard-cards .card-content p {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem; 
+  font-weight: 800;
+  color: #1A1A1A; 
+  margin: 0; 
+  line-height: 1.5; 
+  transition: color 0.3s ease-out;
+}
+
+
+.scholars-card:hover .card-content p {
+  color: #6B9A89; 
+}
+
+.fund-card:hover .card-content p {
+  color: #B88D9C; 
+}
+
+.graduates-card:hover .card-content p {
+  color: #8BBCC7;
+}
+
+
+.dashboard-cards .card-icon {
+  font-size: 48px; 
+  position: absolute; 
+  bottom: 18px;
+  right: 22px; 
+  opacity: 0.5;
+  z-index: 0;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+
+.scholars-card .card-icon { color: #6B9A89; }
+.fund-card .card-icon { color: #B88D9C; }
+.graduates-card .card-icon { color: #8BBCC7; }
+
+
+.card:hover .card-icon {
+  opacity: 0.9;
+  transform: scale(1.08); 
+}
+.scholars-card:hover .card-icon { color: #4B7A6C; }
+.fund-card:hover .card-icon { color: #8E6B7A; }
+.graduates-card:hover .card-icon { color: #6D9BA6; }
+
+[data-lucide] {
+  stroke-width: 1.5;
+}
+
+.dashboard-chart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  margin-top: 10px;
+  color: #5A5A5A;
+}
+
+.chart-card {
+  flex: 1 1 300px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  min-width: 300px;
+}
+
+.chart-card.wide {
+  flex: 2 1 620px; 
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 200px !important;
+  display: block;
+  cursor: pointer;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.chart-header, .chart-card h3{
+  color: #5A5A5A;
+  font-size: 12px;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #5A5A5A;
+}
+
+.year-selector select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.7rem;
+  color: #5A5A5A;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.legend span {
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px; 
+  border-radius: 50%;
+}
+
+.dot-edsp {
+  background-color: #1E3A8A;
+}
+
+.dot-odsp {
+  background-color: #DC2626;
+}
+
+.dot-elap {
+  background-color: #0F766E;
+}
+
+.gender-chart-select {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  border: 1px solid #d1d5db;   
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
 
 .dashboard-card.recent-scholars {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 -2px 4px rgba(0, 0, 0, 0.02);
-    width: 100%;
-    margin-top: 15px;
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .recent-scholars h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #1f2937;
-  }
-  
-  .dashboard-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .dashboard-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .dashboard-list li:last-child {
-    border-bottom: none;
-  }
-  
-  .dashboard-list li:hover {
-    background-color: #f0f4ff;
-    cursor: pointer;
-    border-radius: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-  
-  .dashboard-list li:hover .scholar-info strong {
-    color: #1d4ed8; /* Optional: make the name more vivid on hover */
-  }
-  
-  .dashboard-list li:hover .scholar-info span,
-  .dashboard-list li:hover .date {
-    color: #4b5563; /* Darker shade on hover for clarity */
-  }
-  
-  .scholar-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .scholar-info strong {
-    font-size: 14px;
-    color: #111827;
-  }
-  
-  .scholar-info span {
-    font-size: 12px;
-    color: #6b7280;
-  }
-  
-  .date {
-    font-size: 12px;
-    color: #9ca3af;
-  }
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 -2px 4px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  margin-top: 15px;
+  transition: box-shadow 0.3s ease;
+}
 
+.recent-scholars h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.dashboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dashboard-list li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-list li:hover {
+  background-color: #f0f4ff;
+  cursor: pointer;
+  border-radius: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.dashboard-list li:hover .scholar-info strong {
+  color: #1d4ed8; 
+}
+
+.dashboard-list li:hover .scholar-info span,
+.dashboard-list li:hover .date {
+  color: #4b5563; 
+}
+
+.scholar-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.scholar-info strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+.scholar-info span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+
+
+  .hidden {
+    display: none !important;
+  }
+  
   #scholars-section h3{
     margin: 0;
   }
@@ -678,7 +667,6 @@ header{
     margin-top: 3px;
   }
 
-  /* scholar section styles */
   .scholar-top {
     display: flex;
     justify-content: space-between;
@@ -686,7 +674,6 @@ header{
     margin: 5px;
   }
   
-  /* Label */
   .label {
     display: flex;
     align-items: center;
@@ -700,14 +687,12 @@ header{
     padding-left: 10px;
   }
   
-  /* Right side controls */
   .right-side {
     display: flex;
     align-items: center;
     gap: 12px;
   }
   
-  /* Buttons */
   .btn {
     display: flex;
     align-items: center;
@@ -774,7 +759,6 @@ header{
     color: #555;
   }
   
-  /* Optional: zebra stripes for better readability */
   .scholar-table tbody tr:nth-child(even) {
     background-color: #fdfdfd;
   }
@@ -785,7 +769,6 @@ header{
     cursor: pointer;
   }
 
-  /* Status badge styles */
 .status {
   display: inline-block;
   padding: 4px 10px;
@@ -796,20 +779,18 @@ header{
   text-align: center;
 }
 
-/* Example status colors */
 .status.done {
-  background-color: #4caf50; /* Green */
+  background-color: #4caf50; 
 }
 
 .status.pending {
-  background-color: #ff9800; /* Orange */
+  background-color: #ff9800; 
 }
 
 .status.inactive {
-  background-color: #f44336; /* Red */
+  background-color: #f44336; 
 }
 
-/* Bank cell styling */
 .bank {
   display: inline-block;
   background-color: #eef2f7;
@@ -820,7 +801,6 @@ header{
   font-weight: 500;
 }
   
-  /* Action button styling (optional) */
   .action-menu-btn {
     background: transparent;
     border: none;
@@ -872,6 +852,7 @@ header{
   #page-info {
     font-weight: 500;
   }
+  
   
   
   

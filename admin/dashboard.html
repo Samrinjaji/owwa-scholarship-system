@@ -140,7 +140,7 @@
 		</div>
 	</aside>
 
-	<main class="main-content">
+	<main class="main-content" id="main-content">
 		<!-- DASHBOARD SECTION -->
 		<section id="dashboard-section" class="page-section">
 			<h3>Welcome back! Samrin Jaji</h3>
@@ -267,8 +267,8 @@
 					  </div>
 		</section>
 
-		<!-- SCHOLARS SECTION (Hidden by default) -->
-		<section id="scholars-section" class="page-section">
+				<!-- SCHOLARS SECTION (Hidden by default) -->
+		<section id="scholars-section" class="page-section hidden">
 			<h3>Scholars</h3>
 			<p>View and manage scholar information.</p>
 
@@ -329,7 +329,7 @@
 
 								<td>
 									<button class="action-menu-btn">
-									  <i data-lucide="more-vertical"></i>
+									<i data-lucide="more-vertical"></i>
 									</button>
 								</td>
 							</tr>
@@ -340,12 +340,14 @@
 				<div class="pagination">
 					<span class="pagination-left" id="pagination-showing">Showing: 0 of 0</span>
 					<div class="pagination-right">
-					  <button onclick="prevPage()" id="prev-btn" disabled>&lsaquo;</button>
-					  <span id="page-info">1 / 1</span>
-					  <button onclick="nextPage()" id="next-btn">&rsaquo;</button>
+					<button onclick="prevPage()" id="prev-btn" disabled>&lsaquo;</button>
+					<span id="page-info">1 / 1</span>
+					<button onclick="nextPage()" id="next-btn">&rsaquo;</button>
 					</div>
 				</div>
 		</section>
+
+				
 	</main>
     <script src="/assets/js/script.js"></script>
 </body>

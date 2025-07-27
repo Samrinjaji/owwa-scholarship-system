@@ -1,5 +1,7 @@
 lucide.createIcons();
-/*
+
+
+
 function bindProfileDropdown() {
   const dropdownToggle = document.getElementById('dropdownToggle');
   const profileDropdown = document.getElementById('profileDropdown');
@@ -187,6 +189,29 @@ function navigateToDisbursementFromCard() {
     }
   });
   }
+
+  document.addEventListener("DOMContentLoaded", function () {
+  const selectAllCheckbox = document.getElementById("select-all-scholars");
+  const scholarCheckboxes = document.querySelectorAll(".scholar-checkbox");
+
+  // When the "Select All" checkbox is clicked
+  selectAllCheckbox.addEventListener("change", function () {
+    scholarCheckboxes.forEach(checkbox => {
+      checkbox.checked = selectAllCheckbox.checked;
+    });
+  });
+
+  // When any individual checkbox is changed
+  scholarCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
+      const allChecked = Array.from(scholarCheckboxes).every(cb => cb.checked);
+      selectAllCheckbox.checked = allChecked;
+    });
+  });
+});
+  
+
+
 
   // barchart area
   const ctx = document.getElementById('barChart').getContext('2d');
