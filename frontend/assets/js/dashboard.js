@@ -87,9 +87,10 @@ function bindProfileDropdown() {
       .then(html => {
         document.getElementById('main-content').innerHTML = html;
         setActiveSection(title, iconName);
-  
-        // Re-bind dropdown each time a section is loaded
         bindProfileDropdown();
+        if (sectionFile === 'dashboard.html') {
+          bindDashboardCardClicks(); // ✅ Rebind click when dashboard loads
+        }
       })
       .catch(err => console.error(`Failed to load ${sectionFile}:`, err));
   }
@@ -121,13 +122,66 @@ function bindProfileDropdown() {
       }
     });
   });
+
+  function bindDashboardCardClicks() {
+    const scholarsCard = document.getElementById('goToScholars');
+    const disbursementCard = document.getElementById('goToDisbursement');
+    const graduatesCard = document.getElementById('goToGraduates');
+  
+    const clearSidebarActive = () => {
+      document.querySelectorAll('.nav-link, .dropdown-toggle').forEach(link => link.classList.remove('active'));
+      document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+      const chevron = document.querySelector('.chevron-icon');
+      if (chevron) chevron.classList.remove('rotate');
+    };
+  
+    if (scholarsCard) {
+      scholarsCard.addEventListener('click', () => {
+        loadSection('scholars.html', 'Scholars', 'users');
+        clearSidebarActive();
+  
+        // Activate Scholars dropdown
+        const scholarsToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const chevronIcon = document.querySelector('.chevron-icon');
+  
+        if (scholarsToggle) scholarsToggle.classList.add('active');
+        if (dropdownMenu) dropdownMenu.classList.add('show');
+        if (chevronIcon) chevronIcon.classList.add('rotate');
+      });
+    }
+  
+    if (disbursementCard) {
+      disbursementCard.addEventListener('click', () => {
+        loadSection('disbursement.html', 'Disbursement', 'wallet');
+        clearSidebarActive();
+  
+        const disbursementLink = document.querySelector('.nav-link[data-title="Disbursement"]');
+        if (disbursementLink) disbursementLink.classList.add('active');
+      });
+    }
+  
+    if (graduatesCard) {
+      graduatesCard.addEventListener('click', () => {
+        loadSection('graduates.html', 'Graduates', 'graduation-cap');
+        clearSidebarActive();
+  
+        const graduatesLink = document.querySelector('.nav-link[data-title="Graduates"]');
+        if (graduatesLink) graduatesLink.classList.add('active');
+      });
+    }
+  }
   
   document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
     bindProfileDropdown();     // ✅ Initial bind
     bindSidebarNav();          // ✅ Sidebar logic
-    loadSection('dashboard.html', 'Dashboard', 'layout-grid'); // ✅ Initial load
+    loadSection('dashboard.html', 'Dashboard', 'layout-grid');
+    bindDashboardCardClicks();
+
+    
   });
+
   
 
     
