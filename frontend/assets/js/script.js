@@ -1,38 +1,8 @@
 lucide.createIcons();
 
 
+/*
 
-function bindProfileDropdown() {
-  const dropdownToggle = document.getElementById('dropdownToggle');
-  const profileDropdown = document.getElementById('profileDropdown');
-
-  if (!dropdownToggle || !profileDropdown) return;
-
-  // Clean up existing click handlers if any
-  dropdownToggle.onclick = null;
-  profileDropdown.onclick = null;
-
-  dropdownToggle.addEventListener('click', function (e) {
-    e.stopPropagation();
-    const isVisible = profileDropdown.style.display === 'block';
-    profileDropdown.style.display = isVisible ? 'none' : 'block';
-  });
-
-  // Prevent dropdown from closing when clicked inside
-  profileDropdown.addEventListener('click', function (e) {
-    e.stopPropagation();
-  });
-
-  // Close dropdown on outside click
-  document.addEventListener('click', function handler() {
-    profileDropdown.style.display = 'none';
-  }, { once: true });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-  bindProfileDropdown();
-  updateGenderChart();
-});
 
 // nav interaction
 function showSection(sectionId, el) {

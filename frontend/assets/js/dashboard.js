@@ -1,0 +1,334 @@
+function bindProfileDropdown() {
+    const dropdownToggle = document.getElementById("dropdownToggle");
+    const profileDropdown = document.getElementById("profileDropdown");
+  
+    if (!dropdownToggle || !profileDropdown) return;
+  
+    // Remove old event listeners (clone trick)
+    const newToggle = dropdownToggle.cloneNode(true);
+    dropdownToggle.parentNode.replaceChild(newToggle, dropdownToggle);
+  
+    let isOpen = false;
+  
+    newToggle.onclick = (e) => {
+      e.stopPropagation();
+      isOpen = !isOpen;
+      profileDropdown.style.display = isOpen ? "block" : "none";
+    };
+  
+    document.addEventListener("click", () => {
+      if (isOpen) {
+        profileDropdown.style.display = "none";
+        isOpen = false;
+      }
+    });
+  
+    profileDropdown.onclick = (e) => {
+      e.stopPropagation();
+    };
+  }
+  
+  function bindSidebarNav() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    const chevronIcon = document.querySelector('.chevron-icon');
+  
+    // Handle regular nav links
+    navLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+  
+        // Remove active from all nav links
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector('.dropdown-toggle')?.classList.remove('active');
+  
+        // Set active to the clicked one
+        link.classList.add('active');
+  
+        // Close dropdown if open
+        dropdownMenu?.classList.remove('show');
+        chevronIcon?.classList.remove('rotate');
+      });
+    });
+  
+    // Handle Scholars dropdown
+    if (dropdownToggle && dropdownMenu && chevronIcon) {
+      dropdownToggle.addEventListener('click', e => {
+        e.preventDefault();
+  
+        // Remove active from regular nav links
+        navLinks.forEach(l => l.classList.remove('active'));
+  
+        // Ensure only this dropdown stays active
+        document.querySelectorAll('.dropdown-toggle').forEach(dt => dt.classList.remove('active'));
+        dropdownToggle.classList.add('active');
+  
+        // Toggle dropdown visibility and chevron
+        dropdownMenu.classList.toggle('show');
+        chevronIcon.classList.toggle('rotate');
+      });
+    }
+  }
+  
+  function setActiveSection(label, iconName) {
+    document.getElementById('searchBar').style.display = label === "Dashboard" ? "flex" : "none";
+    const titleBar = document.getElementById('sectionTitleBar');
+    titleBar.style.display = label === "Dashboard" ? "none" : "flex";
+    document.getElementById('sectionTitleText').textContent = label;
+    document.getElementById('sectionIcon').setAttribute('data-lucide', iconName);
+  
+    lucide.createIcons(); // Re-render icons
+  }
+  
+  function loadSection(sectionFile, title, iconName) {
+    fetch(`/frontend/sections/${sectionFile}`)
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('main-content').innerHTML = html;
+        setActiveSection(title, iconName);
+  
+        // Re-bind dropdown each time a section is loaded
+        bindProfileDropdown();
+      })
+      .catch(err => console.error(`Failed to load ${sectionFile}:`, err));
+  }
+  
+  // Navigation click logic
+  document.querySelectorAll('.nav-link, .dropdown-toggle').forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+  
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+  
+      const parent = this.closest('.dropdown');
+      if (parent) {
+        parent.classList.toggle('open');
+        const chevron = parent.querySelector('.chevron-icon');
+        if (chevron) chevron.classList.toggle('rotate');
+      } else {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+        document.querySelectorAll('.chevron-icon').forEach(i => i.classList.remove('rotate'));
+      }
+  
+      const file = this.dataset.file;
+      const title = this.dataset.title;
+      const icon = this.dataset.icon;
+  
+      if (file) {
+        loadSection(file, title, icon);
+      }
+    });
+  });
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+    bindProfileDropdown();     // ✅ Initial bind
+    bindSidebarNav();          // ✅ Sidebar logic
+    loadSection('dashboard.html', 'Dashboard', 'layout-grid'); // ✅ Initial load
+  });
+  
+
+    
+/*
+function bindProfileDropdown() {
+    const dropdownToggle = document.getElementById('dropdownToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+  
+    if (!dropdownToggle || !profileDropdown) return;
+  
+    // Clean up existing click handlers if any
+    dropdownToggle.onclick = null;
+    profileDropdown.onclick = null;
+  
+    dropdownToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const isVisible = profileDropdown.style.display === 'block';
+      profileDropdown.style.display = isVisible ? 'none' : 'block';
+    });
+  
+    // Prevent dropdown from closing when clicked inside
+    profileDropdown.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+  
+    // Close dropdown on outside click
+    document.addEventListener('click', function handler() {
+      profileDropdown.style.display = 'none';
+    }, { once: true });
+  }
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    bindProfileDropdown();
+    updateGenderChart();
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+	// Profile dropdown
+	bindProfileDropdown();
+
+	// Scholars dropdown logic
+	const scholarToggle = document.querySelector(".dropdown-toggle");
+	const scholarDropdown = document.querySelector(".dropdown");
+	const scholarMenu = document.querySelector(".dropdown-menu");
+	const chevronIcon = scholarToggle.querySelector(".chevron-icon");
+
+	scholarToggle.addEventListener("click", function (event) {
+		event.preventDefault();
+
+		// Close other dropdowns
+		document.querySelectorAll(".dropdown").forEach(drop => {
+			if (drop !== scholarDropdown) {
+				drop.classList.remove("open");
+				const menu = drop.querySelector(".dropdown-menu");
+				const icon = drop.querySelector(".chevron-icon");
+				if (menu) menu.classList.remove("show");
+				if (icon) icon.classList.remove("rotate");
+			}
+		});
+
+		// Toggle this dropdown
+		scholarDropdown.classList.toggle("open");
+		scholarMenu.classList.toggle("show");
+		chevronIcon.classList.toggle("rotate");
+
+		// Mark active
+		document.querySelectorAll(".nav-link, .dropdown-toggle").forEach(link => {
+			link.classList.remove("active");
+		});
+		scholarToggle.classList.add("active");
+
+		// Hide dashboard section
+		document.getElementById("dashboard-section").classList.add("hidden");
+
+		// Load Scholars Section
+		fetch("./sections/scholars.html")
+			.then(response => {
+				if (!response.ok) throw new Error("Failed to load scholars section.");
+				return response.text();
+			})
+			.then(html => {
+				const mainContent = document.getElementById("main-content");
+				mainContent.innerHTML = html;
+
+				// Update top bar title
+				document.getElementById("searchBar").style.display = "none";
+				document.getElementById("sectionTitleBar").style.display = "flex";
+				document.getElementById("sectionIcon").setAttribute("data-lucide", "users");
+				document.getElementById("sectionTitleText").textContent = "Scholars";
+
+				lucide.createIcons(); // Refresh icons
+			})
+			.catch(error => {
+				console.error("Error loading scholars section:", error);
+			});
+	});
+});
+
+  
+/*
+// Handle scholars dropdown logic
+function bindScholarsDropdown() {
+	const scholarToggle = document.querySelector(".dropdown-toggle");
+	const scholarDropdown = document.querySelector(".dropdown");
+	const scholarMenu = document.querySelector(".dropdown-menu");
+
+	if (!scholarToggle || !scholarDropdown || !scholarMenu) return;
+
+	// Replace toggle to remove previous listener
+	const newToggle = scholarToggle.cloneNode(true);
+	scholarToggle.parentNode.replaceChild(newToggle, scholarToggle);
+
+	// Get chevron from the new toggle
+	const chevronIcon = newToggle.querySelector(".chevron-icon");
+
+	newToggle.addEventListener("click", function (event) {
+		event.preventDefault();
+
+		const isOpen = scholarMenu.classList.contains("show");
+
+		// Close all dropdowns
+		document.querySelectorAll(".dropdown-menu").forEach(menu => {
+			menu.classList.remove("show");
+		});
+		document.querySelectorAll(".chevron-icon").forEach(icon => {
+			icon.classList.remove("rotate");
+		});
+
+		// Toggle this one
+		if (!isOpen) {
+			scholarMenu.classList.add("show");
+			chevronIcon?.classList.add("rotate");
+		}
+
+		// Set active state
+		document.querySelectorAll(".nav-link, .dropdown-toggle").forEach(link => {
+			link.classList.remove("active");
+		});
+		newToggle.classList.add("active");
+
+		// Load section if needed
+		if (!document.getElementById("scholars-section")) {
+			document.getElementById("dashboard-section")?.classList.add("hidden");
+
+			fetch("./sections/scholars.html")
+				.then(response => response.text())
+				.then(html => {
+					document.getElementById("main-content").innerHTML = html;
+
+					// Top bar setup
+					document.getElementById("searchBar").style.display = "none";
+					document.getElementById("sectionTitleBar").style.display = "flex";
+					document.getElementById("sectionIcon").setAttribute("data-lucide", "users");
+					document.getElementById("sectionTitleText").textContent = "Scholars";
+
+					lucide.createIcons();
+					bindProfileDropdown();
+				})
+				.catch(console.error);
+		}
+	});
+}
+function bindDashboardClick() {
+	const dashboardLink = document.getElementById("dashboardLink");
+
+	if (!dashboardLink) return;
+
+	dashboardLink.addEventListener("click", function (event) {
+		event.preventDefault();
+
+		// Remove all 'active' states from links
+		document.querySelectorAll(".nav-link, .dropdown-toggle").forEach(link => {
+			link.classList.remove("active");
+		});
+		dashboardLink.classList.add("active");
+
+		// Hide dropdown menus and rotate icons
+		document.querySelectorAll(".dropdown-menu").forEach(menu => menu.classList.remove("show"));
+		document.querySelectorAll(".chevron-icon").forEach(icon => icon.classList.remove("rotate"));
+
+		// Show Dashboard section
+		document.getElementById("dashboard-section")?.classList.remove("hidden");
+
+		// Clear dynamic content from scholars or other views
+		const mainContent = document.getElementById("main-content");
+		if (mainContent) {
+			mainContent.innerHTML = "";
+		}
+
+		// Reset the top bar to default Dashboard view
+		document.getElementById("searchBar").style.display = "block";
+		document.getElementById("sectionTitleBar").style.display = "none";
+	});
+}
+
+
+
+// Init on DOM load
+document.addEventListener("DOMContentLoaded", function () {
+	bindProfileDropdown();
+	bindScholarsDropdown();
+
+
+}); 
+*/

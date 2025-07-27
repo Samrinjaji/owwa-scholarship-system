@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OWWA Scholarship</title>
 
-	<link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/style.css"/>
-    <link rel="icon" type="image/png" href="/assets/images/owwa-bg-remove.png" />
+	<link rel="stylesheet" href="/frontend/assets/css/dashboard.css">
+    <link rel="stylesheet" href="/frontend/assets/css/style.css"/>
+    <link rel="icon" type="image/png" href="/frontend/assets/images/owwa-bg-remove.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,7 +20,7 @@
 		<!-- left section topbar -->
 		<div class="left-section">
 			<div class="left-wrapper">
-				<img src="/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
+				<img src="/frontend/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
 
 				<div class="title-header">
 					<h4>OWWA</h4>
@@ -46,7 +46,7 @@
 		<div class="right-section">
 			<div class="admin-profile">
 				<!-- Click to preview or change profile picture -->
-				<img src="/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
+				<img src="/frontend/assets/images/samrinjaji.jpg" alt="Admin Avatar" class="profile-avatar" id="profileImage" height="40px">
 			
 				<!-- Click to go to profile settings -->
 				<div class="profile-details" id="profileDetails">
@@ -83,14 +83,18 @@
 
 			<ul class="nav-links">
 				<li>
-					<a href="#" class="nav-link active" onclick="showSection('dashboard-section', this)">
+					<a href="#" class="nav-link active" data-file="dashboard.html" 
+					data-title="Dashboard" 
+					data-icon="layout-grid">
 					  <i data-lucide="layout-grid"></i>
 					  <span>Dashboard</span>
 					</a>
 				</li>
 
 				<li class="dropdown">
-				  <a href="#" class="dropdown-toggle" onclick="handleScholarsClick(event, this)">
+				  <a href="#" class="dropdown-toggle" data-file="scholars.html" 
+				  data-title="Scholars" 
+				  data-icon="users">
 					<div class="toggle-left">
 					  <i data-lucide="users"></i>
 					  <span>Scholars</span>
@@ -99,9 +103,9 @@
 				  </a>
 				  
 				  <ul class="dropdown-menu">
-					<li><a href="#" onclick="showSection('edsp-section', this)">EDSP</a></li>
-					<li><a href="#" onclick="showSection('odsp-section', this)">ODSP</a></li>
-					<li><a href="#" onclick="showSection('elap-section', this)">ELAP</a></li>
+					<li><a href="#">EDSP</a></li>
+					<li><a href="#">ODSP</a></li>
+					<li><a href="#">ELAP</a></li>
 				  </ul>
 				</li>
 				
@@ -109,14 +113,14 @@
 				
 
 				<li>
-					<a href="#" class="nav-link" onclick="showSection('disbursement-section', this)">
+					<a href="#" class="nav-link">
 					  <i data-lucide="wallet"></i>
 					  <span>Disbursement</span>
 					</a>
 				</li>
 
 				<li>
-					<a href="#" class="nav-link" onclick="showSection('graduates-section', this)">
+					<a href="#" class="nav-link">
 					  <i data-lucide="graduation-cap"></i>
 					  <span>Graduates</span>
 					</a>
@@ -124,7 +128,7 @@
 				  
 
 				<li>
-					<a href="#" class="nav-link" onclick="showSection('settings-section', this)">
+					<a href="#" class="nav-link">
 					  <i data-lucide="settings"></i>
 					  <span>Settings</span>
 					</a>
@@ -147,7 +151,7 @@
 
 			 <!-- existing dashboard content goes here, unchanged -->
 			 <div class="dashboard-cards">
-				<div class="card scholars-card" onclick="navigateToScholarsFromCard()">
+				<div class="card scholars-card">
 					<div class="card-content">
 						<h4>Total Scholars</h4>
 						<p>120</p>
@@ -155,7 +159,7 @@
 					<i data-lucide="users" class="card-icon"></i>
 				</div>
 			
-				<div class="card fund-card" onclick="navigateToDisbursementFromCard()">
+				<div class="card fund-card">
 					<div class="card-content">
 						<h4>Total Disbursement Fund</h4>
 						<p>₱1,5M</p>
@@ -163,7 +167,7 @@
 					<i data-lucide="wallet" class="card-icon"></i>
 				</div>
 			
-				<div class="card graduates-card" onclick="navigateToGraduatesFromCard()">
+				<div class="card graduates-card>
 					<div class="card-content">
 						<h4>Total Graduates</h4>
 						<p>34</p>
@@ -266,89 +270,8 @@
 						</ul>
 					  </div>
 		</section>
-
-				<!-- SCHOLARS SECTION (Hidden by default) -->
-		<section id="scholars-section" class="page-section hidden">
-			<h3>Scholars</h3>
-			<p>View and manage scholar information.</p>
-
-			<div class="scholar-top">
-				<div class="label">
-					<h4>All</h4>
-				</div>
-
-				<div class="right-side">
-					<div class="header-search" id="searchBar" style="display: flex;">
-						<input type="text" class="search-bar" placeholder="Search..." />
-						<i data-lucide="search" class="input-icon"></i>
-					</div>
-
-					<button class="btn filter-btn">
-						<i data-lucide="filter" class="btn-icon"></i>
-						Filter
-					</button>
-					
-					<button class="btn add-btn">
-						<i data-lucide="plus" class="btn-icon"></i>
-						Add
-					</button>
-				</div>
-			</div>
-
-				<div class="container">
-					<table class="scholar-table">
-						<thead>
-							<tr>
-								<th><input type="checkbox" id="select-all-scholars"></th>
-								<th>No.</th>
-								<th>Batch</th>
-								<th>Name of Scholar</th>
-								<th>Home Address</th>
-								<th>Program</th>
-								<th>Birth Date</th>
-								<th>Contact</th>
-								<th>Sex</th>
-								<th>Status</th>
-								<th>Bank Details</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody id="scholar-table-body">
-							<tr>
-								<td><input type="checkbox" /></td>
-								<td>1</td>
-								<td>2023</td>
-								<td>Juan Dela Cruz</td>
-								<td>Zamboanga City</td>
-								<td>ODSP</td>
-								<td>April 15 2001</td>
-								<td>00000000000</td>
-								<td>Male</td>
-								<td><span class="status done">Done</span></td>
-								<td><span class="bank">LNB - 123456789</span></td>
-
-								<td>
-									<button class="action-menu-btn">
-									<i data-lucide="more-vertical"></i>
-									</button>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				
-				<div class="pagination">
-					<span class="pagination-left" id="pagination-showing">Showing: 0 of 0</span>
-					<div class="pagination-right">
-					<button onclick="prevPage()" id="prev-btn" disabled>&lsaquo;</button>
-					<span id="page-info">1 / 1</span>
-					<button onclick="nextPage()" id="next-btn">&rsaquo;</button>
-					</div>
-				</div>
-		</section>
-
-				
 	</main>
-    <script src="/assets/js/script.js"></script>
+    <script src="/frontend/assets/js/script.js"></script>
+	<script src="/frontend/assets/js/dashboard.js"></script>
 </body>
 </html>
