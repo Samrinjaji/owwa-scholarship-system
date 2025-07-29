@@ -1,4 +1,11 @@
-function bindProfileDropdown() {
+ document.addEventListener("DOMContentLoaded", () => {
+    bindProfileDropdown();     // ✅ Initial bind
+    bindSidebarNav();          // ✅ Sidebar logic
+    loadSection('dashboard.html', 'Dashboard', 'layout-grid'); // default view
+    bindDashboardCardClicks(); // ✅ Bind dashboard cards
+  });
+
+  function bindProfileDropdown() {
     const dropdownToggle = document.getElementById("dropdownToggle");
     const profileDropdown = document.getElementById("profileDropdown");
   
@@ -27,50 +34,384 @@ function bindProfileDropdown() {
       e.stopPropagation();
     };
   }
-  
+
   function bindSidebarNav() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const dropdownToggle = document.querySelector('.dropdown-toggle');
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-    const chevronIcon = document.querySelector('.chevron-icon');
+  const navLinks = document.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+  const dropdownToggle = document.querySelector('.dropdown-toggle');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const chevronIcon = document.querySelector('.chevron-icon');
+  const submenuLinks = dropdownMenu?.querySelectorAll('a') || [];
+
+  // ✅ Handle regular nav links (excluding dropdown)
+  navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    // Remove all active states
+    removeAllActive();
+
+    // Activate clicked link
+    link.classList.add('active');
+
+    // Close Scholars dropdown if open
+    dropdownMenu?.classList.remove('show');
+
+    // ✅ Load the corresponding section
+    const file = link.dataset.file;
+    const title = link.dataset.title;
+    const icon = link.dataset.icon;
+    if (file && title && icon) {
+      loadSection(file, title, icon);
+    }
+  });
+});
+
+  // ✅ Handle Scholars dropdown toggle
+if (dropdownToggle && dropdownMenu && chevronIcon) {
+  dropdownToggle.addEventListener('click', e => {
+    e.preventDefault();
+
+    // Toggle dropdown state
+    dropdownMenu.classList.toggle('show');
+
+    // Set only dropdown active
+    removeAllActive();
+    dropdownToggle.classList.add('active');
+
+    // ✅ Load scholars.html when main Scholars is clicked
+    loadSection('scholars.html', 'Scholars', 'users');
+  });
+}
+
+
+  // ✅ Handle submenu clicks (EDSP, ODSP, ELAP)
+submenuLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    // Remove active from all submenu items
+    submenuLinks.forEach(sublink => sublink.classList.remove('active'));
+
+    // Activate clicked submenu item
+    link.classList.add('active');
+
+    // Keep dropdown toggle active
+    dropdownToggle.classList.add('active');
+
+    // Keep dropdown open
+    dropdownMenu.classList.add('show');
+
+    // ✅ Load submenu section, but keep topbar as "Scholars"
+    const file = link.dataset.file;
+    if (file) {
+      loadSection(file, 'Scholars', 'users'); // always show "Scholars" in top bar
+    }
+  });
+});
+
+
+  function removeAllActive() {
+    navLinks.forEach(link => link.classList.remove('active'));
+    dropdownToggle?.classList.remove('active');
+    submenuLinks.forEach(link => link.classList.remove('active'));
+  }
+}
+
+function loadSection(sectionFile, title, iconName) {
+  fetch(`/frontend/sections/${sectionFile}`)
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('main-content').innerHTML = html;
+      setActiveSection(title, iconName);
+      bindProfileDropdown();             // rebind after DOM swap
+      // ✅ Re-bind dashboard cards if loading dashboard
+      if (sectionFile === 'dashboard.html') {
+        bindDashboardCardClicks();
+      }
+    })
+    .catch(err => console.error(`Error loading ${sectionFile}:`, err));
+}
+
+function setActiveSection(title, iconName) {
+  const sectionTitle = document.getElementById('sectionTitleText');
+  const sectionIcon = document.getElementById('sectionIcon');
+
+  if (sectionTitle) sectionTitle.textContent = title;
+
+  if (sectionIcon) {
+    sectionIcon.setAttribute('data-lucide', iconName);
+    lucide.createIcons(); // re-render the updated icon
+  }
+}
+
+function bindDashboardCardClicks() {
+    const scholarsCard = document.getElementById('goToScholars');
+    const disbursementCard = document.getElementById('goToDisbursement');
+    const graduatesCard = document.getElementById('goToGraduates');
   
-    // Handle regular nav links
-    navLinks.forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
+    const clearSidebarActive = () => {
+      document.querySelectorAll('.nav-link, .dropdown-toggle').forEach(link => link.classList.remove('active'));
+      document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+      const chevron = document.querySelector('.chevron-icon');
+      if (chevron) chevron.classList.remove('rotate');
+    };
   
-        // Remove active from all nav links
-        navLinks.forEach(l => l.classList.remove('active'));
-        document.querySelector('.dropdown-toggle')?.classList.remove('active');
+    if (scholarsCard) {
+      scholarsCard.addEventListener('click', () => {
+        loadSection('scholars.html', 'Scholars', 'users');
+        clearSidebarActive();
   
-        // Set active to the clicked one
-        link.classList.add('active');
+        // Activate Scholars dropdown
+        const scholarsToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const chevronIcon = document.querySelector('.chevron-icon');
   
-        // Close dropdown if open
-        dropdownMenu?.classList.remove('show');
-        chevronIcon?.classList.remove('rotate');
+        if (scholarsToggle) scholarsToggle.classList.add('active');
+        if (dropdownMenu) dropdownMenu.classList.add('show');
+        if (chevronIcon) chevronIcon.classList.add('rotate');
       });
-    });
+    }
   
-    // Handle Scholars dropdown
-    if (dropdownToggle && dropdownMenu && chevronIcon) {
-      dropdownToggle.addEventListener('click', e => {
-        e.preventDefault();
+    if (disbursementCard) {
+      disbursementCard.addEventListener('click', () => {
+        loadSection('disbursement.html', 'Disbursement', 'wallet');
+        clearSidebarActive();
   
-        // Remove active from regular nav links
-        navLinks.forEach(l => l.classList.remove('active'));
+        const disbursementLink = document.querySelector('.nav-link[data-title="Disbursement"]');
+        if (disbursementLink) disbursementLink.classList.add('active');
+      });
+    }
   
-        // Ensure only this dropdown stays active
-        document.querySelectorAll('.dropdown-toggle').forEach(dt => dt.classList.remove('active'));
-        dropdownToggle.classList.add('active');
+    if (graduatesCard) {
+      graduatesCard.addEventListener('click', () => {
+        loadSection('graduates.html', 'Graduates', 'graduation-cap');
+        clearSidebarActive();
   
-        // Toggle dropdown visibility and chevron
-        dropdownMenu.classList.toggle('show');
-        chevronIcon.classList.toggle('rotate');
+        const graduatesLink = document.querySelector('.nav-link[data-title="Graduates"]');
+        if (graduatesLink) graduatesLink.classList.add('active');
       });
     }
   }
+
+
+
+
+
+
+
+
+
+ 
+ /*
+
+  function bindSidebarNav() {
+  const navLinks = document.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+  const dropdownToggle = document.querySelector('.dropdown-toggle');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const chevronIcon = document.querySelector('.chevron-icon');
+  const submenuLinks = dropdownMenu?.querySelectorAll('a') || [];
+
+  // ✅ Handle regular nav links (excluding dropdown)
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Remove all active states
+      removeAllActive();
+
+      // Activate clicked link
+      link.classList.add('active');
+
+      // Close dropdown if open
+      dropdownMenu?.classList.remove('show');
+      chevronIcon?.classList.remove('rotate');
+    });
+  });
+
+  // ✅ Handle Scholars dropdown toggle
+  if (dropdownToggle && dropdownMenu && chevronIcon) {
+    dropdownToggle.addEventListener('click', e => {
+  e.preventDefault();
+
+  // Toggle dropdown state
+  dropdownMenu.classList.toggle('show');
+  chevronIcon.classList.toggle('rotate');
+
+  // Set only dropdown active
+  removeAllActive();
+  dropdownToggle.classList.add('active');
+
+  // ✅ Load scholars section (EDSP by default, or general scholars)
+  const file = dropdownToggle.dataset.file;
+  if (file) {
+    loadSection(file, 'Scholars', 'users');
+  }
+});
+
+  }
+
+  // ✅ Handle submenu clicks (EDSP, ODSP, ELAP)
+  submenuLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Remove active from all submenu items
+      submenuLinks.forEach(sublink => sublink.classList.remove('active'));
+
+      // Activate clicked submenu item
+      link.classList.add('active');
+
+      // Keep dropdown toggle active
+      dropdownToggle.classList.add('active');
+
+      // Optional: Keep dropdown open
+      dropdownMenu.classList.add('show');
+      chevronIcon.classList.add('rotate');
+
+      // Optional: load content
+      // loadSection(link.dataset.file);
+    });
+  });
+
+  function removeAllActive() {
+    navLinks.forEach(link => link.classList.remove('active'));
+    dropdownToggle?.classList.remove('active');
+    submenuLinks.forEach(link => link.classList.remove('active'));
+  }
+}
+
+function loadSection(sectionFile, title, iconName) {
+    fetch(`/frontend/sections/${sectionFile}`)
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('main-content').innerHTML = html;
+        setActiveSection(title, iconName);
+        bindProfileDropdown();
+        if (sectionFile === 'dashboard.html') {
+          // ✅ Rebind click when dashboard loads
+        }
+      })
+      .catch(err => console.error(`Failed to load ${sectionFile}:`, err));
+  }
+
   
+ /*
+
+  
+
+ 
+
+
+
+  
+
+/*
+f document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+    bindProfileDropdown();     // ✅ Initial bind
+    bindSidebarNav();          // ✅ Sidebar logic
+    loadSection('dashboard.html', 'Dashboard', 'layout-grid');
+  });
+
+  function bindProfileDropdown() {
+    const dropdownToggle = document.getElementById("dropdownToggle");
+    const profileDropdown = document.getElementById("profileDropdown");
+  
+    if (!dropdownToggle || !profileDropdown) return;
+  
+    // Remove old event listeners (clone trick)
+    const newToggle = dropdownToggle.cloneNode(true);
+    dropdownToggle.parentNode.replaceChild(newToggle, dropdownToggle);
+  
+    let isOpen = false;
+  
+    newToggle.onclick = (e) => {
+      e.stopPropagation();
+      isOpen = !isOpen;
+      profileDropdown.style.display = isOpen ? "block" : "none";
+    };
+  
+    document.addEventListener("click", () => {
+      if (isOpen) {
+        profileDropdown.style.display = "none";
+        isOpen = false;
+      }
+    });
+  
+    profileDropdown.onclick = (e) => {
+      e.stopPropagation();
+    };
+  }
+
+ function bindSidebarNav() {
+  const navLinks = document.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+  const dropdownToggle = document.querySelector('.dropdown-toggle');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const chevronIcon = document.querySelector('.chevron-icon');
+  const submenuLinks = dropdownMenu?.querySelectorAll('a') || [];
+
+  // ✅ Handle regular nav links (excluding dropdown)
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Remove all active states
+      removeAllActive();
+
+      // Activate clicked link
+      link.classList.add('active');
+
+      // Close dropdown if open
+      dropdownMenu?.classList.remove('show');
+      chevronIcon?.classList.remove('rotate');
+    });
+  });
+
+  // ✅ Handle Scholars dropdown toggle
+  if (dropdownToggle && dropdownMenu && chevronIcon) {
+    dropdownToggle.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Toggle dropdown state
+      dropdownMenu.classList.toggle('show');
+      chevronIcon.classList.toggle('rotate');
+
+      // Set only dropdown active
+      removeAllActive();
+      dropdownToggle.classList.add('active');
+    });
+  }
+
+  // ✅ Handle submenu clicks (EDSP, ODSP, ELAP)
+  submenuLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Remove active from all submenu items
+      submenuLinks.forEach(sublink => sublink.classList.remove('active'));
+
+      // Activate clicked submenu item
+      link.classList.add('active');
+
+      // Keep dropdown toggle active
+      dropdownToggle.classList.add('active');
+
+      // Optional: Keep dropdown open
+      dropdownMenu.classList.add('show');
+      chevronIcon.classList.add('rotate');
+
+      // Optional: load content
+      // loadSection(link.dataset.file);
+    });
+  });
+
+  function removeAllActive() {
+    navLinks.forEach(link => link.classList.remove('active'));
+    dropdownToggle?.classList.remove('active');
+    submenuLinks.forEach(link => link.classList.remove('active'));
+  }
+}
+
   function setActiveSection(label, iconName) {
     document.getElementById('searchBar').style.display = label === "Dashboard" ? "flex" : "none";
     const titleBar = document.getElementById('sectionTitleBar');
@@ -181,10 +522,6 @@ function bindProfileDropdown() {
 
     
   });
-
-  
-
-    
 /*
 function bindProfileDropdown() {
     const dropdownToggle = document.getElementById('dropdownToggle');
@@ -382,7 +719,5 @@ function bindDashboardClick() {
 document.addEventListener("DOMContentLoaded", function () {
 	bindProfileDropdown();
 	bindScholarsDropdown();
-
-
 }); 
 */
