@@ -3,6 +3,21 @@
     bindSidebarNav();          // ✅ Sidebar logic
     loadSection('dashboard.html', 'Dashboard', 'layout-grid'); // default view
     bindDashboardCardClicks(); // ✅ Bind dashboard cards
+
+      // Optional: Fill the year dropdown dynamically
+  const yearSelect = document.getElementById('year');
+  const currentYear = new Date().getFullYear();
+  if (yearSelect) {
+    for (let y = 2023; y <= currentYear; y++) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      if (y == currentYear) opt.selected = true;
+      yearSelect.appendChild(opt);
+    }
+
+    yearSelect.addEventListener('change', updateBarChartData);
+  }
   });
 
   function bindProfileDropdown() {
@@ -127,6 +142,9 @@ function loadSection(sectionFile, title, iconName) {
       // ✅ Re-bind dashboard cards if loading dashboard
       if (sectionFile === 'dashboard.html') {
         bindDashboardCardClicks();
+        createBarChart();
+
+        updateGenderChart();
       }
     })
     .catch(err => console.error(`Error loading ${sectionFile}:`, err));
@@ -192,6 +210,214 @@ function bindDashboardCardClicks() {
       });
     }
   }
+
+  let barChartInstance;
+  const yearlyData = {
+  2023: {
+    EDSP: [10, 11, 9, 14, 12, 13, 9, 8, 10, 12, 11, 13],
+    ODSP: [6, 7, 8, 9, 7, 6.5, 7, 8, 9, 10, 8, 9],
+    ELAP: [4, 5, 3.5, 4.5, 4, 3, 4, 3.5, 4, 3.8, 4.2, 5]
+  },
+  2024: {
+    EDSP: [12, 15, 10, 18, 14, 17, 10, 11, 12, 13, 14, 15],
+    ODSP: [8, 7, 9, 11, 9.5, 10, 11, 8, 9, 10, 12, 13],
+    ELAP: [5, 6, 4.5, 7, 7.5, 6.8, 5, 4, 6, 5, 7, 8]
+  }
+};
+
+function createBarChart() {
+  const ctx = document.getElementById('barChart');
+  if (!ctx) return;
+
+  const year = document.getElementById('year')?.value || '2025';
+  const data = yearlyData[year];
+
+  barChartInstance = new Chart(ctx.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ],
+      datasets: [
+        {
+          label: 'EDSP',
+          data: data.EDSP,
+          backgroundColor: '#1E3A8A',
+          borderRadius: 6
+        },
+        {
+          label: 'ODSP',
+          data: data.ODSP,
+          backgroundColor: '#DC2626',
+          borderRadius: 6
+        },
+        {
+          label: 'ELAP',
+          data: data.ELAP,
+          backgroundColor: '#0F766E',
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            title: (tooltipItems) => `Month: ${tooltipItems[0].label}`,
+            label: (tooltipItem) => {
+              const amount = tooltipItem.raw.toLocaleString('en-PH', {
+                style: 'currency',
+                currency: 'PHP'
+              });
+              return `${tooltipItem.dataset.label}: ${amount}`;
+            }
+          }
+        }
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      scales: {
+        y: {
+          display: true,
+          grid: {
+            display: true,
+            color: '#e0e0e0'
+          },
+          ticks: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateBarChartData() {
+  const year = document.getElementById('year')?.value || '2025';
+  if (!barChartInstance || !yearlyData[year]) return;
+
+  const data = yearlyData[year];
+  barChartInstance.data.datasets[0].data = data.EDSP;
+  barChartInstance.data.datasets[1].data = data.ODSP;
+  barChartInstance.data.datasets[2].data = data.ELAP;
+  barChartInstance.update();
+}
+
+// Gender chart
+// Sample gender data (replace later with dynamic ones)
+const programGenderData = {
+  EDSP: { male: 30, female: 20 },
+  ODSP: { male: 15, female: 15 },
+  ELAP: { male: 8, female: 12 }
+};
+
+// Chart instance
+let genderChart;
+
+function updateGenderChart() {
+  const selectedProgram = document.getElementById('programSelect').value;
+
+  let maleCount = 0;
+  let femaleCount = 0;
+
+  if (selectedProgram === 'ALL') {
+    for (const program in programGenderData) {
+      maleCount += programGenderData[program].male;
+      femaleCount += programGenderData[program].female;
+    }
+  } else {
+    maleCount = programGenderData[selectedProgram].male;
+    femaleCount = programGenderData[selectedProgram].female;
+  }
+
+  const total = maleCount + femaleCount;
+
+  const data = {
+    labels: ['Male', 'Female'],
+    datasets: [{
+      data: [maleCount, femaleCount],
+      backgroundColor: ['#1E3A8A', '#DC2626'],
+      borderWidth: 1
+    }]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 0,
+        bottom: 0,
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: selectedProgram === 'ALL'
+          ? 'Gender Breakdown (All Programs)'
+          : `Gender Breakdown (${selectedProgram})`,
+        font: {
+          size: 12,
+          weight: 'bold'
+        },
+        position: 'bottom',
+        padding: {
+          top: 4
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label;
+            const value = context.raw;
+            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${label}: ${value} scholars (${percent}%)`;
+          }
+        }
+      },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 6,
+          boxHeight: 6,
+          padding: 6,
+          font: {
+            size: 12
+          }
+        }
+      }
+    }
+  };
+
+  // Destroy old chart if exists
+  if (genderChart) genderChart.destroy();
+
+  // Create new pie chart
+  const genderCtx = document.getElementById('pieChart').getContext('2d');
+  genderChart = new Chart(genderCtx, {
+    type: 'doughnut', // or 'doughnut'
+    data,
+    options
+  });
+}
+
+
+
 
 
 
