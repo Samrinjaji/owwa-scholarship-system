@@ -5,7 +5,7 @@
 
     <div class="scholar-top">
         <div class="label">
-            <h4>All</h4>
+            <h4 id="program-label">All</h4>
         </div>
 
         <div class="right-side">
@@ -45,8 +45,8 @@
                     </tr>
                 </thead>
                 <tbody id="scholar-table-body">
-                    <tr>
-                        <td><input type="checkbox" /></td>
+                    <tr  data-program="ODSP">
+                        <td><input type="checkbox" class="row-checkbox"/></td>
                         <td>1</td>
                         <td>2023</td>
                         <td>Juan Dela Cruz</td>
@@ -58,15 +58,63 @@
                         <td><span class="status done">Done</span></td>
                         <td><span class="bank">LNB - 123456789</span></td>
 
-                        <td>
-                            <button class="action-menu-btn">
+                        <td class="action-wrapper" style="position: relative;">
+                        <button class="action-menu-btn">
                             <i data-lucide="more-vertical"></i>
-                            </button>
-                        </td>
+                        </button>
+                       </td>
+                    </tr>
+                    <tr  data-program="EDSP">
+                        <td><input type="checkbox" class="row-checkbox"/></td>
+                        <td>2</td>
+                        <td>2023</td>
+                        <td>Jaji Samrin S</td>
+                        <td>Zamboanga City</td>
+                        <td>EDSP</td>
+                        <td>April 15 2001</td>
+                        <td>00000000000</td>
+                        <td>Male</td>
+                        <td><span class="status done">Done</span></td>
+                        <td><span class="bank">LNB - 123456789</span></td>
+
+                       <td class="action-wrapper" style="position: relative;">
+                        <button class="action-menu-btn">
+                            <i data-lucide="more-vertical"></i>
+                        </button>
+                       </td>
+                    </tr>
+                    <tr  data-program="ELAP">
+                        <td><input type="checkbox" class="row-checkbox"/></td>
+                        <td>3</td>
+                        <td>2023</td>
+                        <td>Pedro Jenrick R</td>
+                        <td>Zamboanga City</td>
+                        <td>ELAP</td>
+                        <td>April 15 2001</td>
+                        <td>00000000000</td>
+                        <td>Male</td>
+                        <td><span class="status done">Done</span></td>
+                        <td><span class="bank">LNB - 123456789</span></td>
+
+                       <td class="action-wrapper" style="position: relative;">
+                        <button class="action-menu-btn">
+                            <i data-lucide="more-vertical"></i>
+                        </button>
+                       </td>
                     </tr>
                 </tbody>
             </table>
+            <!-- Global Scholar Dropdown -->
+<div id="scholar-action-dropdown" class="action-dropdown hidden">
+  <div class="dropdown-item"><i data-lucide="edit-2"></i><span>Edit</span></div>
+  <div class="dropdown-item"><i data-lucide="file-text"></i><span>PPF</span></div>
+  <div class="dropdown-item"><i data-lucide="graduation-cap"></i><span>Graduate</span></div>
+  <div class="dropdown-divider"></div>
+  <div class="dropdown-item danger"><i data-lucide="trash-2"></i><span>Delete</span></div>
+</div>
+
         </div>
+        
         
         <div class="pagination">
             <span class="pagination-left" id="pagination-showing">Showing: 0 of 0</span>
@@ -76,4 +124,24 @@
             <button onclick="nextPage()" id="next-btn">&rsaquo;</button>
             </div>
         </div>
+
+        <div id="bulk-action-bar" class="bulk-action hidden">
+    <div class="bulk-item selected-count-toggle" >
+        <i data-lucide="check-square" class="bulk-icon selected-icon"></i>
+        <span id="selected-count">0 Items</span>
+    </div>
+    <div class="divider"></div>
+    <div class="bulk-item graduate-btn">
+        <i data-lucide="graduation-cap" class="bulk-icon"></i>
+        Graduate
+    </div>
+    <div class="divider"></div>
+    <div class="bulk-item remove-btn">
+        <i data-lucide="trash-2" class="bulk-icon danger"></i>
+        Remove
+    </div>
+</div>
+
+
+
 </section>
