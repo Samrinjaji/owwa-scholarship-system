@@ -1,4 +1,74 @@
-<section id="disbursement-section" class="page-section">
-    <h3>Disbursement</h3>
-    <p>View and manage Disburse information.</p>
-</section>
+<!-- DISBURSEMENT SECTION -->
+		<section id="disbursement-section" class="page-section hidden">
+			<h3>Disbursement</h3>
+			<p>Track individual payment status</p>
+
+			<div class="container">
+  <div class="scholar-top">
+    <div class="left-side">
+      <div class="header-search" id="disbursementSearchBar" style="display: flex;">
+        <input type="text" class="search-bar" placeholder="Search..." />
+        <i data-lucide="search" class="input-icon"></i>
+      </div>
+    </div>
+
+    <div class="right-side">
+      <button class="btn filter-btn">
+        <i data-lucide="filter" class="btn-icon"></i>
+        Filter
+      </button>
+
+      <!-- Month Picker with label inside -->
+      <div class="date-picker-wrapper">
+  		<input type="date" id="disbursementDate" class="date-picker" required />
+	  </div>
+    </div>
+  </div>
+
+
+  <table class="scholar-table">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Name of Scholar</th>
+        <th>Program</th>
+        <th>Amount</th>
+        <th>Year Level</th>
+        <th>Sex</th>
+        <th>Course</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="disbursement-table-body">
+      <tr>
+        <td>1</td>
+        <td>Juan Dela Cruz</td>
+        <td>EDSP1</td>
+        <td>₱15,000</td>
+        <td>2nd Year</td>
+        <td>Male</td>
+        <td>BSIT</td>
+        <td>04/15/2001</td>
+        <td><span class="status done">Done</span></td>
+        <td>
+          <button class="btn danger-btn small-btn">
+            <i data-lucide="trash-2" class="btn-icon"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <span class="pagination-left" id="disbursement-showing">Showing: 0 of 0</span>
+    <div class="pagination-right">
+      <button onclick="prevPage()" id="disbursement-prev-btn" disabled>&lsaquo;</button>
+      <span id="disbursement-page-info">1 / 1</span>
+      <button onclick="nextPage()" id="disbursement-next-btn">&rsaquo;</button>
+    </div>
+  </div>
+</div>
+
+		</section>
