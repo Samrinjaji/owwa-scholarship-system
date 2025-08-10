@@ -210,7 +210,7 @@
 						<div class="genderchart-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 						  <h3 class="gender-chart-title">Gender Distribution</h3>
 						
-						  <select id="programSelect" onchange="updateGenderChart()" class="gender-chart-select">
+						  <select id="genderProgramSelect" onchange="updateGenderChart()" class="gender-chart-select">
 							<option value="ALL">All Programs</option>
 							<option value="EDSP">EDSP</option>
 							<option value="ODSP">ODSP</option>
@@ -250,19 +250,45 @@
 							<i data-lucide="search" class="input-icon"></i>
 						</div>
 					</div>
-					<div class="right-side">
+					<div class="right-side" style="position: relative;">
 						<button class="btn filter-btn" id="filterBtn">
 							<i data-lucide="filter" class="btn-icon"></i>
 							Filter
-                    	</button>
+						</button>
 						<button class="btn add-btn">
 							<i data-lucide="plus" class="btn-icon"></i>
 							Add
 						</button>
+						<button class="btn" id="exportCsvBtn">
+							<i data-lucide="download" class="btn-icon"></i>
+							Export CSV
+						</button>
+						<!-- dropdown filter -->
+						<div id="filter-dropdown" class="filter-dropdown hidden">
+							<div class="dropdown-group">
+								<span class="dropdown-label">Program</span>
+								<select id="filterProgramSelect" class="dropdown-select">
+								<option value="ALL">All</option>
+								<option value="EDSP">EDSP</option>
+								<option value="ODSP">ODSP</option>
+								<option value="ELAP">ELAP</option>
+								</select>
+							</div>
+
+							<div class="dropdown-group">
+								<span class="dropdown-label">Category</span>
+								<select id="categorySelect" class="dropdown-select" disabled>
+								<option>Select program first</option>
+								</select>
+							</div>
+
+							<button id="applyFilterBtn" class="btn apply-filter-btn">Apply</button>
+							<button id="clearFilterBtn" class="btn cancel-btn" type="button">Clear</button>
+						</div>
 					</div>
 				</div>
 
-					<table class="scholar-table" id="scholarsTable">
+				                        <table class="scholar-table" id="scholarsTable">
 						<thead>
 							<tr>
 								<th><input type="checkbox" id="select-all-scholars"></th>
@@ -280,24 +306,8 @@
 							</tr>
 						</thead>
 						<tbody id="scholar-table-body">
-							<tr  data-program="EDSP" data-subprogram="EDSP1">
-								<td><input type="checkbox" class="row-checkbox"/></td>
-								<td>1</td>
-								<td>2023</td>
-								<td>Juan Dela Cruz</td>
-								<td>Zamboanga City</td>
-								<td>EDSP1</td>
-								<td>April 15 2001</td>
-								<td>00000000000</td>
-								<td>Male</td>
-								<td><span class="status done">Done</span></td>
-								<td><span class="bank">LNB - 123456789</span></td>
-								<td class="action-wrapper" style="position: relative;">
-									<button class="action-menu-btn">
-									<i data-lucide="more-vertical"></i>
-									</button>
-								</td>
-								<!-- Global Scholar Dropdown -->
+							
+							<!-- Global Scholar Dropdown -->
 								<div id="scholar-action-dropdown" class="action-dropdown hidden">
 									<div class="dropdown-item"><i data-lucide="edit-2"></i><span>Edit</span></div>
 									<div class="dropdown-item"><i data-lucide="view"></i><span>View</span></div>
@@ -306,37 +316,32 @@
 									<div class="dropdown-divider"></div>
 									<div class="dropdown-item danger"><i data-lucide="trash-2"></i><span>Delete</span></div>
 								</div>
-							</tr>
-							<tr  data-program="EDSP" data-subprogram="EDSP1">
-								<td><input type="checkbox" class="row-checkbox"/></td>
-								<td>1</td>
-								<td>2023</td>
-								<td>Jaji Samrin Cruz</td>
-								<td>Zamboanga City</td>
-								<td>EDSP1</td>
-								<td>April 15 2001</td>
-								<td>00000000000</td>
-								<td>Male</td>
-								<td><span class="status done">Done</span></td>
-								<td><span class="bank">LNB - 123456789</span></td>
-								<td class="action-wrapper" style="position: relative;">
-									<button class="action-menu-btn">
-									<i data-lucide="more-vertical"></i>
-									</button>
-								</td>
-								<!-- Global Scholar Dropdown -->
-								<div id="scholar-action-dropdown" class="action-dropdown hidden">
-									<div class="dropdown-item"><i data-lucide="edit-2"></i><span>Edit</span></div>
-									<div class="dropdown-item"><i data-lucide="view"></i><span>View</span></div>
-									<div class="dropdown-item"><i data-lucide="file-text"></i><span>PPF</span></div>
-									<div class="dropdown-item"><i data-lucide="graduation-cap"></i><span>Graduate</span></div>
-									<div class="dropdown-divider"></div>
-									<div class="dropdown-item danger"><i data-lucide="trash-2"></i><span>Delete</span></div>
-								</div>
-							</tr>
 							
 						</tbody>
 					</table>
+					
+					<!-- Contextual Action Bar -->
+					<div id="contextual-action-bar" class="contextual-action-bar hidden">
+						<div class="action-bar-left">
+							<input type="checkbox" id="action-bar-checkbox" checked>
+							<span id="selected-count-text">0 Items</span>
+						</div>
+						<div class="action-bar-divider"></div>
+						<div class="action-bar-middle">
+							<button class="action-bar-btn" id="release-btn">
+								<i data-lucide="graduation-cap" class="action-bar-icon"></i>
+								<span>Graduates</span>
+							</button>
+						</div>
+						<div class="action-bar-divider"></div>
+						<div class="action-bar-right">
+							<button class="action-bar-btn danger" id="remove-btn">
+								<i data-lucide="trash-2" class="action-bar-icon"></i>
+								<span>Remove</span>
+							</button>
+						</div>
+					</div>
+					
 					<!-- Global Scholar Dropdown -->
 								<div id="scholar-action-dropdown" class="action-dropdown hidden">
 									<div class="dropdown-item"><i data-lucide="edit-2"></i><span>Edit</span></div>
@@ -358,28 +363,6 @@
 						<button onclick="nextPage()" id="next-btn">&rsaquo;</button>
 					</div>
 				</div>
-			</div>
-
-			<!-- dropdown filter -->
-			 <div id="filter-dropdown" class="filter-dropdown hidden">
-				<div class="dropdown-group">
-					<span class="dropdown-label">Program</span>
-					<select id="programSelect" class="dropdown-select">
-					<option value="All">All</option>
-					<option value="EDSP">EDSP</option>
-					<option value="ODSP">ODSP</option>
-					<option value="ELAP">ELAP</option>
-					</select>
-				</div>
-
-				<div class="dropdown-group">
-					<span class="dropdown-label">Category</span>
-					<select id="categorySelect" class="dropdown-select" disabled>
-					<option>Select program first</option>
-					</select>
-				</div>
-
-				<button id="applyFilterBtn" class="btn apply-filter-btn">Apply</button>
 			</div>
 
 			<!-- Minimal & Clean Add Scholar Modal with Labels -->
@@ -408,7 +391,7 @@
 						<option value="ODSP1">
 						<option value="ODSP2">
 						<option value="ELAP ELEMENTARY">
-						<option value="ELAP HIGH SCHOOL">
+						<option value="ELAP HIGHSCHOOL">
 						<option value="ELAP COLLEGE">
 						</datalist>
 					</label>

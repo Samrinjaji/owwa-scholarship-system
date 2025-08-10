@@ -693,7 +693,7 @@ main{
   transition: transform 0.2s ease;
   margin-top: 10px;
   border-radius: 10px;
-  overflow-y: auto;
+  overflow: visible;
   transition: transform 0.2s ease;
   margin-top: 10px;
   background-color: #fff;
@@ -713,6 +713,7 @@ main{
   align-items: center;
   gap: 12px;
   position: relative;
+  overflow: visible;
 }
 
 .header-search{
@@ -765,6 +766,8 @@ main{
   background-color: #1d4ed8;
   color: #fff;
 }
+
+/* Filter button positioning handled by parent container */
 
 .btn-icon {
   width: 16px;
@@ -903,20 +906,21 @@ main{
 /* program filter styles */
 .filter-dropdown {
   position: absolute;
-  top: 160px;
-  right: 25px;
-  margin-top: 6px;
+  top: 100%;
+  right: 120px;
+  margin-top: 8px;
   padding: 12px;
   background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-  width: 180px;
+  width: 200px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  z-index: 100;
+  z-index: 1000;
   font-family: 'Inter', sans-serif;
+  pointer-events: auto;
 }
 
 .dropdown-group {
@@ -966,6 +970,27 @@ main{
   background-color: #2c6fba;
 }
 
+/* Clear button inside filter dropdown */
+#clearFilterBtn {
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+  width: 100%;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+#clearFilterBtn:hover {
+  background-color: #e5e7eb;
+  border-color: #cfd4dc;
+}
+
 /* modal styles */
 #addScholarModal2.modal-overlay {
   position: fixed;
@@ -974,25 +999,24 @@ main{
   z-index: 9999;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px;
   overflow-y: auto;
 }
 
 #addScholarModal2 .modal {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 10px;
   width: 100%;
-  max-width: 860px;
-  max-height: 90vh;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  max-height: 85vh;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 -2px 4px rgba(0, 0, 0, 0.02);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: fadeIn 0.2s ease-in-out;
 }
 
 /* ========== MODAL HEADER ========== */
@@ -1001,24 +1025,35 @@ main{
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background-color: #f7f7f7;
-  border-bottom: 1px solid #ddd;
+  background-color: #f0f4ff;
+  border-bottom: 1px solid #e1e4ec;
 }
 
 .modal-header h2 {
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
+  color: #1d4ed8;
+  font-weight: 600;
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-close:hover {
+  background-color: #e1e4ec;
+  color: #333;
 }
 
 /* ========== MODAL BODY ========== */
@@ -1026,106 +1061,114 @@ main{
   padding: 20px;
   overflow-y: auto;
   flex: 1;
+  background-color: #fff;
 }
 
 .modal-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .modal-section h3 {
-  font-size: 15px;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 14px;
+  color: #1e2126;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 600;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e1e4ec;
 }
 
 /* ========== FORM GRID ========== */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .form-grid label {
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: #444;
+  color: #666;
 }
 
 .form-grid input,
 .form-grid select {
-  margin-top: 4px;
-  padding: 8px 10px;
+  margin-top: 6px;
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 13px;
-  transition: border-color 0.2s;
+  font-size: 12px;
+  transition: border-color 0.2s ease;
   background-color: #fff;
+  color: #333;
 }
 
 .form-grid input:focus,
 .form-grid select:focus {
-  border-color: #007bff;
+  border-color: #1d4ed8;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.1);
+}
+
+.form-grid input::placeholder {
+  color: #999;
 }
 
 /* ========== MODAL FOOTER ========== */
 .modal-footer {
   padding: 16px 20px;
-  background-color: #f7f7f7;
+  background-color: #f0f4ff;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  border-top: 1px solid #ddd;
+  gap: 12px;
+  border-top: 1px solid #e1e4ec;
 }
 
-.btn {
+.modal-footer .btn {
   padding: 8px 16px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.cancel-btn {
-  background-color: #e0e0e0;
+.modal-footer .cancel-btn {
+  background-color: #fff;
+  color: #666;
+}
+
+.modal-footer .cancel-btn:hover {
+  background-color: #f3f4f6;
   color: #333;
 }
 
-.submit-btn {
-  background-color: #007bff;
+.modal-footer .submit-btn {
+  background-color: #1d4ed8;
   color: white;
+  border-color: #1d4ed8;
 }
 
-.submit-btn:hover {
-  background-color: #0056b3;
-}
-
-.cancel-btn:hover {
-  background-color: #c6c6c6;
+.modal-footer .submit-btn:hover {
+  background-color: #1e40af;
+  border-color: #1e40af;
 }
 
 /* ========== ICON SIZE ========== */
-.icon {
+.modal-header .icon,
+.modal-section .icon {
   width: 16px;
   height: 16px;
-  color: #007bff;
-}
-
-/* ========== ANIMATION ==========  */
-@keyframes fadeIn {
-  from {
-    transform: scale(0.96);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  color: #1d4ed8;
+  stroke-width: 2;
 }
 
 /*action dropdown styles */
@@ -1185,5 +1228,229 @@ main{
   height: 16px;
   margin-right: 8px;
   stroke-width: 1.5; /* optional: thinner lines */
+}
+
+/* ========== CHECKBOX STYLES ========== */
+.row-checkbox,
+#select-all-scholars {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  border: 1.5px solid #ccc;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  position: relative;
+  transition: all 0.2s ease;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.row-checkbox:checked,
+#select-all-scholars:checked {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.row-checkbox:checked::after,
+#select-all-scholars:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.row-checkbox:focus,
+#select-all-scholars:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
+  border-color: #1d4ed8;
+}
+
+.row-checkbox:hover,
+#select-all-scholars:hover {
+  border-color: #1d4ed8;
+  background-color: #f8fafc;
+}
+
+.row-checkbox:checked:hover,
+#select-all-scholars:checked:hover {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
+
+/* Indeterminate state for select all checkbox */
+#select-all-scholars:indeterminate {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+#select-all-scholars:indeterminate::after {
+  content: '−';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Table header checkbox alignment */
+.scholar-table th:first-child {
+  text-align: center;
+  width: 35px;
+}
+
+.scholar-table td:first-child {
+  text-align: center;
+  width: 35px;
+}
+
+/* ========== CONTEXTUAL ACTION BAR ========== */
+.contextual-action-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 1px solid #e1e4ec;
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: auto;
+  z-index: 1000;
+}
+
+.contextual-action-bar.hidden {
+  display: none;
+}
+
+.action-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-bar-left input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  border: 1.5px solid #ccc;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  position: relative;
+  transition: all 0.2s ease;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.action-bar-left input[type="checkbox"]:checked {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.action-bar-left input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.action-bar-left input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
+  border-color: #1d4ed8;
+}
+
+.action-bar-left input[type="checkbox"]:hover {
+  border-color: #1d4ed8;
+  background-color: #f8fafc;
+}
+
+.action-bar-left input[type="checkbox"]:checked:hover {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
+
+#selected-count-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
+.action-bar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e1e4ec;
+  flex-shrink: 0;
+}
+
+.action-bar-middle,
+.action-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-bar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.action-bar-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.action-bar-btn.danger {
+  color: #dc2626;
+  border-color: #fecaca;
+  background-color: #fef2f2;
+}
+
+.action-bar-btn.danger:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.action-bar-icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
 }
 
