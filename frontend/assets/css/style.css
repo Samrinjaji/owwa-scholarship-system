@@ -1227,7 +1227,7 @@ main{
   width: 16px;    /* or 14px, 12px, etc. */
   height: 16px;
   margin-right: 8px;
-  stroke-width: 1.5; /* optional: thinner lines */
+  stroke-width: 1; /* optional: thinner lines */
 }
 
 /* ========== CHECKBOX STYLES ========== */

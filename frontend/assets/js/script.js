@@ -364,34 +364,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // -------- Your existing functions below --------
 
+let __profileDropdownBound = false;
 function bindProfileDropdown() {
-  const dropdownToggle = document.getElementById("dropdownToggle");
-  const profileDropdown = document.getElementById("profileDropdown");
+  if (__profileDropdownBound) return;
+  const profileContainer = document.querySelector('.admin-profile');
+  const profileDropdown = document.getElementById('profileDropdown');
+  if (!profileContainer || !profileDropdown) return;
 
-  if (!dropdownToggle || !profileDropdown) return;
+  __profileDropdownBound = true;
 
-  // Remove old event listeners (clone trick)
-  const newToggle = dropdownToggle.cloneNode(true);
-  dropdownToggle.parentNode.replaceChild(newToggle, dropdownToggle);
-
-  let isOpen = false;
-
-  newToggle.onclick = (e) => {
+  // Toggle when clicking anywhere on the profile container (avatar/details/chevron)
+  profileContainer.addEventListener('click', (e) => {
     e.stopPropagation();
-    isOpen = !isOpen;
-    profileDropdown.style.display = isOpen ? "block" : "none";
-  };
-
-  document.addEventListener("click", () => {
-    if (isOpen) {
-      profileDropdown.style.display = "none";
-      isOpen = false;
-    }
+    // Close others first
+    closeAllDropdownsExcept(profileDropdown);
+    const isOpen = profileDropdown.style.display === 'block';
+    profileDropdown.style.display = isOpen ? 'none' : 'block';
   });
 
-  profileDropdown.onclick = (e) => {
-    e.stopPropagation();
-  };
+  // Prevent closing when interacting inside the dropdown
+  profileDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+  // Close when clicking outside
+  document.addEventListener('click', () => {
+    if (profileDropdown.style.display === 'block') {
+      profileDropdown.style.display = 'none';
+    }
+  });
 }
 
 function bindExportCsv() {
@@ -1317,7 +1316,10 @@ function updateSelectedCount() {
 }
 
 // ========== SCHOLAR ROW ACTION MENU (3-DOT) ==========
+let __rowActionMenusBound = false;
 function bindScholarRowActionMenus() {
+  if (__rowActionMenusBound) return;
+  __rowActionMenusBound = true;
   const dropdown = document.getElementById('scholar-action-dropdown');
   const tableBody = document.getElementById('scholar-table-body');
   if (!dropdown || !tableBody) return;
@@ -1329,7 +1331,10 @@ function bindScholarRowActionMenus() {
 
     event.stopPropagation();
 
-    // Close if clicking the same button while open
+    // Close any other open dropdowns (e.g., profile dropdown, filter dropdown)
+    closeAllDropdownsExcept(dropdown);
+
+    // Toggle if clicking the same button again
     const isOpen = !dropdown.classList.contains('hidden');
     const openedFor = dropdown.getAttribute('data-for-button-id');
     const thisId = ensureActionButtonId(button);
@@ -1338,13 +1343,15 @@ function bindScholarRowActionMenus() {
       return;
     }
 
-    // Position dropdown near the button
+    // Position dropdown near the button (fixed to viewport to avoid layout shifts/scrollbars)
     const rect = button.getBoundingClientRect();
     const dropdownWidthPx = parseInt(window.getComputedStyle(dropdown).width || '130', 10) || 130;
     dropdown.style.position = 'fixed';
     dropdown.style.right = 'auto';
-    dropdown.style.top = `${Math.round(rect.bottom + 6)}px`;
-    const left = Math.max(8, Math.round(rect.right - dropdownWidthPx));
+    const top = Math.round(rect.bottom + 6);
+    let left = Math.round(rect.right - dropdownWidthPx);
+    left = Math.max(8, Math.min(left, window.innerWidth - dropdownWidthPx - 8));
+    dropdown.style.top = `${top}px`;
     dropdown.style.left = `${left}px`;
 
     // Mark which button opened it
@@ -1386,6 +1393,23 @@ function ensureActionButtonId(button) {
 function hideScholarActionDropdown(dropdown) {
   dropdown.classList.add('hidden');
   dropdown.removeAttribute('data-for-button-id');
+}
+
+// Close all dropdowns except the one provided (if any)
+function closeAllDropdownsExcept(exceptElement) {
+  const profileDropdown = document.getElementById('profileDropdown');
+  const scholarDropdown = document.getElementById('scholar-action-dropdown');
+  const filterDropdown = document.getElementById('filter-dropdown');
+
+  if (profileDropdown && profileDropdown !== exceptElement) {
+    profileDropdown.style.display = 'none';
+  }
+  if (scholarDropdown && scholarDropdown !== exceptElement) {
+    hideScholarActionDropdown(scholarDropdown);
+  }
+  if (filterDropdown && filterDropdown !== exceptElement) {
+    filterDropdown.classList.add('hidden');
+  }
 }
 
 // Get selected scholar IDs
