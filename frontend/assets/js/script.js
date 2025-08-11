@@ -356,6 +356,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Scholars filter dropdown (program/category)
   bindFilterDropdownToggle();
   bindExportCsv();
+  // Ensure row action menus are bound on initial render as well
+  bindScholarRowActionMenus();
 
   
 });
@@ -827,6 +829,7 @@ function renderScholarsTable() {
     const tr = document.createElement('tr');
     tr.setAttribute('data-program', scholar.program.toUpperCase());
     tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
+    tr.setAttribute('data-index', String(index));
 
     tr.innerHTML = `
       <td><input type="checkbox" class="row-checkbox"/></td>
@@ -861,6 +864,9 @@ function renderScholarsTable() {
   
   // Bind contextual action bar functionality
   bindContextualActionBar();
+  
+  // Bind per-row action menu (3-dot) to global dropdown
+  bindScholarRowActionMenus();
 }
 
 function updateDashboardCounts() {
@@ -1308,6 +1314,78 @@ function updateSelectedCount() {
   }
   
   console.log(`Selected ${count} scholars`);
+}
+
+// ========== SCHOLAR ROW ACTION MENU (3-DOT) ==========
+function bindScholarRowActionMenus() {
+  const dropdown = document.getElementById('scholar-action-dropdown');
+  const tableBody = document.getElementById('scholar-table-body');
+  if (!dropdown || !tableBody) return;
+
+  // Delegate click for all current/future buttons
+  tableBody.addEventListener('click', (event) => {
+    const button = event.target.closest('.action-menu-btn');
+    if (!button) return;
+
+    event.stopPropagation();
+
+    // Close if clicking the same button while open
+    const isOpen = !dropdown.classList.contains('hidden');
+    const openedFor = dropdown.getAttribute('data-for-button-id');
+    const thisId = ensureActionButtonId(button);
+    if (isOpen && openedFor === thisId) {
+      hideScholarActionDropdown(dropdown);
+      return;
+    }
+
+    // Position dropdown near the button
+    const rect = button.getBoundingClientRect();
+    const dropdownWidthPx = parseInt(window.getComputedStyle(dropdown).width || '130', 10) || 130;
+    dropdown.style.position = 'fixed';
+    dropdown.style.right = 'auto';
+    dropdown.style.top = `${Math.round(rect.bottom + 6)}px`;
+    const left = Math.max(8, Math.round(rect.right - dropdownWidthPx));
+    dropdown.style.left = `${left}px`;
+
+    // Mark which button opened it
+    dropdown.setAttribute('data-for-button-id', thisId);
+
+    // Show dropdown
+    dropdown.classList.remove('hidden');
+
+    // Re-init icons in case
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  });
+
+  // Global outside click to close
+  document.addEventListener('click', (e) => {
+    if (dropdown.classList.contains('hidden')) return;
+    const isInside = dropdown.contains(e.target);
+    const openedButtonId = dropdown.getAttribute('data-for-button-id');
+    const openedButton = openedButtonId ? document.getElementById(openedButtonId) : null;
+    const clickOnButton = openedButton && openedButton.contains(e.target);
+    if (!isInside && !clickOnButton) {
+      hideScholarActionDropdown(dropdown);
+    }
+  });
+
+  // Close on scroll/resize to avoid misplacement
+  window.addEventListener('scroll', () => hideScholarActionDropdown(dropdown), true);
+  window.addEventListener('resize', () => hideScholarActionDropdown(dropdown));
+}
+
+function ensureActionButtonId(button) {
+  if (!button.id) {
+    button.id = `action-btn-${Math.random().toString(36).slice(2, 9)}`;
+  }
+  return button.id;
+}
+
+function hideScholarActionDropdown(dropdown) {
+  dropdown.classList.add('hidden');
+  dropdown.removeAttribute('data-for-button-id');
 }
 
 // Get selected scholar IDs
