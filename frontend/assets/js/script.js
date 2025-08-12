@@ -1,73 +1,43 @@
 let barChartInstance;
 let genderChart;
 
-const allScholars = [
-  {
-    id: 1,
-    batch: 2023,
-    name: "Juan Dela Cruz",
-    address: "Zamboanga City",
-    program: "EDSP1",
-    birthDate: "April 15, 2001",
-    contact: "00000000000",
-    sex: "Male",
-    status: "Done",
-    bankDetails: "LNB - 123456789",
-    recentDate: "2025-08-07"
-  },
-  {
-    id: 2,
-    batch: 2023,
-    name: "Jaji Samrin S",
-    address: "Zamboanga City",
-    program: "EDSP1",
-    birthDate: "April 15, 2001",
-    contact: "00000000000",
-    sex: "Male",
-    status: "Done",
-    bankDetails: "LNB - 123456789",
-    recentDate: "2025-08-05"
-  },
-  {
-    id: 3,
-    batch: 2023,
-    name: "Lorenzo Elizabeth",
-    address: "Zamboanga City",
-    program: "ODSP1",
-    birthDate: "April 15, 2001",
-    contact: "00000000000",
-    sex: "Female",
-    status: "Done",
-    bankDetails: "LNB - 123456789",
-    recentDate: "2025-08-05"
-  },
-  {
-    id: 4,
-    batch: 2025,
-    name: "Pedro Jenrick",
-    address: "Zamboanga City",
-    program: "ELAP ELEMENTARY",
-    birthDate: "April 15, 2001",
-    contact: "00000000000",
-    sex: "Male",
-    status: "Done",
-    bankDetails: "LNB - 123456789",
-    recentDate: "2025-08-05"
-  },
-  {
-    id: 5,
-    batch: 2025,
-    name: "Pedro Jenrick",
-    address: "Zamboanga City",
-    program: "ELAP COLLEGE",
-    birthDate: "April 15, 2001",
-    contact: "00000000000",
-    sex: "Male",
-    status: "Done",
-    bankDetails: "LNB - 123456789",
-    recentDate: "2025-08-05"
+let allScholars = [];
+
+async function fetchScholars() {
+  try {
+    const res = await fetch('../backend/scholars_list.php', { credentials: 'same-origin' });
+    const json = await res.json();
+    if (json.success) {
+      allScholars = json.data.map(row => ({
+        id: row.id,
+        batch: row.batch,
+        name: `${row.last_name}, ${row.first_name}${row.middle_name ? ' ' + row.middle_name : ''}`,
+        address: row.home_address,
+        province: row.province || '',
+        program: row.program,
+        birthDate: row.birth_date || '',
+        contact: row.contact_number,
+        sex: row.sex,
+        status: row.remarks || 'Active',
+        bankDetails: row.bank_details,
+        recentDate: row.created_at
+      }));
+      renderScholarsTable();
+      updateDashboardCounts();
+      updateRecentScholars();
+      updateGenderChart();
+      // Initialize showing count immediately
+      const tbody = document.getElementById('scholar-table-body');
+      if (tbody) {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const showingEl = document.getElementById('pagination-showing');
+        if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to fetch scholars', e);
   }
-];
+}
 
 
 const COLORS = {
@@ -315,20 +285,19 @@ document.addEventListener("DOMContentLoaded", () => {
   bindSidebarNav();
   bindDashboardCardClicks();
   populateYearSelect();
-  renderScholarsTable();      // Fill the table with dummy data
-  updateDashboardCounts();    // Update total scholars count in dashboard
-  // Initialize showing/pagination if scholars table is present on initial load
-  try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-  if (document.getElementById('scholar-table-body')) {
-    if (typeof paginateScholars === 'function') {
-      paginateScholars();
-    } else {
-      const tbody = document.getElementById('scholar-table-body');
-      const rows = Array.from(tbody?.querySelectorAll('tr') || []);
+  
+  // Load scholars data first
+  fetchScholars();
+  
+  // Initialize showing/pagination after data is loaded
+  setTimeout(() => {
+    const tbody = document.getElementById('scholar-table-body');
+    if (tbody) {
+      const rows = Array.from(tbody.querySelectorAll('tr'));
       const showingEl = document.getElementById('pagination-showing');
       if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
     }
-  }
+  }, 100);
 
   // Initialize bar chart with selected year or default
   const yearSelect = document.getElementById('year');
@@ -351,15 +320,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Initialize recent scholars list
-  updateRecentScholars();  // <-- Add this line here
+  updateRecentScholars();
   bindScholarSearch();
-  // Scholars filter dropdown (program/category)
+  // Scholars filter dropdown (program/category/province)
   bindFilterDropdownToggle();
   bindExportCsv();
   // Ensure row action menus are bound on initial render as well
   bindScholarRowActionMenus();
 
-  
+  // Submission handled by modal.js
 });
 
 // -------- Your existing functions below --------
@@ -501,6 +470,9 @@ function bindSidebarNav() {
 
   navLinks.forEach(link => {
     link.addEventListener("click", function (e) {
+      if (this.classList.contains("logout-link")) {
+        return; // allow natural navigation for logout link
+      }
       e.preventDefault();
 
       navLinks.forEach(l => l.classList.remove("active"));
@@ -532,13 +504,15 @@ function bindSidebarNav() {
         if (program === "ALL") {
           showAllScholars();
         } else {
-          applyProgramCategoryFilter(program, "");
+          applyFilters(program, "", "ALL");
         }
 
-        // Re-apply search if active
+        // Re-apply search if active - use a longer delay to ensure DOM updates are complete
         const searchInput = document.querySelector('.search-bar');
         if (searchInput && searchInput.value.trim() !== '') {
-          searchInput.dispatchEvent(new Event('keyup'));
+          setTimeout(() => {
+            performScholarSearch(searchInput.value.toLowerCase().trim());
+          }, 100);
         }
 
         // Update label and reset pagination
@@ -602,6 +576,14 @@ function bindSidebarNav() {
             const rows = Array.from(tbody?.querySelectorAll('tr') || []);
             const showingEl = document.getElementById('pagination-showing');
             if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
+          }
+          
+          // Re-apply search if active
+          const searchInput = document.querySelector('.search-bar');
+          if (searchInput && searchInput.value.trim() !== '') {
+            setTimeout(() => {
+              performScholarSearch(searchInput.value.toLowerCase().trim());
+            }, 100);
           }
         }
       }
@@ -680,6 +662,14 @@ function bindDashboardCardClicks() {
           if (parentDropdown) {
             const subNavLinks = parentDropdown.querySelectorAll(".dropdown-menu .nav-link");
             subNavLinks.forEach(link => link.classList.remove("active"));
+          }
+          
+          // Re-apply search if active
+          const searchInput = document.querySelector('.search-bar');
+          if (searchInput && searchInput.value.trim() !== '') {
+            setTimeout(() => {
+              performScholarSearch(searchInput.value.toLowerCase().trim());
+            }, 100);
           }
         }
       );
@@ -822,14 +812,14 @@ function renderScholarsTable() {
   const tbody = document.getElementById('scholar-table-body');
   if (!tbody) return;
 
-  tbody.innerHTML = ''; // Clear previous rows
+  tbody.innerHTML = '';
 
   allScholars.forEach((scholar, index) => {
     const tr = document.createElement('tr');
     tr.setAttribute('data-program', scholar.program.toUpperCase());
     tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
-    tr.setAttribute('data-index', String(index));
-
+    tr.setAttribute('data-province', scholar.province.toUpperCase());
+    
     tr.innerHTML = `
       <td><input type="checkbox" class="row-checkbox"/></td>
       <td>${index + 1}</td>
@@ -837,34 +827,26 @@ function renderScholarsTable() {
       <td>${scholar.name}</td>
       <td>${scholar.address}</td>
       <td>${scholar.program}</td>
-      <td>${scholar.birthDate}</td>
+      <td>${scholar.birthDate || 'N/A'}</td>
       <td>${scholar.contact}</td>
       <td>${scholar.sex}</td>
       <td><span class="status done">${scholar.status}</span></td>
-      <td><span class="bank">${scholar.bankDetails}</span></td>
+      <td><span class="bank">${scholar.bankDetails || 'N/A'}</span></td>
       <td class="action-wrapper" style="position: relative;">
         <button class="action-menu-btn">
           <i data-lucide="more-vertical"></i>
         </button>
-        <!-- Dropdown menu can be added here if needed -->
       </td>
     `;
-
     tbody.appendChild(tr);
   });
 
-  // Re-init lucide icons for dynamically added elements
   if (window.lucide) {
     window.lucide.createIcons();
   }
   
-  // Bind checkbox functionality
   bindCheckboxLogic();
-  
-  // Bind contextual action bar functionality
   bindContextualActionBar();
-  
-  // Bind per-row action menu (3-dot) to global dropdown
   bindScholarRowActionMenus();
 }
 
@@ -884,79 +866,7 @@ function computeGenderData(scholars) {
   }, { male: 0, female: 0 });
 }
 
-function bindScholarSearch() {
-  const searchInput = document.querySelector('.search-bar');
-  const scholarTableBody = document.getElementById('scholar-table-body');
-  const paginationShowing = document.getElementById('pagination-showing');
 
-  if (!searchInput || !scholarTableBody || !paginationShowing) return;
-
-  searchInput.addEventListener('keyup', () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-
-    // Read current filter selections (if present)
-    const programSelect = document.getElementById('filterProgramSelect') || document.getElementById('programSelect');
-    const categorySelect = document.getElementById('categorySelect');
-    const selectedProgram = (programSelect?.value || 'ALL').toUpperCase();
-    const selectedCategoryRaw = (categorySelect?.value || '').toUpperCase();
-    const categoryEnabled = !!categorySelect && !categorySelect.disabled && !!selectedCategoryRaw;
-
-    let visibleCount = 0;
-
-    // Split input into words for Last, First matching
-    const terms = searchTerm.split(/\s+/);
-    const lastNameTerm = terms[0] || "";
-    const firstNameTerm = terms[1] || "";
-
-    Array.from(scholarTableBody.rows).forEach(row => {
-      // Base filter (Program + Category)
-      const rowProgram = (row.getAttribute('data-program') || '').toUpperCase();
-      const rowSub = (row.getAttribute('data-subprogram') || '').toUpperCase();
-
-      const matchesProgram = selectedProgram === 'ALL' || rowProgram.startsWith(selectedProgram);
-
-      let matchesCategory = true;
-      if (selectedProgram !== 'ALL' && categoryEnabled) {
-        let expectedSub = selectedCategoryRaw;
-        if (selectedProgram === 'ELAP' && !selectedCategoryRaw.startsWith('ELAP')) {
-          expectedSub = `ELAP ${selectedCategoryRaw}`;
-        }
-        matchesCategory = rowSub === expectedSub || rowProgram === expectedSub;
-      }
-
-      // Search filter (by name)
-      let matchesSearch = true;
-      if (searchTerm !== "") {
-        const nameCell = row.cells[3];
-        if (!nameCell) {
-          matchesSearch = false;
-    } else {
-      const fullName = nameCell.textContent.trim().toLowerCase();
-      const nameParts = fullName.split(/\s+/);
-      const lastName = nameParts[0] || "";
-      const firstName = nameParts[1] || "";
-          matchesSearch = lastName.startsWith(lastNameTerm) && (firstNameTerm === '' || firstName.startsWith(firstNameTerm));
-        }
-      }
-
-      const showRow = matchesProgram && matchesCategory && matchesSearch;
-      row.style.display = showRow ? '' : 'none';
-      if (showRow) visibleCount++;
-    });
-
-    const totalRows = scholarTableBody.rows.length;
-    paginationShowing.textContent = `Showing: ${visibleCount} of ${totalRows}`;
-
-    // Reset and apply pagination if available
-    try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-    if (typeof paginateScholars === 'function') {
-      paginateScholars();
-    }
-    
-    // Update checkbox states after filtering
-    updateSelectAllState();
-  });
-}
 
 
 // Toggle the Scholars filter dropdown panel
@@ -965,6 +875,7 @@ function bindFilterDropdownToggle() {
   const filterDropdown = document.getElementById('filter-dropdown');
   const programSelect = document.getElementById('filterProgramSelect') || document.getElementById('programSelect');
   const categorySelect = document.getElementById('categorySelect');
+  const provinceSelect = document.getElementById('provinceSelect');
   const applyBtn = document.getElementById('applyFilterBtn');
   const clearBtn = document.getElementById('clearFilterBtn');
 
@@ -997,8 +908,8 @@ function bindFilterDropdownToggle() {
         opt.textContent = 'Select program first';
         opt.value = '';
         categorySelect.appendChild(opt);
-    return;
-  }
+        return;
+      }
 
       categorySelect.disabled = false;
 
@@ -1023,21 +934,57 @@ function bindFilterDropdownToggle() {
     programSelect.addEventListener('change', (e) => populateCategories(e.target.value));
   }
 
+  // Populate Province options from data
+  if (provinceSelect) {
+    const populateProvinces = () => {
+      provinceSelect.innerHTML = '';
+      
+      // Add "All" option
+      const allOpt = document.createElement('option');
+      allOpt.value = 'ALL';
+      allOpt.textContent = 'All Provinces';
+      provinceSelect.appendChild(allOpt);
+
+      // Get unique provinces from data
+      const provinces = [...new Set(allScholars.map(scholar => scholar.province).filter(p => p))];
+      provinces.sort().forEach(province => {
+        const opt = document.createElement('option');
+        opt.value = province.toUpperCase();
+        opt.textContent = province;
+        provinceSelect.appendChild(opt);
+      });
+    };
+
+    // Populate provinces when data is loaded
+    if (allScholars.length > 0) {
+      populateProvinces();
+    } else {
+      // Wait for data to be loaded
+      const checkData = setInterval(() => {
+        if (allScholars.length > 0) {
+          populateProvinces();
+          clearInterval(checkData);
+        }
+      }, 100);
+    }
+  }
+
   // Apply filter to table rows
   if (applyBtn) {
     applyBtn.addEventListener('click', () => {
       const selectedProgram = (programSelect?.value || 'ALL').toUpperCase();
       const selectedCategoryRaw = (categorySelect?.value || 'ALL').toUpperCase();
+      const selectedProvince = (provinceSelect?.value || 'ALL').toUpperCase();
 
-      applyProgramCategoryFilter(selectedProgram, selectedCategoryRaw);
+      applyFilters(selectedProgram, selectedCategoryRaw, selectedProvince);
       // Sync submenu active state and label with selected Program
       updateScholarsSubmenuActive(selectedProgram);
       updateScholarsLabel(selectedProgram);
 
       // If there is an active search, re-apply it
-  const searchInput = document.querySelector('.search-bar');
+      const searchInput = document.querySelector('.search-bar');
       if (searchInput && searchInput.value.trim() !== '') {
-        searchInput.dispatchEvent(new Event('keyup'));
+        performScholarSearch(searchInput.value.toLowerCase().trim());
       }
 
       // Close dropdown after applying
@@ -1062,10 +1009,15 @@ function bindFilterDropdownToggle() {
       if (categorySelect) {
         categorySelect.disabled = true;
         categorySelect.innerHTML = '';
-      const opt = document.createElement('option');
+        const opt = document.createElement('option');
         opt.textContent = 'Select program first';
         opt.value = '';
         categorySelect.appendChild(opt);
+      }
+
+      // Reset Province select to All
+      if (provinceSelect) {
+        provinceSelect.value = 'ALL';
       }
 
       // Show all rows
@@ -1075,7 +1027,7 @@ function bindFilterDropdownToggle() {
       // Reset pagination to first page if available
       try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
       if (typeof paginateScholars === 'function') {
-    paginateScholars();
+        paginateScholars();
       } else {
         const showingEl = document.getElementById('pagination-showing');
         if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
@@ -1084,7 +1036,7 @@ function bindFilterDropdownToggle() {
       // Re-apply search if any
       const searchInput = document.querySelector('.search-bar');
       if (searchInput && searchInput.value.trim() !== '') {
-        searchInput.dispatchEvent(new Event('keyup'));
+        performScholarSearch(searchInput.value.toLowerCase().trim());
       }
       // Sync submenu and label to ALL
       updateScholarsSubmenuActive('ALL');
@@ -1096,23 +1048,28 @@ function bindFilterDropdownToggle() {
   }
 }
 
-// Helper: Apply Program + Category filter to rows and update counts/pagination
-function applyProgramCategoryFilter(selectedProgram, selectedCategoryRaw) {
+// Helper: Apply Program + Category + Province filter to rows and update counts/pagination
+function applyFilters(selectedProgram, selectedCategoryRaw, selectedProvince) {
   const tbody = document.getElementById('scholar-table-body');
   if (!tbody) return;
 
   const rows = Array.from(tbody.querySelectorAll('tr'));
   const program = (selectedProgram || 'ALL').toUpperCase();
   const categoryRaw = (selectedCategoryRaw || 'ALL').toUpperCase();
+  const province = (selectedProvince || 'ALL').toUpperCase();
+  
+  console.log('Applying filters - Program:', program, 'Category:', categoryRaw, 'Province:', province);
+  console.log('Total rows to filter:', rows.length);
 
   rows.forEach((row) => {
     const rowProgram = (row.getAttribute('data-program') || '').toUpperCase();
     const rowSub = (row.getAttribute('data-subprogram') || '').toUpperCase();
+    const rowProvince = (row.getAttribute('data-province') || '').toUpperCase();
 
     const matchesProgram = program === 'ALL' || rowProgram.startsWith(program);
 
-  let matchesCategory = true;
-  if (program !== 'ALL' && categoryRaw !== 'ALL') {
+    let matchesCategory = true;
+    if (program !== 'ALL' && categoryRaw !== 'ALL') {
       let expectedSub = categoryRaw;
       if (program === 'ELAP' && !categoryRaw.startsWith('ELAP')) {
         expectedSub = `ELAP ${categoryRaw}`;
@@ -1120,7 +1077,13 @@ function applyProgramCategoryFilter(selectedProgram, selectedCategoryRaw) {
       matchesCategory = rowSub === expectedSub || rowProgram === expectedSub;
     }
 
-    row.style.display = (matchesProgram && matchesCategory) ? '' : 'none';
+    const matchesProvince = province === 'ALL' || rowProvince === province;
+
+    const shouldShow = matchesProgram && matchesCategory && matchesProvince;
+    row.style.display = shouldShow ? '' : 'none';
+    if (shouldShow) {
+      console.log('Filter showing row:', row.cells[3]?.textContent, 'Program:', rowProgram);
+    }
   });
 
   // Update showing counter if present
@@ -1136,9 +1099,6 @@ function applyProgramCategoryFilter(selectedProgram, selectedCategoryRaw) {
   if (typeof paginateScholars === 'function') {
     paginateScholars();
   }
-  
-  // Update checkbox states after filtering
-  updateSelectAllState();
 }
 
 // Highlight the correct Scholars submenu based on program
@@ -1169,48 +1129,21 @@ function updateScholarsSubmenuActive(programValue) {
 
 // Add any other existing helper or binding functions here...
 
-// Add Scholar Modal Functions
+// Legacy modal functions (kept for compatibility)
 function openAddScholarModal() {
-  const modal = document.getElementById('addScholarModal2');
-  if (modal) {
-    modal.classList.remove('hidden');
+  if (window.scholarModal) {
+    window.scholarModal.openModal();
   }
 }
 
 function closeAddScholarModal2() {
-  const modal = document.getElementById('addScholarModal2');
-  if (modal) {
-    modal.classList.add('hidden');
+  if (window.scholarModal) {
+    window.scholarModal.closeModal();
   }
 }
 
-// Add click event for Add button to open modal
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  const addBtn = document.querySelector('.add-btn');
-  const modal = document.getElementById('addScholarModal2');
-  
-  if (addBtn && modal) {
-    addBtn.addEventListener('click', () => {
-      openAddScholarModal();
-    });
-  }
-  
-  // Close modal when clicking outside
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeAddScholarModal2();
-      }
-    });
-  }
-  
-  // Close modal with Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeAddScholarModal2();
-    }
-  });
-  
   // Bind contextual action bar functionality
   bindContextualActionBar();
 });
@@ -1500,4 +1433,124 @@ function bindContextualActionBar() {
       }
     });
   }
+}
+
+function bindScholarSearch() {
+  const searchInput = document.querySelector('.search-bar');
+  const scholarTableBody = document.getElementById('scholar-table-body');
+  const paginationShowing = document.getElementById('pagination-showing');
+
+  if (!searchInput || !scholarTableBody || !paginationShowing) return;
+
+  // Use a flag to prevent multiple bindings if this function is called multiple times
+  if (searchInput.dataset.searchBound === 'true') {
+    return;
+  }
+  searchInput.dataset.searchBound = 'true';
+
+  searchInput.addEventListener('keyup', () => {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    performScholarSearch(searchTerm);
+  });
+}
+
+// Function to perform scholar search and filtering based on current state
+function performScholarSearch(searchTerm) {
+  const scholarTableBody = document.getElementById('scholar-table-body');
+  const paginationShowing = document.getElementById('pagination-showing');
+
+  if (!scholarTableBody || !paginationShowing) return;
+
+  // Get the current active program from submenu or filter dropdown
+  let currentProgram = 'ALL';
+  
+  // Check if a submenu link is currently active
+  const activeSubmenuLink = document.querySelector('.dropdown-menu .nav-link.active');
+  if (activeSubmenuLink) {
+    const submenuProgram = activeSubmenuLink.getAttribute('data-program');
+    if (submenuProgram && submenuProgram.toUpperCase() !== 'ALL') {
+      currentProgram = submenuProgram.toUpperCase();
+    }
+  } else {
+    // If no submenu is active, check the filter dropdown
+    const programSelect = document.getElementById('filterProgramSelect') || document.getElementById('programSelect');
+    if (programSelect && programSelect.value && programSelect.value.toUpperCase() !== 'ALL') {
+      currentProgram = programSelect.value.toUpperCase();
+    }
+  }
+
+  console.log('Current program filter:', currentProgram);
+  console.log('Search term:', searchTerm);
+
+  let visibleCount = 0;
+  const terms = searchTerm.split(/\s+/);
+  const lastNameTerm = terms[0] || "";
+  const firstNameTerm = terms[1] || "";
+
+  console.log('Total rows to process:', scholarTableBody.rows.length);
+  
+  // Process all rows and apply both program filter and search filter
+  Array.from(scholarTableBody.rows).forEach((row, index) => {
+    const rowProgram = (row.getAttribute('data-program') || '').toUpperCase();
+    const rowSub = (row.getAttribute('data-subprogram') || '').toUpperCase();
+    const rowName = row.cells[3]?.textContent || '';
+
+    // Check if the row matches the current program filter
+    const matchesProgram = currentProgram === 'ALL' || rowProgram.startsWith(currentProgram);
+
+    // Apply Search filter (by name, address, province, contact)
+    let matchesSearch = true;
+    if (searchTerm !== "") {
+      const nameCell = row.cells[3];
+      const addressCell = row.cells[4];
+      const contactCell = row.cells[7];
+      const provinceCell = row.getAttribute('data-province') || '';
+      
+      if (!nameCell) {
+        matchesSearch = false;
+      } else {
+        const fullName = nameCell.textContent.trim().toLowerCase();
+        const address = addressCell?.textContent.trim().toLowerCase() || '';
+        const contact = contactCell?.textContent.trim().toLowerCase() || '';
+        const province = provinceCell.toLowerCase(); 
+        
+        const nameParts = fullName.split(/\s+/);
+        const lastName = nameParts[0] || "";
+        const firstName = nameParts[1] || "";
+        
+        const nameMatch = lastName.startsWith(lastNameTerm) && (firstNameTerm === '' || firstName.startsWith(firstNameTerm));
+        const addressMatch = address.includes(searchTerm);
+        const contactMatch = contact.includes(searchTerm);
+        const provinceMatch = province.includes(searchTerm);
+        
+        matchesSearch = nameMatch || addressMatch || contactMatch || provinceMatch;
+      }
+    }
+
+    // Show row if it matches both program filter and search term
+    const showRow = matchesProgram && matchesSearch;
+    row.style.display = showRow ? '' : 'none';
+    
+    if (showRow) {
+      visibleCount++;
+      console.log(`SHOWING Row ${index}:`, {
+        name: rowName,
+        program: rowProgram,
+        matchesProgram: matchesProgram,
+        matchesSearch: matchesSearch
+      });
+    }
+  });
+
+  const totalRows = scholarTableBody.rows.length;
+  paginationShowing.textContent = `Showing: ${visibleCount} of ${totalRows}`;
+
+  // Reset and apply pagination if available
+  try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
+  if (typeof paginateScholars === 'function') {
+    paginateScholars();
+  }
+  
+  // Update checkbox states after filtering
+  updateSelectAllState();
 }

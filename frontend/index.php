@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+// Prevent caching of the protected page to avoid Back showing stale content
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
+
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../frontend/login.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +20,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OWWA Scholarship</title>
 
-    <link rel="stylesheet" href="/frontend/assets/css/style.css"/>
-    <link rel="icon" type="image/png" href="/frontend/assets/images/owwa-bg-remove.png" />
+    <link rel="stylesheet" href="../frontend/assets/css/style.css"/>
+    <link rel="icon" type="image/png" href="../frontend/assets/images/owwa-bg-remove.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,7 +33,7 @@
 		<!-- left section topbar -->
 		<div class="left-section">
 			<div class="left-wrapper">
-				<img src="/frontend/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
+				<img src="../frontend/assets/images/owwa-bg-remove.png" alt="Owwa-logo" height="45px">
 
 				<div class="title-header">
 					<h4>OWWA</h4>
@@ -50,20 +64,22 @@
 				<i data-lucide="chevron-down" class="dropdown-icon" id="dropdownToggle"></i>
 			
 				<!-- Dropdown menu -->
-				<ul class="profile-dropdown" id="profileDropdown">
-					<li>
-						<a href="#">
-							<i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
-							<span>Profile Settings</span>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<i data-lucide="log-out" class="dropdown-icon-left"></i>
-							<span>Logout</span>
-						</a>
-					</li>
-				</ul>
+<ul class="profile-dropdown" id="profileDropdown">
+  <li>
+    <a href="#">
+      <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
+      <span>Profile Settings</span>
+    </a>
+  </li>
+  <li>
+    <a href="../backend/logout.php" class="logout-link">
+      <i data-lucide="log-out" class="dropdown-icon-left"></i>
+      <span>Logout</span>
+    </a>
+  </li>
+</ul>
+
+
 			</div>
 		</div>
 	</header>
@@ -134,7 +150,7 @@
 		</nav>
 
 		<div class="logout-section">
-		  <a href="logout.php" class="logout-link">
+		  <a href="../backend/logout.php" class="logout-link">
 			<i data-lucide="log-out"></i>
 			<span>Logout</span>
 		  </a>
@@ -370,103 +386,109 @@
 					<h3><i data-lucide="graduation-cap" class="icon"></i> Scholar Info</h3>
 					<div class="form-grid">
 					
-					<label>Last Name<input type="text" /></label>
-					<label>First Name<input type="text" /></label>
-					<label>Middle Name<input type="text" /></label>
+					<label>Last Name<input type="text" name="last_name" required /></label>
+					<label>First Name<input type="text" name="first_name" required /></label>
+					<label>Middle Name<input type="text" name="middle_name" /></label>
 
 					<label>Program
-						<input list="programList" id="programInput" placeholder="Select Program" />
-						<datalist id="programList">
-						<option value="EDSP1">
-						<option value="EDSP2">
-						<option value="ODSP1">
-						<option value="ODSP2">
-						<option value="ELAP ELEMENTARY">
-						<option value="ELAP HIGHSCHOOL">
-						<option value="ELAP COLLEGE">
-						</datalist>
+						<select name="program" required>
+							<option value="">Select Program</option>
+							<option value="EDSP1">EDSP1</option>
+							<option value="EDSP2">EDSP2</option>
+							<option value="ODSP1">ODSP1</option>
+							<option value="ODSP2">ODSP2</option>
+							<option value="ELAP ELEMENTARY">ELAP ELEMENTARY</option>
+							<option value="ELAP HIGHSCHOOL">ELAP HIGHSCHOOL</option>
+							<option value="ELAP COLLEGE">ELAP COLLEGE</option>
+						</select>
 					</label>
 
-					<label>Batch (Year)<input type="text" placeholder="e.g. 2025" /></label>
+                    <label>Batch (Year)<input type="number" name="batch" placeholder="e.g. 2025" min="2020" max="2030" required /></label>
 
-					<label>Sex
-						<input list="sexList" id="sexInput" placeholder="Select Sex" />
-						<datalist id="sexList">
-						<option value="Male">
-						<option value="Female">
-						</datalist>
+                    <label>Birth Date
+                        <input type="date" name="birth_date" />
+                    </label>
+
+                    <label>Sex
+						<select name="sex" required>
+							<option value="">Select Sex</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+						</select>
 					</label>
 
-					<label>Home Address<input type="text" /></label>
+					<label>Home Address<input type="text" name="home_address" required /></label>
 
 					<label>Province
-						<input list="provinceList" id="provinceInput" placeholder="Select Province" />
-						<datalist id="provinceList">
-						<option value="Zamboanga Del Sur">
-						<option value="Zamboanga Del Norte">
-						</datalist>
+						<select name="province" required>
+							<option value="">Select Province</option>
+							<option value="Zamboanga Del Sur">Zamboanga Del Sur</option>
+							<option value="Zamboanga Del Norte">Zamboanga Del Norte</option>
+						</select>
 					</label>
 
-					<label>Contact Number<input id="contactInput" type="text" placeholder="+63" /></label>
+					<label>Contact Number<input name="contact_number" type="tel" placeholder="+63" pattern="[+]63[0-9]{10}" required /></label>
 
 					<label>Course
-						<input list="courseList" id="courseInput" type="text" placeholder="Select Course" />
-						<datalist id="courseList">
-						<option value="Bachelor of Science in Information Technology">
-						<option value="Bachelor of Science in Computer Science">
-						<option value="Bachelor of Science in Business Administration">
-						<option value="Bachelor of Science in Accountancy">
-						<option value="Bachelor of Science in Civil Engineering">
-						<option value="Bachelor of Science in Electrical Engineering">
-						<option value="Bachelor of Science in Mechanical Engineering">
-						<option value="Bachelor of Science in Electronics Engineering">
-						<option value="Bachelor of Arts in Communication">
-						<option value="Bachelor of Arts in Political Science">
-						<option value="Bachelor of Arts in Psychology">
-						<option value="Bachelor of Arts in Sociology">
-						<option value="Bachelor of Arts in Education">
-						<option value="Bachelor of Arts in English">
-						<option value="Bachelor of Arts in Filipino">
-						<option value="Bachelor of Arts in History">
-						<option value="Bachelor of Arts in Philosophy">
-						<option value="Bachelor of Arts in Anthropology">
-						<option value="Bachelor of Arts in Economics">
-						</datalist>
+						<select name="course">
+							<option value="">Select Course</option>
+							<option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+							<option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
+							<option value="Bachelor of Science in Business Administration">Bachelor of Science in Business Administration</option>
+							<option value="Bachelor of Science in Accountancy">Bachelor of Science in Accountancy</option>
+							<option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
+							<option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
+							<option value="Bachelor of Science in Mechanical Engineering">Bachelor of Science in Mechanical Engineering</option>
+							<option value="Bachelor of Science in Electronics Engineering">Bachelor of Science in Electronics Engineering</option>
+							<option value="Bachelor of Arts in Communication">Bachelor of Arts in Communication</option>
+							<option value="Bachelor of Arts in Political Science">Bachelor of Arts in Political Science</option>
+							<option value="Bachelor of Arts in Psychology">Bachelor of Arts in Psychology</option>
+							<option value="Bachelor of Arts in Sociology">Bachelor of Arts in Sociology</option>
+							<option value="Bachelor of Arts in Education">Bachelor of Arts in Education</option>
+							<option value="Bachelor of Arts in English">Bachelor of Arts in English</option>
+							<option value="Bachelor of Arts in Filipino">Bachelor of Arts in Filipino</option>
+							<option value="Bachelor of Arts in History">Bachelor of Arts in History</option>
+							<option value="Bachelor of Arts in Philosophy">Bachelor of Arts in Philosophy</option>
+							<option value="Bachelor of Arts in Anthropology">Bachelor of Arts in Anthropology</option>
+							<option value="Bachelor of Arts in Economics">Bachelor of Arts in Economics</option>
+						</select>
 					</label>
 
-					<label>No. of Years<input type="number" min="1" placeholder="e.g. 4" /></label>
+                    <label>No. of Years<input type="number" name="years" min="1" max="4" placeholder="e.g. 4" /></label>
 
 					<label>Year Level
-						<input list="yearLevelList" id="yearLevelInput" placeholder="Select Year Level" />
-						<datalist id="yearLevelList">
-						<option value="1st Year">
-						<option value="2nd Year">
-						<option value="3rd Year">
-						<option value="4th Year">
-						</datalist>
+						<select name="year_level">
+							<option value="">Select Year Level</option>
+							<option value="1st Year">1st Year</option>
+							<option value="2nd Year">2nd Year</option>
+							<option value="3rd Year">3rd Year</option>
+							<option value="4th Year">4th Year</option>
+						</select>
 					</label>
 
 					<label>School
-						<input list="schoolList" id="schoolInput" type="text" placeholder="Select School" />
-						<datalist id="schoolList">
-						<option value="Zamboanga State College of Marine Sciences and Technology">
-						<option value="Western Mindanao State University">
-						<option value="Mindanao State University - Zamboanga Peninsula">
-						<option value="Zamboanga City State Polytechnic College">
-						<option value="Zamboanga City Medical Center College of Nursing">
-						<option value="Zamboanga City Polytechnic State College">
-						<option value="Zamboanga City State University">
-						<option value="Zamboanga City College of Arts and Trades">
-						<option value="Zamboanga City College of Science and Technology">
-						<option value="Zamboanga City College of Education">
-						<option value="Zamboanga City College of Business and Management">
-						<option value="Universidad De Zamboanga">
-						</datalist>
+						<select name="school">
+							<option value="">Select School</option>
+							<option value="Zamboanga State College of Marine Sciences and Technology">Zamboanga State College of Marine Sciences and Technology</option>
+							<option value="Western Mindanao State University">Western Mindanao State University</option>
+							<option value="Mindanao State University - Zamboanga Peninsula">Mindanao State University - Zamboanga Peninsula</option>
+							<option value="Zamboanga City State Polytechnic College">Zamboanga City State Polytechnic College</option>
+							<option value="Zamboanga City Medical Center College of Nursing">Zamboanga City Medical Center College of Nursing</option>
+							<option value="Zamboanga City Polytechnic State College">Zamboanga City Polytechnic State College</option>
+							<option value="Zamboanga City State University">Zamboanga City State University</option>
+							<option value="Zamboanga City College of Arts and Trades">Zamboanga City College of Arts and Trades</option>
+							<option value="Zamboanga City College of Science and Technology">Zamboanga City College of Science and Technology</option>
+							<option value="Zamboanga City College of Education">Zamboanga City College of Education</option>
+							<option value="Zamboanga City College of Business and Management">Zamboanga City College of Business and Management</option>
+							<option value="Universidad De Zamboanga">Universidad De Zamboanga</option>
+						</select>
 					</label>
 
-					<label>School Address<input id="schoolAddressInput" type="text" /></label>
+                    <label>School Address<input name="school_address" type="text" /></label>
 
-					<label>Bank Details<input type="text" /></label>
+                    <label>Remarks<input type="text" name="remarks" /></label>
+
+                    <label>Bank Details<input type="text" name="bank_details" /></label>
 					</div>
 				</div>
 
@@ -475,28 +497,28 @@
 					<h3><i data-lucide="briefcase" class="icon"></i> OFW Record</h3>
 					<div class="form-grid">
 					
-					<label>Parent/Guardian Name<input type="text" /></label>
-					<label>Relationship to OFW<input type="text" /></label>
-					<label>Name of OFW<input type="text" /></label>
-					<label>Category<input type="text" /></label>
+                    <label>Parent/Guardian Name<input type="text" name="parent_name" /></label>
+                    <label>Relationship to OFW<input type="text" name="relationship" /></label>
+					<label>Name of OFW<input type="text" name="ofw_name" /></label>
+					<label>Category<input type="text" name="category" /></label>
 
 					<label>Gender
-						<select>
-						<option disabled selected>Select Gender</option>
-						<option>Male</option>
-						<option>Female</option>
+                        <select name="gender">
+							<option value="">Select Gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
 						</select>
 					</label>
 
-					<label>Jobsite<input type="text" /></label>
-					<label>Position<input type="text" /></label>
+					<label>Jobsite<input type="text" name="jobsite" /></label>
+					<label>Position<input type="text" name="position" /></label>
 					</div>
 				</div>
 				</div>
 
 			<div class="modal-footer">
-			<button class="btn cancel-btn" onclick="closeAddScholarModal2()">Cancel</button>
-			<button class="btn submit-btn">Save</button>
+			<button type="button" class="btn cancel-btn" onclick="closeAddScholarModal2()">Cancel</button>
+			<button type="button" class="btn submit-btn" onclick="submitScholarForm()">Save</button>
 			</div>
 		</div>
 		</div>
@@ -519,7 +541,30 @@
     		<p>Manage admin profile, system preferences, and security options.</p>
 		</section>
 	</main>
-    <script src="/frontend/assets/js/script.js"></script>
-	<script src="/frontend/assets/js/dashboard.js"></script>
+    <script src="../frontend/assets/js/script.js"></script>
+	<script src="../frontend/assets/js/dashboard.js"></script>
+	<script src="../frontend/assets/js/modal.js"></script>
+    <script>
+      // If the dashboard is restored from bfcache after logout, force a reload
+      window.addEventListener('pageshow', function (event) {
+        const isBackForward = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]?.type) === 'back_forward';
+        if (event.persisted || isBackForward) {
+          // Reload so PHP session check runs again
+          window.location.reload();
+        }
+      });
+
+      // Keep the user on the dashboard when pressing Back (avoid flashing login page)
+      (function () {
+        if (window.history && window.history.pushState) {
+          // Create a new history entry for the current page
+          history.pushState(null, '', location.href);
+          window.addEventListener('popstate', function () {
+            // Immediately move forward to stay on dashboard
+            history.go(1);
+          });
+        }
+      })();
+    </script>
 </body>
 </html>
