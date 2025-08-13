@@ -37,6 +37,39 @@ class ScholarModal {
                     this.closeModal();
                 }
             });
+
+            // Contact number input formatting
+            const contactInput = this.modal.querySelector('input[name="contact_number"]');
+            if (contactInput) {
+                contactInput.addEventListener('focus', (e) => {
+                    if (e.target.value.trim() === '') {
+                        e.target.value = '+63';
+                        // Put cursor at the end after setting value
+                        setTimeout(() => {
+                            e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
+                        }, 0);
+                    }
+                });
+
+                contactInput.addEventListener('input', (e) => {
+                    let val = e.target.value;
+
+                    // If user deletes all input, don't auto-fill here — wait for focus event to add +63
+                    if (val === '') {
+                        return;
+                    }
+
+                    // If input doesn't start with '+63', add it once and keep the rest
+                    if (!val.startsWith('+63')) {
+                        val = '+63' + val.replace(/^(\+|0)*/, '');
+                        e.target.value = val;
+                    }
+
+                    // Allow user to type digits only after +63
+                    // Remove non-digit characters except the leading '+'
+                    e.target.value = e.target.value[0] + e.target.value.slice(1).replace(/\D/g, '');
+                });
+            }
         }
     }
 
@@ -45,7 +78,7 @@ class ScholarModal {
             this.modal.classList.remove('hidden');
             this.clearForm();
             this.resetValidation();
-            
+
             // Focus on first input
             const firstInput = this.modal.querySelector('input, select');
             if (firstInput) {
@@ -68,7 +101,7 @@ class ScholarModal {
             input.value = '';
             input.classList.remove('error');
         });
-        
+
         // Clear any error messages
         const errorMessages = this.modal.querySelectorAll('.error-message');
         errorMessages.forEach(msg => msg.remove());
@@ -83,7 +116,7 @@ class ScholarModal {
 
     setupFormValidation() {
         const inputs = this.modal.querySelectorAll('input, select');
-        
+
         inputs.forEach(input => {
             // Real-time validation
             input.addEventListener('blur', () => {
@@ -191,12 +224,12 @@ class ScholarModal {
     showFieldError(field, message) {
         // Remove existing error message
         this.removeFieldError(field);
-        
+
         // Create error message element
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message show';
         errorDiv.textContent = message;
-        
+
         // Insert after the field
         field.parentNode.appendChild(errorDiv);
     }
@@ -224,7 +257,7 @@ class ScholarModal {
     getFormData() {
         const formData = {};
         const inputs = this.modal.querySelectorAll('input, select');
-        
+
         inputs.forEach(input => {
             if (input.name) {
                 formData[input.name] = input.value.trim();
@@ -258,7 +291,7 @@ class ScholarModal {
         this.isSubmitting = loading;
         const submitBtn = this.modal.querySelector('.submit-btn');
         const modal = this.modal.querySelector('.modal');
-        
+
         if (loading) {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Saving...';
@@ -283,14 +316,14 @@ class ScholarModal {
 
         try {
             const formData = this.getFormData();
-            
+
             // Simulate API call (replace with actual API endpoint)
             const response = await this.saveScholar(formData);
-            
+
             if (response.success) {
                 this.showNotification('Scholar added successfully!', 'success');
                 this.closeModal();
-                
+
                 // Refresh the scholars table without reloading
                 if (typeof fetchScholars === 'function') {
                     fetchScholars();
@@ -327,7 +360,6 @@ let scholarModal;
 
 document.addEventListener('DOMContentLoaded', () => {
     scholarModal = new ScholarModal();
-    // Make modal instance globally accessible
     window.scholarModal = scholarModal;
 });
 

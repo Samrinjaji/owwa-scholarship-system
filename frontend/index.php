@@ -7,24 +7,35 @@ header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: ../frontend/login.php");
-    exit;
+	header("Location: ../frontend/login.php");
+	exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OWWA Scholarship</title>
+<style>
+  /* Only apply to Address column in scholars table */
+  #scholarsTable td.address-cell {
+	max-width: 250px;
+	white-space: normal;
+	word-break: break-word;
+  }
+  #scholarsTable th.address-cell {
+	max-width: 250px;
+  }
+</style>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OWWA Scholarship</title>
 
-    <link rel="stylesheet" href="../frontend/assets/css/style.css"/>
-    <link rel="icon" type="image/png" href="../frontend/assets/images/owwa-bg-remove.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<link rel="stylesheet" href="../frontend/assets/css/style.css"/>
+	<link rel="icon" type="image/png" href="../frontend/assets/images/owwa-bg-remove.png" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
 <body> 
@@ -66,16 +77,16 @@ if (!isset($_SESSION['admin_id'])) {
 				<!-- Dropdown menu -->
 <ul class="profile-dropdown" id="profileDropdown">
   <li>
-    <a href="#">
-      <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
-      <span>Profile Settings</span>
-    </a>
+	<a href="#">
+	  <i data-lucide="user-round-cog" class="dropdown-icon-left"></i>
+	  <span>Profile Settings</span>
+	</a>
   </li>
   <li>
-    <a href="../backend/logout.php" class="logout-link">
-      <i data-lucide="log-out" class="dropdown-icon-left"></i>
-      <span>Logout</span>
-    </a>
+	<a href="../backend/logout.php" class="logout-link">
+	  <i data-lucide="log-out" class="dropdown-icon-left"></i>
+	  <span>Logout</span>
+	</a>
   </li>
 </ul>
 
@@ -191,8 +202,8 @@ if (!isset($_SESSION['admin_id'])) {
 			</div>
 
 
-                <!-- Dashboard Chart Section -->
-                <div class="dashboard-chart">
+				<!-- Dashboard Chart Section -->
+				<div class="dashboard-chart">
 					<!-- Disbursement Statistics (2-card width) -->
 						<div class="card chart-card wide">
 							<div class="chart-header">
@@ -297,6 +308,21 @@ if (!isset($_SESSION['admin_id'])) {
 								<option>Select program first</option>
 								</select>
 							</div>
+							
+							<div class="dropdown-group">
+							<span class="dropdown-label">Province</span>
+							<select id="provinceSelect" class="dropdown-select">
+								<option value="ALL">All</option>
+								<option value="Zamboanga City">Zamboanga City</option>
+								<option value="Isabela City">Isabela City</option>
+								<option value="Dipolog City">Dipolog City</option>
+								<option value="Pagadian City">Pagadian City</option>
+								<option value="Zamboanga del Norte">Zamboanga del Norte</option>
+								<option value="Zamboanga del Sur">Zamboanga del Sur</option>
+								<option value="Zamboanga Sibugay">Zamboanga Sibugay</option>
+							</select>
+							</div>
+
 
 							<button id="applyFilterBtn" class="btn apply-filter-btn">Apply</button>
 							<button id="clearFilterBtn" class="btn cancel-btn" type="button">Clear</button>
@@ -403,13 +429,13 @@ if (!isset($_SESSION['admin_id'])) {
 						</select>
 					</label>
 
-                    <label>Batch (Year)<input type="number" name="batch" placeholder="e.g. 2025" min="2020" max="2030" required /></label>
+					<label>Batch (Year)<input type="number" name="batch" placeholder="e.g. 2025" min="2020" max="2030" required /></label>
 
-                    <label>Birth Date
-                        <input type="date" name="birth_date" />
-                    </label>
+					<label>Birth Date
+						<input type="date" name="birth_date" />
+					</label>
 
-                    <label>Sex
+					<label>Sex
 						<select name="sex" required>
 							<option value="">Select Sex</option>
 							<option value="Male">Male</option>
@@ -421,9 +447,14 @@ if (!isset($_SESSION['admin_id'])) {
 
 					<label>Province
 						<select name="province" required>
-							<option value="">Select Province</option>
-							<option value="Zamboanga Del Sur">Zamboanga Del Sur</option>
-							<option value="Zamboanga Del Norte">Zamboanga Del Norte</option>
+						<option value="ALL">All</option>
+								<option value="Zamboanga City">Zamboanga City</option>
+								<option value="Zamboanga del Norte">Zamboanga del Norte</option>
+								<option value="Zamboanga del Sur">Zamboanga del Sur</option>
+								<option value="Zamboanga Sibugay">Zamboanga Sibugay</option>
+								<option value="Dipolog City">Dipolog City</option>
+								<option value="Pagadian City">Pagadian City</option>
+								<option value="Isabela City">Isabela City</option>
 						</select>
 					</label>
 
@@ -454,7 +485,7 @@ if (!isset($_SESSION['admin_id'])) {
 						</select>
 					</label>
 
-                    <label>No. of Years<input type="number" name="years" min="1" max="4" placeholder="e.g. 4" /></label>
+					<label>No. of Years<input type="number" name="years" min="1" max="4" placeholder="e.g. 4" /></label>
 
 					<label>Year Level
 						<select name="year_level">
@@ -484,11 +515,13 @@ if (!isset($_SESSION['admin_id'])) {
 						</select>
 					</label>
 
-                    <label>School Address<input name="school_address" type="text" /></label>
+					<label>School Address<input name="school_address" type="text" /></label>
 
-                    <label>Remarks<input type="text" name="remarks" /></label>
+					<label>Remarks<input type="text" name="remarks" /></label>
 
-                    <label>Bank Details<input type="text" name="bank_details" /></label>
+					<label>Bank Details
+						<input type="text" name="bank_details" id="bankDetailsInput" maxlength="16" pattern="\d{16}" inputmode="numeric" required />
+					</label>
 					</div>
 				</div>
 
@@ -497,13 +530,13 @@ if (!isset($_SESSION['admin_id'])) {
 					<h3><i data-lucide="briefcase" class="icon"></i> OFW Record</h3>
 					<div class="form-grid">
 					
-                    <label>Parent/Guardian Name<input type="text" name="parent_name" /></label>
-                    <label>Relationship to OFW<input type="text" name="relationship" /></label>
+					<label>Parent/Guardian Name<input type="text" name="parent_name" /></label>
+					<label>Relationship to OFW<input type="text" name="relationship" /></label>
 					<label>Name of OFW<input type="text" name="ofw_name" /></label>
 					<label>Category<input type="text" name="category" /></label>
 
 					<label>Gender
-                        <select name="gender">
+						<select name="gender">
 							<option value="">Select Gender</option>
 							<option value="Male">Male</option>
 							<option value="Female">Female</option>
@@ -532,39 +565,39 @@ if (!isset($_SESSION['admin_id'])) {
 
 		<!-- GRADUATES SECTION -->
 		<section id="graduates-section" class="page-section hidden">
-    		<h3>Graduates</h3>
-    		<p>List of students who have completed the program.</p>
+			<h3>Graduates</h3>
+			<p>List of students who have completed the program.</p>
 		</section>
 
 		<section id="settings-section" class="page-section hidden">
-    		<h3>Settings</h3>
-    		<p>Manage admin profile, system preferences, and security options.</p>
+			<h3>Settings</h3>
+			<p>Manage admin profile, system preferences, and security options.</p>
 		</section>
 	</main>
-    <script src="../frontend/assets/js/script.js"></script>
+	<script src="../frontend/assets/js/script.js"></script>
 	<script src="../frontend/assets/js/dashboard.js"></script>
 	<script src="../frontend/assets/js/modal.js"></script>
-    <script>
-      // If the dashboard is restored from bfcache after logout, force a reload
-      window.addEventListener('pageshow', function (event) {
-        const isBackForward = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]?.type) === 'back_forward';
-        if (event.persisted || isBackForward) {
-          // Reload so PHP session check runs again
-          window.location.reload();
-        }
-      });
+	<script>
+	  // If the dashboard is restored from bfcache after logout, force a reload
+	  window.addEventListener('pageshow', function (event) {
+		const isBackForward = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]?.type) === 'back_forward';
+		if (event.persisted || isBackForward) {
+		  // Reload so PHP session check runs again
+		  window.location.reload();
+		}
+	  });
 
-      // Keep the user on the dashboard when pressing Back (avoid flashing login page)
-      (function () {
-        if (window.history && window.history.pushState) {
-          // Create a new history entry for the current page
-          history.pushState(null, '', location.href);
-          window.addEventListener('popstate', function () {
-            // Immediately move forward to stay on dashboard
-            history.go(1);
-          });
-        }
-      })();
-    </script>
+	  // Keep the user on the dashboard when pressing Back (avoid flashing login page)
+	  (function () {
+		if (window.history && window.history.pushState) {
+		  // Create a new history entry for the current page
+		  history.pushState(null, '', location.href);
+		  window.addEventListener('popstate', function () {
+			// Immediately move forward to stay on dashboard
+			history.go(1);
+		  });
+		}
+	  })();
+	</script>
 </body>
 </html>

@@ -285,10 +285,28 @@ document.addEventListener("DOMContentLoaded", () => {
   bindSidebarNav();
   bindDashboardCardClicks();
   populateYearSelect();
-  
+
+  // Add Scholar modal: Bank Details input acts as account number input, max 16 digits, auto-format
+  const bankDetailsInput = document.getElementById('bankDetailsInput');
+  if (bankDetailsInput) {
+    bankDetailsInput.addEventListener('input', function() {
+      let val = bankDetailsInput.value.replace(/\D/g, '').slice(0, 16);
+      bankDetailsInput.value = val ? `LNB - ${val}` : '';
+    });
+    bankDetailsInput.addEventListener('focus', function() {
+      // Remove LNB - prefix for easier editing
+      let val = bankDetailsInput.value.replace(/^LNB -\s*/, '');
+      bankDetailsInput.value = val;
+    });
+    bankDetailsInput.addEventListener('blur', function() {
+      let val = bankDetailsInput.value.replace(/\D/g, '').slice(0, 16);
+      bankDetailsInput.value = val ? `LNB - ${val}` : '';
+    });
+  }
+
   // Load scholars data first
   fetchScholars();
-  
+
   // Initialize showing/pagination after data is loaded
   setTimeout(() => {
     const tbody = document.getElementById('scholar-table-body');
@@ -332,6 +350,71 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // -------- Your existing functions below --------
+// Scholars Table Pagination
+let currentPage = 1;
+const scholarsPerPage = 10;
+
+function paginateScholars() {
+  const tbody = document.getElementById('scholar-table-body');
+  if (!tbody) return;
+  const allRows = Array.from(tbody.querySelectorAll('tr'));
+  // Only paginate rows that are currently visible (filtered)
+  const visibleRows = allRows.filter(row => row.style.display !== 'none');
+  const totalRows = visibleRows.length;
+  const totalPages = Math.ceil(totalRows / scholarsPerPage) || 1;
+  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+  visibleRows.forEach((row, idx) => {
+    if (idx >= (currentPage - 1) * scholarsPerPage && idx < currentPage * scholarsPerPage) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  // Hide all non-visible rows
+  allRows.forEach(row => {
+    if (!visibleRows.includes(row)) {
+      row.style.display = 'none';
+    }
+  });
+
+  // Update pagination info
+  const pageInfo = document.getElementById('page-info');
+  if (pageInfo) {
+    pageInfo.textContent = `${currentPage} / ${totalPages}`;
+  }
+  // Enable/disable buttons
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  if (prevBtn) prevBtn.disabled = currentPage === 1;
+  if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+  // Update showing counter
+  const showingEl = document.getElementById('pagination-showing');
+  if (showingEl) {
+    const showingCount = Math.min(scholarsPerPage, totalRows - (currentPage - 1) * scholarsPerPage);
+    showingEl.textContent = `Showing: ${showingCount} of ${totalRows}`;
+  }
+}
+
+function nextPage() {
+  const tbody = document.getElementById('scholar-table-body');
+  if (!tbody) return;
+  const totalRows = tbody.querySelectorAll('tr').length;
+  const totalPages = Math.ceil(totalRows / scholarsPerPage) || 1;
+  if (currentPage < totalPages) {
+    currentPage++;
+    paginateScholars();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    paginateScholars();
+  }
+}
 
 let __profileDropdownBound = false;
 function bindProfileDropdown() {
@@ -814,24 +897,33 @@ function renderScholarsTable() {
 
   tbody.innerHTML = '';
 
-  allScholars.forEach((scholar, index) => {
+  // Calculate the range of scholars to show based on current page
+  const startIndex = (currentPage - 1) * scholarsPerPage;
+  const endIndex = startIndex + scholarsPerPage;
+  const scholarsToShow = allScholars.slice(startIndex, endIndex);
+
+  scholarsToShow.forEach((scholar, index) => {
     const tr = document.createElement('tr');
     tr.setAttribute('data-program', scholar.program.toUpperCase());
     tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
     tr.setAttribute('data-province', scholar.province.toUpperCase());
-    
     tr.innerHTML = `
       <td><input type="checkbox" class="row-checkbox"/></td>
-      <td>${index + 1}</td>
+      <td>${startIndex + index + 1}</td>
       <td>${scholar.batch}</td>
       <td>${scholar.name}</td>
-      <td>${scholar.address}</td>
+      <td class="address-cell">${scholar.address}</td>
       <td>${scholar.program}</td>
       <td>${scholar.birthDate || 'N/A'}</td>
       <td>${scholar.contact}</td>
       <td>${scholar.sex}</td>
       <td><span class="status done">${scholar.status}</span></td>
-      <td><span class="bank">${scholar.bankDetails || 'N/A'}</span></td>
+      <td>
+        <span class="bank-details" data-full="${scholar.bankDetails || ''}"></span>
+        <button class="toggle-bank-btn" title="Show/Hide Account" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;">
+          <span class="eye-icon">👁</span>
+        </button>
+      </td>
       <td class="action-wrapper" style="position: relative;">
         <button class="action-menu-btn">
           <i data-lucide="more-vertical"></i>
@@ -840,11 +932,43 @@ function renderScholarsTable() {
     `;
     tbody.appendChild(tr);
   });
+  // ...existing code...
+  // After rendering, apply pagination
+  paginateScholars();
 
   if (window.lucide) {
     window.lucide.createIcons();
   }
-  
+
+  // Mask bank details and add toggle logic
+  document.querySelectorAll('.bank-details').forEach((el, idx) => {
+    const full = el.getAttribute('data-full');
+    if (!full || full === 'N/A') {
+      el.textContent = 'N/A';
+      return;
+    }
+    // Extract last 3 digits
+    const match = full.match(/(\d{3})$/);
+    const last3 = match ? match[1] : '';
+    el.textContent = `LNB - ****${last3}`;
+    el.setAttribute('data-masked', `LNB - ****${last3}`);
+    el.setAttribute('data-visible', 'false');
+  });
+  document.querySelectorAll('.toggle-bank-btn').forEach((btn, idx) => {
+    btn.addEventListener('click', function() {
+      const bankSpan = btn.previousElementSibling;
+      if (!bankSpan) return;
+      const visible = bankSpan.getAttribute('data-visible') === 'true';
+      if (visible) {
+        bankSpan.textContent = bankSpan.getAttribute('data-masked');
+        bankSpan.setAttribute('data-visible', 'false');
+      } else {
+        bankSpan.textContent = bankSpan.getAttribute('data-full');
+        bankSpan.setAttribute('data-visible', 'true');
+      }
+    });
+  });
+
   bindCheckboxLogic();
   bindContextualActionBar();
   bindScholarRowActionMenus();
@@ -1048,50 +1172,100 @@ function bindFilterDropdownToggle() {
   }
 }
 
+// Track current filter state globally
+let currentFilterState = {
+  program: 'ALL',
+  category: 'ALL',
+  province: 'ALL'
+};
+
 // Helper: Apply Program + Category + Province filter to rows and update counts/pagination
 function applyFilters(selectedProgram, selectedCategoryRaw, selectedProvince) {
   const tbody = document.getElementById('scholar-table-body');
   if (!tbody) return;
 
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  const program = (selectedProgram || 'ALL').toUpperCase();
-  const categoryRaw = (selectedCategoryRaw || 'ALL').toUpperCase();
-  const province = (selectedProvince || 'ALL').toUpperCase();
-  
-  console.log('Applying filters - Program:', program, 'Category:', categoryRaw, 'Province:', province);
-  console.log('Total rows to filter:', rows.length);
+  // Save current filter state
+  currentFilterState = {
+    program: (selectedProgram || 'ALL').toUpperCase(),
+    category: (selectedCategoryRaw || 'ALL').toUpperCase(),
+    province: (selectedProvince || 'ALL').toUpperCase()
+  };
+
+  // When filtering, clear search bar so only filter is applied
+  const searchInput = document.querySelector('.search-bar');
+  if (searchInput && searchInput.value.trim() !== '') {
+    searchInput.value = '';
+  }
+
+  filterAndSearchScholars('');
+}
+
+// Combined filter and search logic
+function filterAndSearchScholars(searchTerm) {
+  const tbody = document.getElementById('scholar-table-body');
+  const rows = Array.from(tbody?.querySelectorAll('tr') || []);
+  // Province: trim and uppercase for comparison
+  const { program, category } = currentFilterState;
+  const province = (currentFilterState.province || 'ALL').trim().toUpperCase();
+  let visibleCount = 0;
+  const terms = (searchTerm || '').toLowerCase().split(/\s+/);
+  const lastNameTerm = terms[0] || "";
+  const firstNameTerm = terms[1] || "";
 
   rows.forEach((row) => {
     const rowProgram = (row.getAttribute('data-program') || '').toUpperCase();
     const rowSub = (row.getAttribute('data-subprogram') || '').toUpperCase();
-    const rowProvince = (row.getAttribute('data-province') || '').toUpperCase();
+    const rowProvince = (row.getAttribute('data-province') || '').trim().toUpperCase();
 
+    // Filter logic
     const matchesProgram = program === 'ALL' || rowProgram.startsWith(program);
-
     let matchesCategory = true;
-    if (program !== 'ALL' && categoryRaw !== 'ALL') {
-      let expectedSub = categoryRaw;
-      if (program === 'ELAP' && !categoryRaw.startsWith('ELAP')) {
-        expectedSub = `ELAP ${categoryRaw}`;
+    if (program !== 'ALL' && category !== 'ALL') {
+      let expectedSub = category;
+      if (program === 'ELAP' && !category.startsWith('ELAP')) {
+        expectedSub = `ELAP ${category}`;
       }
       matchesCategory = rowSub === expectedSub || rowProgram === expectedSub;
     }
-
+    // Province: match exactly, ignore case and trim
     const matchesProvince = province === 'ALL' || rowProvince === province;
 
-    const shouldShow = matchesProgram && matchesCategory && matchesProvince;
-    row.style.display = shouldShow ? '' : 'none';
-    if (shouldShow) {
-      console.log('Filter showing row:', row.cells[3]?.textContent, 'Program:', rowProgram);
+    // Search logic
+    let matchesSearch = true;
+    if (searchTerm && searchTerm !== "") {
+      const nameCell = row.cells[3];
+      const addressCell = row.cells[4];
+      const contactCell = row.cells[7];
+      const provinceCell = row.getAttribute('data-province') || '';
+      if (!nameCell) {
+        matchesSearch = false;
+      } else {
+        const fullName = nameCell.textContent.trim().toLowerCase();
+        const address = addressCell?.textContent.trim().toLowerCase() || '';
+        const contact = contactCell?.textContent.trim().toLowerCase() || '';
+        const prov = provinceCell.toLowerCase();
+        const nameParts = fullName.split(/\s+/);
+        const lastName = nameParts[0] || "";
+        const firstName = nameParts[1] || "";
+        const nameMatch = lastName.startsWith(lastNameTerm) && (firstNameTerm === '' || firstName.startsWith(firstNameTerm));
+        const addressMatch = address.includes(searchTerm);
+        const contactMatch = contact.includes(searchTerm);
+        const provinceMatch = prov.includes(searchTerm);
+        matchesSearch = nameMatch || addressMatch || contactMatch || provinceMatch;
+      }
     }
+
+    // Show row if it matches both filter and search
+    const showRow = matchesProgram && matchesCategory && matchesProvince && matchesSearch;
+    row.style.display = showRow ? '' : 'none';
+    if (showRow) visibleCount++;
   });
 
   // Update showing counter if present
   const showingEl = document.getElementById('pagination-showing');
   if (showingEl) {
     const all = rows.length;
-    const visible = rows.filter(r => r.style.display !== 'none').length;
-    showingEl.textContent = `Showing: ${visible} of ${all}`;
+    showingEl.textContent = `Showing: ${visibleCount} of ${all}`;
   }
 
   // Reset pagination to first page if available
@@ -1099,6 +1273,9 @@ function applyFilters(selectedProgram, selectedCategoryRaw, selectedProvince) {
   if (typeof paginateScholars === 'function') {
     paginateScholars();
   }
+
+  // Update checkbox states after filtering
+  updateSelectAllState();
 }
 
 // Highlight the correct Scholars submenu based on program
@@ -1435,12 +1612,10 @@ function bindContextualActionBar() {
   }
 }
 
+
 function bindScholarSearch() {
   const searchInput = document.querySelector('.search-bar');
-  const scholarTableBody = document.getElementById('scholar-table-body');
-  const paginationShowing = document.getElementById('pagination-showing');
-
-  if (!searchInput || !scholarTableBody || !paginationShowing) return;
+  if (!searchInput) return;
 
   // Use a flag to prevent multiple bindings if this function is called multiple times
   if (searchInput.dataset.searchBound === 'true') {
@@ -1450,107 +1625,7 @@ function bindScholarSearch() {
 
   searchInput.addEventListener('keyup', () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
-    performScholarSearch(searchTerm);
+    filterAndSearchScholars(searchTerm);
   });
 }
 
-// Function to perform scholar search and filtering based on current state
-function performScholarSearch(searchTerm) {
-  const scholarTableBody = document.getElementById('scholar-table-body');
-  const paginationShowing = document.getElementById('pagination-showing');
-
-  if (!scholarTableBody || !paginationShowing) return;
-
-  // Get the current active program from submenu or filter dropdown
-  let currentProgram = 'ALL';
-  
-  // Check if a submenu link is currently active
-  const activeSubmenuLink = document.querySelector('.dropdown-menu .nav-link.active');
-  if (activeSubmenuLink) {
-    const submenuProgram = activeSubmenuLink.getAttribute('data-program');
-    if (submenuProgram && submenuProgram.toUpperCase() !== 'ALL') {
-      currentProgram = submenuProgram.toUpperCase();
-    }
-  } else {
-    // If no submenu is active, check the filter dropdown
-    const programSelect = document.getElementById('filterProgramSelect') || document.getElementById('programSelect');
-    if (programSelect && programSelect.value && programSelect.value.toUpperCase() !== 'ALL') {
-      currentProgram = programSelect.value.toUpperCase();
-    }
-  }
-
-  console.log('Current program filter:', currentProgram);
-  console.log('Search term:', searchTerm);
-
-  let visibleCount = 0;
-  const terms = searchTerm.split(/\s+/);
-  const lastNameTerm = terms[0] || "";
-  const firstNameTerm = terms[1] || "";
-
-  console.log('Total rows to process:', scholarTableBody.rows.length);
-  
-  // Process all rows and apply both program filter and search filter
-  Array.from(scholarTableBody.rows).forEach((row, index) => {
-    const rowProgram = (row.getAttribute('data-program') || '').toUpperCase();
-    const rowSub = (row.getAttribute('data-subprogram') || '').toUpperCase();
-    const rowName = row.cells[3]?.textContent || '';
-
-    // Check if the row matches the current program filter
-    const matchesProgram = currentProgram === 'ALL' || rowProgram.startsWith(currentProgram);
-
-    // Apply Search filter (by name, address, province, contact)
-    let matchesSearch = true;
-    if (searchTerm !== "") {
-      const nameCell = row.cells[3];
-      const addressCell = row.cells[4];
-      const contactCell = row.cells[7];
-      const provinceCell = row.getAttribute('data-province') || '';
-      
-      if (!nameCell) {
-        matchesSearch = false;
-      } else {
-        const fullName = nameCell.textContent.trim().toLowerCase();
-        const address = addressCell?.textContent.trim().toLowerCase() || '';
-        const contact = contactCell?.textContent.trim().toLowerCase() || '';
-        const province = provinceCell.toLowerCase(); 
-        
-        const nameParts = fullName.split(/\s+/);
-        const lastName = nameParts[0] || "";
-        const firstName = nameParts[1] || "";
-        
-        const nameMatch = lastName.startsWith(lastNameTerm) && (firstNameTerm === '' || firstName.startsWith(firstNameTerm));
-        const addressMatch = address.includes(searchTerm);
-        const contactMatch = contact.includes(searchTerm);
-        const provinceMatch = province.includes(searchTerm);
-        
-        matchesSearch = nameMatch || addressMatch || contactMatch || provinceMatch;
-      }
-    }
-
-    // Show row if it matches both program filter and search term
-    const showRow = matchesProgram && matchesSearch;
-    row.style.display = showRow ? '' : 'none';
-    
-    if (showRow) {
-      visibleCount++;
-      console.log(`SHOWING Row ${index}:`, {
-        name: rowName,
-        program: rowProgram,
-        matchesProgram: matchesProgram,
-        matchesSearch: matchesSearch
-      });
-    }
-  });
-
-  const totalRows = scholarTableBody.rows.length;
-  paginationShowing.textContent = `Showing: ${visibleCount} of ${totalRows}`;
-
-  // Reset and apply pagination if available
-  try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-  if (typeof paginateScholars === 'function') {
-    paginateScholars();
-  }
-  
-  // Update checkbox states after filtering
-  updateSelectAllState();
-}
