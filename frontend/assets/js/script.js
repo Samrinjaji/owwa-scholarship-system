@@ -331,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bindExportCsv();
   // Ensure row action menus are bound on initial render as well
   bindScholarRowActionMenus();
+   bindScholarDropdownActions();
 
   // Submission handled by modal.js
 });
@@ -960,9 +961,10 @@ function renderScholarsTable() {
   // Render ALL scholars, don't slice here - pagination will handle visibility
   allScholars.forEach((scholar, index) => {
     const tr = document.createElement('tr');
-    tr.setAttribute('data-program', scholar.program.toUpperCase());
-    tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
-    tr.setAttribute('data-province', scholar.province.toUpperCase());
+tr.setAttribute('data-program', scholar.program.toUpperCase());
+tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
+tr.setAttribute('data-province', scholar.province.toUpperCase());
+tr.setAttribute('data-scholar-id', scholar.id); // Add this line
     tr.innerHTML = `
       <td><input type="checkbox" class="row-checkbox"/></td>
       <td>${index + 1}</td>
@@ -1726,22 +1728,140 @@ function bindContextualActionBar() {
     });
   }
   
-  // Remove button functionality
-  if (removeBtn) {
-    removeBtn.addEventListener('click', function() {
-      const selectedIds = getSelectedScholarIds();
-      if (selectedIds.length > 0) {
-        const confirmMessage = `Are you sure you want to remove ${selectedIds.length} selected scholar${selectedIds.length === 1 ? '' : 's'}?`;
-        if (confirm(confirmMessage)) {
-          console.log(`Removing ${selectedIds.length} scholars:`, selectedIds);
-          // Add your remove logic here
-          alert(`Remove functionality for ${selectedIds.length} selected scholars`);
-        }
-      } else {
-        alert('Please select scholars to remove');
+ // Remove button functionality - Fixed version
+if (removeBtn) {
+  removeBtn.addEventListener('click', async function() {
+    const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+    if (checkedCheckboxes.length === 0) {
+      alert('Please select scholars to remove');
+      return;
+    }
+
+    const selectedCount = checkedCheckboxes.length;
+    const scholarNames = [];
+    
+    // Get scholar names for confirmation
+    checkedCheckboxes.forEach(checkbox => {
+      const row = checkbox.closest('tr');
+      if (row && row.cells[3]) {
+        scholarNames.push(row.cells[3].textContent.trim());
       }
     });
-  }
+
+    // Show confirmation modal - use same modal for consistency
+    const confirmMessage = selectedCount === 1 
+      ? scholarNames[0] 
+      : `${selectedCount} scholars`;
+    
+    let shouldRemove;
+    try {
+      shouldRemove = await showDeleteConfirmationModal(confirmMessage, 'remove');
+    } catch (error) {
+      console.error('Error showing confirmation modal:', error);
+      return;
+    }
+    
+    if (!shouldRemove) {
+      return; // User cancelled - modal should already be closed by showDeleteConfirmationModal
+    }
+
+    // Show loading state
+    const originalText = this.innerHTML;
+    this.innerHTML = '<i data-lucide="loader-2"></i><span>Deleting...</span>';
+    this.disabled = true;
+
+    try {
+      // Get selected scholar IDs for API call if you have them
+      const selectedIds = [];
+      checkedCheckboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        const scholarId = row?.getAttribute('data-scholar-id');
+        if (scholarId) {
+          selectedIds.push(scholarId);
+        }
+      });
+
+      // Use the same delete_scholar.php endpoint for each selected scholar
+      if (selectedIds.length > 0) {
+        // Delete all scholars in parallel instead of sequential loop
+        const deletePromises = selectedIds.map(scholarId => 
+          fetch('../backend/delete_scholar.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ 
+              id: scholarId 
+            })
+          }).then(response => response.json())
+        );
+
+        const results = await Promise.all(deletePromises);
+        
+        // Check if any deletions failed
+        const failedDeletions = results.filter(result => !result.success);
+        if (failedDeletions.length > 0) {
+          throw new Error(`Failed to delete ${failedDeletions.length} scholar(s)`);
+        }
+      }
+
+      // Remove rows from table and update local data
+      checkedCheckboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        if (row) {
+          // Remove from allScholars array
+          const scholarName = row.cells[3]?.textContent.trim();
+          const scholarBatch = row.cells[2]?.textContent.trim();
+          const scholarProgram = row.cells[5]?.textContent.trim();
+          
+          const scholarIndex = allScholars.findIndex(scholar => 
+            scholar.name === scholarName && 
+            scholar.batch === scholarBatch &&
+            scholar.program === scholarProgram
+          );
+
+          if (scholarIndex !== -1) {
+            allScholars.splice(scholarIndex, 1);
+          }
+
+          // Remove the row
+          row.remove();
+        }
+      });
+
+      // Update UI
+      updateDashboardCounts();
+      updateRecentScholars();
+      updateGenderChart();
+      currentPage = 1;
+      paginateScholars();
+      updateSelectAllState();
+      updateSelectedCount(); // This should hide the contextual action bar automatically
+
+      // ADDITIONAL FIX: Explicitly hide the contextual action bar
+      const contextualActionBar = document.getElementById('contextual-action-bar');
+      if (contextualActionBar) {
+        contextualActionBar.classList.add('hidden');
+      }
+
+      // Show success message
+      showNotification(`${selectedCount} scholar${selectedCount === 1 ? '' : 's'} deleted successfully`, 'success');
+
+    } catch (error) {
+      console.error('Error deleting scholars:', error);
+      showNotification('Failed to delete scholars: ' + error.message, 'error');
+    } finally {
+      // Reset button state
+      this.innerHTML = originalText;
+      this.disabled = false;
+      
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+  });
+}
 }
 
 
@@ -1761,3 +1881,534 @@ function bindScholarSearch() {
   });
 }
 
+
+// Enhanced Notification function to match system design
+function showNotification(message, type = 'info') {
+  // Create notification container
+  const notification = document.createElement('div');
+  notification.className = `system-notification notification-${type}`;
+  
+  // Set up the notification HTML
+  let iconHtml = '';
+  let bgColor = '';
+  let iconColor = '';
+  
+  switch (type) {
+    case 'success':
+      iconHtml = '<i data-lucide="check-circle"></i>';
+      bgColor = '#10b981';
+      iconColor = 'white';
+      break;
+    case 'error':
+      iconHtml = '<i data-lucide="x-circle"></i>';
+      bgColor = '#ef4444';
+      iconColor = 'white';
+      break;
+    case 'info':
+    default:
+      iconHtml = '<i data-lucide="info"></i>';
+      bgColor = '#3b82f6';
+      iconColor = 'white';
+      break;
+  }
+  
+  notification.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="color: ${iconColor}; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+        ${iconHtml}
+      </div>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  notification.style.cssText = `
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    z-index: 10001;
+    background-color: ${bgColor};
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    animation: notificationSlideIn 0.3s ease;
+    max-width: 350px;
+    min-width: 250px;
+  `;
+
+  // Add animation styles
+  const notificationStyle = document.createElement('style');
+  notificationStyle.textContent = `
+    @keyframes notificationSlideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes notificationSlideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+  `;
+  document.head.appendChild(notificationStyle);
+
+  document.body.appendChild(notification);
+
+  // Initialize Lucide icons
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
+  // Auto remove after 3.5 seconds
+  setTimeout(() => {
+    notification.style.animation = 'notificationSlideOut 0.3s ease';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+      if (notificationStyle.parentNode) {
+        notificationStyle.parentNode.removeChild(notificationStyle);
+      }
+    }, 300);
+  }, 3500);
+}// Add this to your existing JavaScript code
+
+// Function to handle dropdown item clicks
+function bindScholarDropdownActions() {
+  const dropdown = document.getElementById('scholar-action-dropdown');
+  if (!dropdown) return;
+
+  // Remove any existing event listeners to prevent duplicates
+  dropdown.removeEventListener('click', handleDropdownClick);
+  
+  // Add click event listener to the dropdown container
+  dropdown.addEventListener('click', handleDropdownClick);
+}
+
+// Separate function to handle dropdown clicks (prevents duplicate bindings)
+function handleDropdownClick(event) {
+  const clickedItem = event.target.closest('.dropdown-item');
+  if (!clickedItem) return;
+
+  // Prevent action if button is disabled (loading state)
+  if (clickedItem.disabled || clickedItem.style.pointerEvents === 'none') {
+    return;
+  }
+
+  const dropdown = document.getElementById('scholar-action-dropdown');
+
+  // Get the currently opened button's row
+  const openedButtonId = dropdown.getAttribute('data-for-button-id');
+  const openedButton = openedButtonId ? document.getElementById(openedButtonId) : null;
+  const scholarRow = openedButton ? openedButton.closest('tr') : null;
+
+  if (!scholarRow) {
+    console.error('Could not find scholar row');
+    return;
+  }
+
+  // Get scholar data from the row
+  const scholarData = getScholarDataFromRow(scholarRow);
+
+  // Handle different actions based on clicked item
+  const actionText = clickedItem.querySelector('span')?.textContent?.trim().toLowerCase();
+  
+  switch (actionText) {
+    case 'edit':
+      handleEditScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'view':
+      handleViewScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'ppf':
+      handlePPFScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'graduate':
+      handleGraduateScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'delete':
+      // Don't hide dropdown immediately for delete - let the function handle it
+      handleDeleteScholar(scholarData, scholarRow);
+      break;
+    default:
+      console.log('Unknown action:', actionText);
+      hideScholarActionDropdown(dropdown);
+  }
+}
+
+// Function to extract scholar data from table row
+function getScholarDataFromRow(row) {
+  const cells = row.cells;
+  return {
+    id: row.getAttribute('data-scholar-id') || null, // Add this attribute to your rows if you have IDs
+    rowIndex: row.rowIndex - 1, // Adjust for header row
+    number: cells[1]?.textContent?.trim() || '',
+    batch: cells[2]?.textContent?.trim() || '',
+    name: cells[3]?.textContent?.trim() || '',
+    address: cells[4]?.textContent?.trim() || '',
+    program: cells[5]?.textContent?.trim() || '',
+    contact: cells[6]?.textContent?.trim() || '',
+    sex: cells[7]?.textContent?.trim() || '',
+    status: cells[8]?.textContent?.trim() || '',
+    bankDetails: cells[9]?.querySelector('.bank-details')?.getAttribute('data-full') || ''
+  };
+}
+
+// Fixed handleDeleteScholar function
+async function handleDeleteScholar(scholarData, row) {
+  const dropdown = document.getElementById('scholar-action-dropdown');
+  
+  // Show custom delete confirmation modal
+  let shouldDelete;
+  try {
+    shouldDelete = await showDeleteConfirmationModal(scholarData.name);
+  } catch (error) {
+    console.error('Error showing confirmation modal:', error);
+    hideScholarActionDropdown(dropdown);
+    return;
+  }
+  
+  if (!shouldDelete) {
+    // User cancelled - hide dropdown immediately
+    hideScholarActionDropdown(dropdown);
+    return;
+  }
+
+  // Find the specific delete button for this dropdown instance
+  const deleteBtn = dropdown.querySelector('.dropdown-item.danger');
+  let originalText = '';
+
+  try {
+    // Show loading state
+    if (deleteBtn) {
+      originalText = deleteBtn.innerHTML;
+      deleteBtn.innerHTML = '<i data-lucide="loader-2"></i><span>Deleting...</span>';
+      deleteBtn.style.pointerEvents = 'none';
+      deleteBtn.disabled = true;
+    }
+
+    // If you have scholar IDs, make API call to delete from backend
+    if (scholarData.id) {
+      const response = await fetch('../backend/delete_scholar.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ 
+          id: scholarData.id 
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to delete scholar from database');
+      }
+    }
+
+    // Remove from local allScholars array
+    const scholarIndex = allScholars.findIndex(scholar => 
+      scholar.name === scholarData.name && 
+      scholar.batch === scholarData.batch &&
+      scholar.program === scholarData.program
+    );
+
+    if (scholarIndex !== -1) {
+      allScholars.splice(scholarIndex, 1);
+    }
+
+    // Remove the row from the table
+    row.remove();
+
+    // Update dashboard counts
+    updateDashboardCounts();
+
+    // Update recent scholars list
+    updateRecentScholars();
+
+    // Update gender chart
+    updateGenderChart();
+
+    // Reset pagination and update display
+    currentPage = 1;
+    paginateScholars();
+
+    // Update checkbox states
+    updateSelectAllState();
+    updateSelectedCount();
+
+    // FORCE CLOSE the dropdown immediately after successful deletion
+    // Hide dropdown first
+    hideScholarActionDropdown(dropdown);
+    
+    // Additional cleanup - remove any dropdown positioning and attributes
+    dropdown.style.position = '';
+    dropdown.style.top = '';
+    dropdown.style.left = '';
+    dropdown.style.right = '';
+    dropdown.removeAttribute('data-for-button-id');
+    
+    // Ensure dropdown is truly hidden
+    dropdown.classList.add('hidden');
+    dropdown.style.display = 'none';
+
+    // Show success message
+    showNotification('Scholar deleted successfully', 'success');
+
+  } catch (error) {
+    console.error('Error deleting scholar:', error);
+    showNotification('Failed to delete scholar: ' + error.message, 'error');
+    
+    // Hide dropdown on error too with same cleanup
+    hideScholarActionDropdown(dropdown);
+    dropdown.style.position = '';
+    dropdown.style.top = '';
+    dropdown.style.left = '';
+    dropdown.style.right = '';
+    dropdown.removeAttribute('data-for-button-id');
+    dropdown.classList.add('hidden');
+    dropdown.style.display = 'none';
+    
+  } finally {
+    // Always reset the button state regardless of success or failure
+    if (deleteBtn && originalText) {
+      deleteBtn.innerHTML = originalText;
+      deleteBtn.style.pointerEvents = '';
+      deleteBtn.disabled = false;
+      
+      // Recreate Lucide icons since we changed the innerHTML
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+    
+    // Extra safety - ensure dropdown is closed
+    setTimeout(() => {
+      if (dropdown) {
+        hideScholarActionDropdown(dropdown);
+        dropdown.classList.add('hidden');
+        dropdown.style.display = 'none';
+      }
+    }, 100);
+  }
+}
+
+// Enhanced hideScholarActionDropdown function for better cleanup
+function hideScholarActionDropdown(dropdown) {
+  if (!dropdown) return;
+  
+  // Remove all positioning styles
+  dropdown.style.position = '';
+  dropdown.style.top = '';
+  dropdown.style.left = '';
+  dropdown.style.right = '';
+  dropdown.style.display = 'none';
+  
+  // Add hidden class
+  dropdown.classList.add('hidden');
+  
+  // Remove tracking attribute
+  dropdown.removeAttribute('data-for-button-id');
+  
+  // Force hide with multiple methods for maximum compatibility
+  dropdown.style.visibility = 'hidden';
+  dropdown.style.opacity = '0';
+  dropdown.style.zIndex = '-1';
+  
+  // Reset after a short delay
+  setTimeout(() => {
+    dropdown.style.visibility = '';
+    dropdown.style.opacity = '';
+    dropdown.style.zIndex = '';
+  }, 200);
+}
+
+// Enhanced dropdown click handler to ensure proper cleanup
+function handleDropdownClick(event) {
+  const clickedItem = event.target.closest('.dropdown-item');
+  if (!clickedItem) return;
+
+  // Prevent action if button is disabled (loading state)
+  if (clickedItem.disabled || clickedItem.style.pointerEvents === 'none') {
+    return;
+  }
+
+  const dropdown = document.getElementById('scholar-action-dropdown');
+
+  // Get the currently opened button's row
+  const openedButtonId = dropdown.getAttribute('data-for-button-id');
+  const openedButton = openedButtonId ? document.getElementById(openedButtonId) : null;
+  const scholarRow = openedButton ? openedButton.closest('tr') : null;
+
+  if (!scholarRow) {
+    console.error('Could not find scholar row');
+    hideScholarActionDropdown(dropdown); // Close dropdown on error
+    return;
+  }
+
+  // Get scholar data from the row
+  const scholarData = getScholarDataFromRow(scholarRow);
+
+  // Handle different actions based on clicked item
+  const actionText = clickedItem.querySelector('span')?.textContent?.trim().toLowerCase();
+  
+  switch (actionText) {
+    case 'edit':
+      handleEditScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'view':
+      handleViewScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'ppf':
+      handlePPFScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'graduate':
+      handleGraduateScholar(scholarData, scholarRow);
+      hideScholarActionDropdown(dropdown);
+      break;
+    case 'delete':
+      // For delete, the handleDeleteScholar function will handle closing the dropdown
+      // Don't close it here as we need it open during the confirmation dialog
+      handleDeleteScholar(scholarData, scholarRow);
+      break;
+    default:
+      console.log('Unknown action:', actionText);
+      hideScholarActionDropdown(dropdown);
+  }
+}
+
+// Updated showDeleteConfirmationModal function to handle proper cleanup
+function showDeleteConfirmationModal(scholarName, actionType = 'delete') {
+    return new Promise((resolve) => {
+        // Remove any existing delete confirmation modals first
+        const existingModals = document.querySelectorAll('.modal-backdrop');
+        existingModals.forEach(modal => {
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        });
+
+        // Create modal backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop';
+
+        // Create modal container
+        const modal = document.createElement('div');
+        modal.className = 'delete-confirmation-modal';
+
+        // Determine action text
+        const actionText = actionType === 'remove' ? 'Remove' : 'Delete';
+        const actionVerb = actionType === 'remove' ? 'remove' : 'delete';
+
+        // Modal content
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-icon">
+                    <i data-lucide="trash-2"></i>
+                </div>
+                <h3 class="modal-title">${actionText} Scholar${scholarName.includes('scholars') ? 's' : ''}</h3>
+                <p class="modal-message">
+                    Are you sure you want to ${actionVerb} <strong>"${scholarName}"</strong>?
+                    <br><br>
+                    <span class="modal-warning">This action cannot be undone.</span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancel-delete-btn">Cancel</button>
+                <button class="modal-btn delete-btn" id="confirm-delete-btn">${actionText}</button>
+            </div>
+        `;
+
+        // Append to DOM
+        backdrop.appendChild(modal);
+        document.body.appendChild(backdrop);
+
+        // Initialize Lucide icons
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
+        // Get button elements
+        const cancelBtn = modal.querySelector('#cancel-delete-btn');
+        const confirmBtn = modal.querySelector('#confirm-delete-btn');
+
+        // Close modal function with proper cleanup
+        function closeModal(result) {
+            // Ensure modal elements exist before animating
+            if (backdrop && backdrop.parentNode) {
+                backdrop.style.animation = 'fadeIn 0.2s ease reverse';
+            }
+            if (modal) {
+                modal.style.animation = 'slideIn 0.2s ease reverse';
+            }
+            
+            setTimeout(() => {
+                // Remove modal from DOM
+                if (backdrop && backdrop.parentNode) {
+                    backdrop.parentNode.removeChild(backdrop);
+                }
+                resolve(result);
+            }, 200);
+        }
+
+        // Event listeners
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal(false);
+            });
+        }
+        
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal(true);
+            });
+        }
+
+        // Close on backdrop click
+        backdrop.addEventListener('click', (e) => {
+            if (e.target === backdrop) {
+                closeModal(false);
+            }
+        });
+
+        // Close on Escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', handleEscape);
+                closeModal(false);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+
+        // Focus on cancel button by default
+        setTimeout(() => {
+            if (cancelBtn && cancelBtn.focus) {
+                cancelBtn.focus();
+            }
+        }, 100);
+    });
+}
