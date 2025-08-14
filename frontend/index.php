@@ -15,17 +15,6 @@ if (!isset($_SESSION['admin_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<style>
-  /* Only apply to Address column in scholars table */
-  #scholarsTable td.address-cell {
-	max-width: 250px;
-	white-space: normal;
-	word-break: break-word;
-  }
-  #scholarsTable th.address-cell {
-	max-width: 250px;
-  }
-</style>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -339,7 +328,6 @@ if (!isset($_SESSION['admin_id'])) {
 								<th>Name of Scholar</th>
 								<th>Home Address</th>
 								<th>Program</th>
-								<th>Birth Date</th>
 								<th>Contact</th>
 								<th>Sex</th>
 								<th>Status</th>

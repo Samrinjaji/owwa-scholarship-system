@@ -806,13 +806,11 @@ main{
   text-align: left;
   border-bottom: 1px solid #eee;
   font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   color: #555;
 }
 
-.scholar-table tbody tr:nth-child(even) {
+.scholar-table tbody tr {
     background-color: #fdfdfd;
   }
 
@@ -858,9 +856,7 @@ main{
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
+  text-align: center;
 }
 
 /* Pagination Styles */

@@ -3,6 +3,7 @@ let genderChart;
 
 let allScholars = [];
 
+// Updated fetchScholars function with alphabetical sorting
 async function fetchScholars() {
   try {
     const res = await fetch('../backend/scholars_list.php', { credentials: 'same-origin' });
@@ -15,24 +16,24 @@ async function fetchScholars() {
         address: row.home_address,
         province: row.province || '',
         program: row.program,
-        birthDate: row.birth_date || '',
         contact: row.contact_number,
         sex: row.sex,
         status: row.remarks || 'Active',
         bankDetails: row.bank_details,
         recentDate: row.created_at
-      }));
+      }))
+      // Sort scholars alphabetically by name (last name first, then first name)
+      .sort((a, b) => {
+        // Compare names alphabetically (case-insensitive)
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+      
       renderScholarsTable();
       updateDashboardCounts();
       updateRecentScholars();
       updateGenderChart();
-      // Initialize showing count immediately
-      const tbody = document.getElementById('scholar-table-body');
-      if (tbody) {
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const showingEl = document.getElementById('pagination-showing');
-        if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
-      }
     }
   } catch (e) {
     console.error('Failed to fetch scholars', e);
@@ -55,31 +56,16 @@ const yearlyData = {
     ELAP: Array(12).fill(0)
   },
   2024: {
-    EDSP: Array(12).fill(0),
-    ODSP: Array(12).fill(0),
-    ELAP: Array(12).fill(0)
-  },
-  2025: {
     EDSP: [10, 11, 9, 14, 12, 13, 9, 8, 10, 12, 11, 13],
     ODSP: [6, 7, 8, 9, 7, 6.5, 7, 8, 9, 10, 8, 9],
     ELAP: [4, 5, 3.5, 4.5, 4, 3, 4, 3.5, 4, 3.8, 4.2, 5]
+  },
+  2025: {
+    EDSP: Array(12).fill(0),
+    ODSP: Array(12).fill(0),
+    ELAP: Array(12).fill(0)
   }
 };
-
-/* Sample gender data
-const programGenderData = {
-  EDSP: { male: 0, female: 0 },
-  ODSP: { male: 0, female: 0 },
-  ELAP: { male: 0, female: 0 }
-};
-*/
-
-// Recent scholars data (empty or add sample entries for testing)
-const recentScholars = [
-  // Example entries:
-  // { name: "Juan Dela Cruz", program: "EDSP", date: "July 19, 2025" },
-  // { name: "Maria Santos", program: "ODSP", date: "July 18, 2025" },
-];
 
 
 function createOrUpdateBarChart(year = '2025') {
@@ -350,59 +336,78 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // -------- Your existing functions below --------
-// Scholars Table Pagination
+// Fixed Pagination Functions - Replace your existing pagination code
 let currentPage = 1;
 const scholarsPerPage = 10;
 
 function paginateScholars() {
   const tbody = document.getElementById('scholar-table-body');
   if (!tbody) return;
+  
   const allRows = Array.from(tbody.querySelectorAll('tr'));
-  // Only paginate rows that are currently visible (filtered)
-  const visibleRows = allRows.filter(row => row.style.display !== 'none');
+  
+  // Get all rows that should be visible based on current filters (not pagination)
+  const visibleRows = allRows.filter(row => {
+    // Check if row is hidden by filters or search (not by pagination)
+    return !row.hasAttribute('data-filtered-out');
+  });
+  
   const totalRows = visibleRows.length;
   const totalPages = Math.ceil(totalRows / scholarsPerPage) || 1;
+  
+  // Ensure current page is within valid range
   currentPage = Math.max(1, Math.min(currentPage, totalPages));
-
-  visibleRows.forEach((row, idx) => {
-    if (idx >= (currentPage - 1) * scholarsPerPage && idx < currentPage * scholarsPerPage) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
-
-  // Hide all non-visible rows
+  
+  const startIndex = (currentPage - 1) * scholarsPerPage;
+  const endIndex = startIndex + scholarsPerPage;
+  
+  // Hide all rows first
   allRows.forEach(row => {
-    if (!visibleRows.includes(row)) {
-      row.style.display = 'none';
+    row.style.display = 'none';
+  });
+  
+  // Show only the rows for current page
+  visibleRows.forEach((row, index) => {
+    if (index >= startIndex && index < endIndex) {
+      row.style.display = '';
     }
   });
-
+  
   // Update pagination info
   const pageInfo = document.getElementById('page-info');
   if (pageInfo) {
     pageInfo.textContent = `${currentPage} / ${totalPages}`;
   }
+  
   // Enable/disable buttons
   const prevBtn = document.getElementById('prev-btn');
   const nextBtn = document.getElementById('next-btn');
   if (prevBtn) prevBtn.disabled = currentPage === 1;
-  if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+  
   // Update showing counter
   const showingEl = document.getElementById('pagination-showing');
   if (showingEl) {
-    const showingCount = Math.min(scholarsPerPage, totalRows - (currentPage - 1) * scholarsPerPage);
-    showingEl.textContent = `Showing: ${showingCount} of ${totalRows}`;
+    const actualShowing = Math.min(scholarsPerPage, totalRows - startIndex);
+    const showingStart = totalRows > 0 ? startIndex + 1 : 0;
+    const showingEnd = totalRows > 0 ? startIndex + actualShowing : 0;
+    showingEl.textContent = `Showing: ${showingStart}-${showingEnd} of ${totalRows}`;
   }
+  
+  // Update checkbox states after pagination
+  updateSelectAllState();
 }
 
 function nextPage() {
   const tbody = document.getElementById('scholar-table-body');
   if (!tbody) return;
-  const totalRows = tbody.querySelectorAll('tr').length;
+  
+  // Count visible rows (not filtered out)
+  const allRows = Array.from(tbody.querySelectorAll('tr'));
+  const visibleRows = allRows.filter(row => !row.hasAttribute('data-filtered-out'));
+  const totalRows = visibleRows.length;
   const totalPages = Math.ceil(totalRows / scholarsPerPage) || 1;
+  
   if (currentPage < totalPages) {
     currentPage++;
     paginateScholars();
@@ -534,6 +539,7 @@ function updateScholarsLabel(program) {
   label.textContent = text;
 }
 
+// Fixed bindSidebarNav function
 function bindSidebarNav() {
   const navLinks = document.querySelectorAll(".nav-link");
   const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
@@ -549,6 +555,25 @@ function bindSidebarNav() {
       titleElement.textContent = title;
       lucide.createIcons();
     }
+  }
+
+  function showAllScholars() {
+    const tbody = document.getElementById('scholar-table-body');
+    if (!tbody) return;
+    
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    // Remove filter attributes and show all rows
+    rows.forEach(row => {
+      row.removeAttribute('data-filtered-out');
+      row.style.display = '';
+    });
+    
+    // Reset current filter state
+    currentFilterState = {
+      program: 'ALL',
+      category: 'ALL',
+      province: 'ALL'
+    };
   }
 
   navLinks.forEach(link => {
@@ -580,6 +605,12 @@ function bindSidebarNav() {
       const program = (this.getAttribute("data-program") || "ALL").toUpperCase();
 
       if (sectionId === "scholars-section") {
+        // Clear search input first
+        const searchInput = document.querySelector('.search-bar');
+        if (searchInput) {
+          searchInput.value = '';
+        }
+
         // Update filter dropdown UI to reflect submenu choice
         updateFilterDropdownUI(program);
 
@@ -590,20 +621,13 @@ function bindSidebarNav() {
           applyFilters(program, "", "ALL");
         }
 
-        // Re-apply search if active - use a longer delay to ensure DOM updates are complete
-        const searchInput = document.querySelector('.search-bar');
-        if (searchInput && searchInput.value.trim() !== '') {
-          setTimeout(() => {
-            performScholarSearch(searchInput.value.toLowerCase().trim());
-          }, 100);
-        }
-
         // Update label and reset pagination
         updateScholarsLabel(program);
-        try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-        if (typeof paginateScholars === 'function') {
-          paginateScholars();
-        }
+        currentPage = 1;
+        paginateScholars();
+        
+        // Update checkbox states
+        updateSelectAllState();
       }
 
       if (!this.closest(".dropdown-menu")) {
@@ -625,10 +649,35 @@ function bindSidebarNav() {
       e.preventDefault();
 
       const parent = this.closest(".dropdown");
+      const isAlreadyOpen = parent.classList.contains("open");
 
       allDropdowns.forEach(d => d.classList.remove("open"));
       dropdownToggles.forEach(t => t.classList.remove("active"));
       navLinks.forEach(l => l.classList.remove("active"));
+
+      // **FIX: Handle scholars dropdown toggle properly**
+      const sectionId = this.getAttribute("data-section-id");
+      if (sectionId === "scholars-section") {
+        if (isAlreadyOpen) {
+          // If clicking on already open scholars dropdown, show ALL scholars
+          const searchInput = document.querySelector('.search-bar');
+          if (searchInput) {
+            searchInput.value = '';
+          }
+          
+          updateFilterDropdownUI('ALL');
+          showAllScholars();
+          updateScholarsLabel("ALL");
+          
+          // Clear submenu active states
+          const submenuLinks = parent.querySelectorAll('.dropdown-menu .nav-link');
+          submenuLinks.forEach(link => link.classList.remove('active'));
+          
+          currentPage = 1;
+          paginateScholars();
+          updateSelectAllState();
+        }
+      }
 
       parent.classList.add("open");
       this.classList.add("active");
@@ -640,34 +689,19 @@ function bindSidebarNav() {
         bindProfileDropdown();
       }
 
-      const sectionId = this.getAttribute("data-section-id");
       if (sectionId) {
         allSections.forEach(sec => sec.classList.add("hidden"));
         const target = document.getElementById(sectionId);
         if (target) target.classList.remove("hidden");
 
-        if (sectionId === "scholars-section") {
+        if (sectionId === "scholars-section" && !isAlreadyOpen) {
+          // First time opening scholars section
           showAllScholars();
           updateScholarsLabel("ALL");
           updateFilterDropdownUI('ALL');
-          // Initialize pagination/showing when landing on Scholars
-          try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-          if (typeof paginateScholars === 'function') {
-            paginateScholars();
-          } else {
-            const tbody = document.getElementById('scholar-table-body');
-            const rows = Array.from(tbody?.querySelectorAll('tr') || []);
-            const showingEl = document.getElementById('pagination-showing');
-            if (showingEl) showingEl.textContent = `Showing: ${rows.length} of ${rows.length}`;
-          }
-          
-          // Re-apply search if active
-          const searchInput = document.querySelector('.search-bar');
-          if (searchInput && searchInput.value.trim() !== '') {
-            setTimeout(() => {
-              performScholarSearch(searchInput.value.toLowerCase().trim());
-            }, 100);
-          }
+          currentPage = 1;
+          paginateScholars();
+          updateSelectAllState();
         }
       }
     });
@@ -695,11 +729,25 @@ function bindDashboardCardClicks() {
   }
 
   function showAllScholars() {
-    const rows = document.querySelectorAll("#scholar-table-body tr");
-    rows.forEach(row => (row.style.display = ""));
+    const tbody = document.getElementById('scholar-table-body');
+    if (!tbody) return;
+    
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    // Remove filter attributes and show all rows
+    rows.forEach(row => {
+      row.removeAttribute('data-filtered-out');
+      row.style.display = '';
+    });
+    
+    // Reset current filter state
+    currentFilterState = {
+      program: 'ALL',
+      category: 'ALL',
+      province: 'ALL'
+    };
   }
 
-  function activateNavLinkAndShowSection(navSelector, sectionId, title, icon, extraAction) {
+ function activateNavLinkAndShowSection(navSelector, sectionId, title, icon, extraAction) {
     navLinks.forEach(l => l.classList.remove("active"));
     dropdownToggles.forEach(t => t.classList.remove("active"));
     allDropdowns.forEach(d => d.classList.remove("open"));
@@ -737,23 +785,35 @@ function bindDashboardCardClicks() {
         "Scholars",
         "users",
         () => {
+          // Clear search input
+          const searchInput = document.querySelector('.search-bar');
+          if (searchInput) {
+            searchInput.value = '';
+          }
+
+          // Reset filter dropdown UI
+          updateFilterDropdownUI('ALL');
+          
+          // Show all scholars and reset filters
           showAllScholars();
+          
+          // Update label
           const label = document.getElementById("scholarsLabel");
           if (label) label.textContent = "All Scholars";
 
+          // Clear active states from submenu links
           const parentDropdown = document.querySelector('.nav-link[data-section-id="scholars-section"]').closest(".dropdown");
           if (parentDropdown) {
             const subNavLinks = parentDropdown.querySelectorAll(".dropdown-menu .nav-link");
             subNavLinks.forEach(link => link.classList.remove("active"));
           }
           
-          // Re-apply search if active
-          const searchInput = document.querySelector('.search-bar');
-          if (searchInput && searchInput.value.trim() !== '') {
-            setTimeout(() => {
-              performScholarSearch(searchInput.value.toLowerCase().trim());
-            }, 100);
-          }
+          // **FIX: Reset pagination properly**
+          currentPage = 1;
+          paginateScholars();
+          
+          // Update checkbox states after showing all scholars
+          updateSelectAllState();
         }
       );
     });
@@ -897,30 +957,25 @@ function renderScholarsTable() {
 
   tbody.innerHTML = '';
 
-  // Calculate the range of scholars to show based on current page
-  const startIndex = (currentPage - 1) * scholarsPerPage;
-  const endIndex = startIndex + scholarsPerPage;
-  const scholarsToShow = allScholars.slice(startIndex, endIndex);
-
-  scholarsToShow.forEach((scholar, index) => {
+  // Render ALL scholars, don't slice here - pagination will handle visibility
+  allScholars.forEach((scholar, index) => {
     const tr = document.createElement('tr');
     tr.setAttribute('data-program', scholar.program.toUpperCase());
     tr.setAttribute('data-subprogram', scholar.program.toUpperCase());
     tr.setAttribute('data-province', scholar.province.toUpperCase());
     tr.innerHTML = `
       <td><input type="checkbox" class="row-checkbox"/></td>
-      <td>${startIndex + index + 1}</td>
+      <td>${index + 1}</td>
       <td>${scholar.batch}</td>
       <td>${scholar.name}</td>
-      <td class="address-cell">${scholar.address}</td>
+      <td>${scholar.address}</td>
       <td>${scholar.program}</td>
-      <td>${scholar.birthDate || 'N/A'}</td>
       <td>${scholar.contact}</td>
       <td>${scholar.sex}</td>
       <td><span class="status done">${scholar.status}</span></td>
       <td>
         <span class="bank-details" data-full="${scholar.bankDetails || ''}"></span>
-        <button class="toggle-bank-btn" title="Show/Hide Account" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;">
+        <button class="toggle-bank-btn" title="Show/Hide Account" style="background:none;border:none;cursor:pointer;padding:0;>
           <span class="eye-icon">👁</span>
         </button>
       </td>
@@ -932,9 +987,6 @@ function renderScholarsTable() {
     `;
     tbody.appendChild(tr);
   });
-  // ...existing code...
-  // After rendering, apply pagination
-  paginateScholars();
 
   if (window.lucide) {
     window.lucide.createIcons();
@@ -947,13 +999,13 @@ function renderScholarsTable() {
       el.textContent = 'N/A';
       return;
     }
-    // Extract last 3 digits
     const match = full.match(/(\d{3})$/);
     const last3 = match ? match[1] : '';
     el.textContent = `LNB - ****${last3}`;
     el.setAttribute('data-masked', `LNB - ****${last3}`);
     el.setAttribute('data-visible', 'false');
   });
+
   document.querySelectorAll('.toggle-bank-btn').forEach((btn, idx) => {
     btn.addEventListener('click', function() {
       const bankSpan = btn.previousElementSibling;
@@ -972,6 +1024,10 @@ function renderScholarsTable() {
   bindCheckboxLogic();
   bindContextualActionBar();
   bindScholarRowActionMenus();
+
+  // Reset to first page and apply pagination
+  currentPage = 1;
+  paginateScholars();
 }
 
 function updateDashboardCounts() {
@@ -1200,11 +1256,10 @@ function applyFilters(selectedProgram, selectedCategoryRaw, selectedProvince) {
   filterAndSearchScholars('');
 }
 
-// Combined filter and search logic
+// Updated filter and search logic to work with pagination
 function filterAndSearchScholars(searchTerm) {
   const tbody = document.getElementById('scholar-table-body');
   const rows = Array.from(tbody?.querySelectorAll('tr') || []);
-  // Province: trim and uppercase for comparison
   const { program, category } = currentFilterState;
   const province = (currentFilterState.province || 'ALL').trim().toUpperCase();
   let visibleCount = 0;
@@ -1227,7 +1282,6 @@ function filterAndSearchScholars(searchTerm) {
       }
       matchesCategory = rowSub === expectedSub || rowProgram === expectedSub;
     }
-    // Province: match exactly, ignore case and trim
     const matchesProvince = province === 'ALL' || rowProvince === province;
 
     // Search logic
@@ -1255,28 +1309,26 @@ function filterAndSearchScholars(searchTerm) {
       }
     }
 
-    // Show row if it matches both filter and search
-    const showRow = matchesProgram && matchesCategory && matchesProvince && matchesSearch;
-    row.style.display = showRow ? '' : 'none';
-    if (showRow) visibleCount++;
+    // Mark row as filtered out or not (don't change display here)
+    const shouldShow = matchesProgram && matchesCategory && matchesProvince && matchesSearch;
+    if (shouldShow) {
+      row.removeAttribute('data-filtered-out');
+      visibleCount++;
+    } else {
+      row.setAttribute('data-filtered-out', 'true');
+    }
   });
 
-  // Update showing counter if present
-  const showingEl = document.getElementById('pagination-showing');
-  if (showingEl) {
-    const all = rows.length;
-    showingEl.textContent = `Showing: ${visibleCount} of ${all}`;
-  }
+  // Reset pagination to first page
+  currentPage = 1;
+  paginateScholars();
 
-  // Reset pagination to first page if available
-  try { if (typeof currentPage !== 'undefined') currentPage = 1; } catch (_) {}
-  if (typeof paginateScholars === 'function') {
-    paginateScholars();
-  }
-
-  // Update checkbox states after filtering
+   // Update checkbox states after filtering
   updateSelectAllState();
 }
+
+ 
+
 
 // Highlight the correct Scholars submenu based on program
 function updateScholarsSubmenuActive(programValue) {
@@ -1425,7 +1477,7 @@ function updateSelectedCount() {
   console.log(`Selected ${count} scholars`);
 }
 
-// ========== SCHOLAR ROW ACTION MENU (3-DOT) ==========
+// ========== SCHOLAR ROW ACTION MENU (3-DOT) - FIXED VERSION ==========
 let __rowActionMenusBound = false;
 function bindScholarRowActionMenus() {
   if (__rowActionMenusBound) return;
@@ -1453,16 +1505,8 @@ function bindScholarRowActionMenus() {
       return;
     }
 
-    // Position dropdown near the button (fixed to viewport to avoid layout shifts/scrollbars)
-    const rect = button.getBoundingClientRect();
-    const dropdownWidthPx = parseInt(window.getComputedStyle(dropdown).width || '130', 10) || 130;
-    dropdown.style.position = 'fixed';
-    dropdown.style.right = 'auto';
-    const top = Math.round(rect.bottom + 6);
-    let left = Math.round(rect.right - dropdownWidthPx);
-    left = Math.max(8, Math.min(left, window.innerWidth - dropdownWidthPx - 8));
-    dropdown.style.top = `${top}px`;
-    dropdown.style.left = `${left}px`;
+    // Position dropdown with smart positioning
+    positionDropdownSmart(dropdown, button);
 
     // Mark which button opened it
     dropdown.setAttribute('data-for-button-id', thisId);
@@ -1491,6 +1535,94 @@ function bindScholarRowActionMenus() {
   // Close on scroll/resize to avoid misplacement
   window.addEventListener('scroll', () => hideScholarActionDropdown(dropdown), true);
   window.addEventListener('resize', () => hideScholarActionDropdown(dropdown));
+}
+
+// Smart positioning function to prevent dropdown cutoff
+function positionDropdownSmart(dropdown, button) {
+  const rect = button.getBoundingClientRect();
+  const dropdownWidth = 130; // From your CSS
+  
+  // Get dropdown height by temporarily showing it to measure
+  dropdown.style.visibility = 'hidden';
+  dropdown.style.display = 'block';
+  dropdown.classList.remove('hidden');
+  const dropdownHeight = dropdown.offsetHeight;
+  dropdown.style.visibility = '';
+  dropdown.style.display = '';
+  dropdown.classList.add('hidden');
+  
+  const viewportHeight = window.innerHeight;
+  const viewportWidth = window.innerWidth;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  
+  // Calculate space available below and above the button
+  const spaceBelow = viewportHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  
+  // Determine vertical position
+  let top;
+  if (spaceBelow >= dropdownHeight + 10) {
+    // Enough space below - position below button
+    top = rect.bottom + scrollTop + 6;
+  } else if (spaceAbove >= dropdownHeight + 10) {
+    // Not enough space below but enough above - position above button
+    top = rect.top + scrollTop - dropdownHeight - 6;
+  } else {
+    // Not enough space either direction - position to fit in viewport
+    if (spaceBelow > spaceAbove) {
+      // More space below - position at bottom edge
+      top = viewportHeight - dropdownHeight - 10 + scrollTop;
+    } else {
+      // More space above - position at top edge
+      top = 10 + scrollTop;
+    }
+  }
+  
+  // Calculate horizontal position (prefer right-aligned to button)
+  let left = rect.right + scrollLeft - dropdownWidth;
+  
+  // Ensure dropdown doesn't go off-screen horizontally
+  if (left < 8) {
+    left = 8; // Minimum padding from left edge
+  } else if (left + dropdownWidth > viewportWidth - 8) {
+    left = viewportWidth - dropdownWidth - 8; // Maximum padding from right edge
+  }
+  
+  // Apply positioning
+  dropdown.style.position = 'absolute';
+  dropdown.style.top = `${Math.round(top)}px`;
+  dropdown.style.left = `${Math.round(left)}px`;
+  dropdown.style.right = 'auto';
+}
+
+function ensureActionButtonId(button) {
+  if (!button.id) {
+    button.id = `action-btn-${Math.random().toString(36).slice(2, 9)}`;
+  }
+  return button.id;
+}
+
+function hideScholarActionDropdown(dropdown) {
+  dropdown.classList.add('hidden');
+  dropdown.removeAttribute('data-for-button-id');
+}
+
+// Close all dropdowns except the one provided (if any)
+function closeAllDropdownsExcept(exceptElement) {
+  const profileDropdown = document.getElementById('profileDropdown');
+  const scholarDropdown = document.getElementById('scholar-action-dropdown');
+  const filterDropdown = document.getElementById('filter-dropdown');
+
+  if (profileDropdown && profileDropdown !== exceptElement) {
+    profileDropdown.style.display = 'none';
+  }
+  if (scholarDropdown && scholarDropdown !== exceptElement) {
+    hideScholarActionDropdown(scholarDropdown);
+  }
+  if (filterDropdown && filterDropdown !== exceptElement) {
+    filterDropdown.classList.add('hidden');
+  }
 }
 
 function ensureActionButtonId(button) {
