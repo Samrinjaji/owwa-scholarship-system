@@ -5,6 +5,8 @@ class ScholarModal {
         this.modal = document.getElementById('addScholarModal2');
         this.form = null;
         this.isSubmitting = false;
+        this.mode = 'add';
+        this.editId = null;
         this.init();
     }
 
@@ -75,6 +77,7 @@ class ScholarModal {
 
     openModal() {
         if (this.modal) {
+            this.setMode('add');
             this.modal.classList.remove('hidden');
             this.clearForm();
             this.resetValidation();
@@ -294,11 +297,11 @@ class ScholarModal {
 
         if (loading) {
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Saving...';
+            submitBtn.textContent = this.mode === 'edit' ? 'Updating...' : 'Saving...';
             modal.classList.add('loading');
         } else {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Save';
+            submitBtn.textContent = this.mode === 'edit' ? 'Update' : 'Save';
             modal.classList.remove('loading');
         }
     }
@@ -317,11 +320,15 @@ class ScholarModal {
         try {
             const formData = this.getFormData();
 
-            // Simulate API call (replace with actual API endpoint)
-            const response = await this.saveScholar(formData);
+            let response;
+            if (this.mode === 'edit' && this.editId) {
+                response = await this.updateScholar({ id: this.editId, ...formData });
+            } else {
+                response = await this.saveScholar(formData);
+            }
 
             if (response.success) {
-                this.showNotification('Scholar added successfully!', 'success');
+                this.showNotification(this.mode === 'edit' ? 'Scholar updated successfully!' : 'Scholar added successfully!', 'success');
                 this.closeModal();
 
                 // Refresh the scholars table without reloading
@@ -329,7 +336,7 @@ class ScholarModal {
                     fetchScholars();
                 }
             } else {
-                this.showNotification(response.message || 'Failed to add scholar', 'error');
+                this.showNotification(response.message || (this.mode === 'edit' ? 'Failed to update scholar' : 'Failed to add scholar'), 'error');
             }
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -352,6 +359,97 @@ class ScholarModal {
         } catch (error) {
             throw new Error('Network error: ' + error.message);
         }
+    }
+
+    async updateScholar(data) {
+        try {
+            const response = await fetch('../backend/update_scholar.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            });
+            return await response.json();
+        } catch (error) {
+            throw new Error('Network error: ' + error.message);
+        }
+    }
+
+    setMode(mode) {
+        this.mode = mode === 'edit' ? 'edit' : 'add';
+        const header = this.modal.querySelector('.modal-header h2');
+        const submitBtn = this.modal.querySelector('.submit-btn');
+        if (header) {
+            if (this.mode === 'edit') {
+                header.innerHTML = '<i data-lucide="user-plus" class="icon"></i> Edit Scholar Record';
+            } else {
+                header.innerHTML = '<i data-lucide="user-plus" class="icon"></i> Add Scholar Record';
+            }
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+        if (submitBtn) {
+            submitBtn.textContent = this.mode === 'edit' ? 'Update' : 'Save';
+        }
+    }
+
+    openForEdit(scholar) {
+        if (!this.modal) return;
+        this.setMode('edit');
+        this.editId = scholar.id;
+        this.modal.classList.remove('hidden');
+        this.resetValidation();
+        this.prefillForm(scholar);
+        const firstInput = this.modal.querySelector('input, select');
+        if (firstInput) firstInput.focus();
+    }
+
+    prefillForm(data) {
+        const setValue = (name, value) => {
+            const el = this.modal.querySelector(`[name="${name}"]`);
+            if (!el) return;
+            if (el.tagName.toLowerCase() === 'select') {
+                // If option not present, append it
+                const exists = Array.from(el.options).some(opt => opt.value === (value ?? ''));
+                if (!exists && value !== undefined && value !== null && value !== '') {
+                    const opt = document.createElement('option');
+                    opt.value = value;
+                    opt.textContent = value;
+                    el.appendChild(opt);
+                }
+                el.value = value ?? '';
+            } else {
+                el.value = value ?? '';
+            }
+        };
+
+        setValue('last_name', data.last_name);
+        setValue('first_name', data.first_name);
+        setValue('middle_name', data.middle_name);
+        setValue('program', data.program);
+        setValue('batch', data.batch);
+        setValue('birth_date', data.birth_date);
+        setValue('sex', data.sex);
+        setValue('home_address', data.home_address);
+        setValue('province', data.province);
+        setValue('contact_number', data.contact_number);
+        setValue('course', data.course);
+        setValue('years', data.years);
+        setValue('year_level', data.year_level);
+        setValue('school', data.school);
+        setValue('school_address', data.school_address);
+        setValue('remarks', data.remarks);
+        setValue('bank_details', data.bank_details);
+        setValue('parent_name', data.parent_name);
+        setValue('relationship', data.relationship);
+        setValue('ofw_name', data.ofw_name);
+        setValue('category', data.category);
+        setValue('gender', data.gender);
+        setValue('jobsite', data.jobsite);
+        setValue('position', data.position);
     }
 }
 

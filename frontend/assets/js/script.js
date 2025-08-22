@@ -2,6 +2,7 @@ let barChartInstance;
 let genderChart;
 
 let allScholars = [];
+let scholarRawById = {};
 
 // Updated fetchScholars function with alphabetical sorting
 async function fetchScholars() {
@@ -9,19 +10,23 @@ async function fetchScholars() {
     const res = await fetch('../backend/scholars_list.php', { credentials: 'same-origin' });
     const json = await res.json();
     if (json.success) {
-      allScholars = json.data.map(row => ({
-        id: row.id,
-        batch: row.batch,
-        name: `${row.last_name}, ${row.first_name}${row.middle_name ? ' ' + row.middle_name : ''}`,
-        address: row.home_address,
-        province: row.province || '',
-        program: row.program,
-        contact: row.contact_number,
-        sex: row.sex,
-        status: row.remarks || 'Active',
-        bankDetails: row.bank_details,
-        recentDate: row.created_at
-      }))
+      scholarRawById = {};
+      allScholars = json.data.map(row => {
+        scholarRawById[row.id] = row;
+        return ({
+          id: row.id,
+          batch: row.batch,
+          name: `${row.last_name}, ${row.first_name}${row.middle_name ? ' ' + row.middle_name : ''}`,
+          address: row.home_address,
+          province: row.province || '',
+          program: row.program,
+          contact: row.contact_number,
+          sex: row.sex,
+          status: row.remarks || 'Active',
+          bankDetails: row.bank_details,
+          recentDate: row.created_at
+        });
+      })
       // Sort scholars alphabetically by name (last name first, then first name)
       .sort((a, b) => {
         // Compare names alphabetically (case-insensitive)
@@ -29,7 +34,7 @@ async function fetchScholars() {
         const nameB = b.name.toLowerCase();
         return nameA.localeCompare(nameB);
       });
-      
+      window.scholarRawById = scholarRawById;
       renderScholarsTable();
       updateDashboardCounts();
       updateRecentScholars();
@@ -2411,4 +2416,22 @@ function showDeleteConfirmationModal(scholarName, actionType = 'delete') {
             }
         }, 100);
     });
+}
+
+function handleEditScholar(scholarData, scholarRow) {
+  const id = scholarData?.id;
+  if (!id) {
+    showNotification('Cannot edit: missing scholar ID', 'error');
+    return;
+  }
+  const raw = (window.scholarRawById || {})[id];
+  if (!raw) {
+    showNotification('Full scholar details not loaded. Please refresh.', 'error');
+    return;
+  }
+  if (window.scholarModal && typeof window.scholarModal.openForEdit === 'function') {
+    window.scholarModal.openForEdit(raw);
+  } else {
+    showNotification('Edit modal is not available', 'error');
+  }
 }
