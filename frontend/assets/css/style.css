@@ -1623,3 +1623,218 @@ main{
 .modal-btn:active {
     transform: translateY(1px);
 }
+
+/* Scholar View Section Styles */
+.scholar-view-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.scholar-view-header {
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+.back-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.scholar-profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.scholar-profile-header {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.scholar-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.scholar-avatar {
+    width: 80px;
+    height: 80px;
+    background-color: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.scholar-avatar i {
+    width: 32px;
+    height: 32px;
+    color: #64748b;
+}
+
+.scholar-basic-info h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+    font-family: var(--font-inter);
+}
+
+.scholar-basic-info p {
+    font-size: 16px;
+    color: #64748b;
+    margin: 0 0 12px 0;
+}
+
+.scholar-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.detail-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.detail-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+}
+
+.detail-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-card .card-header i {
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color);
+}
+
+.detail-card .card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    font-family: var(--font-inter);
+}
+
+.detail-card .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    min-height: 24px;
+}
+
+.detail-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748b;
+    flex-shrink: 0;
+    width: 140px;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #334155;
+    text-align: right;
+    flex: 1;
+    word-wrap: break-word;
+}
+
+.detail-value:empty::after {
+    content: "-";
+    color: #94a3b8;
+}
+
+/* Status badge in scholar view */
+#scholar-view-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive design for scholar view */
+@media (max-width: 768px) {
+    .scholar-view-container {
+        padding: 16px;
+    }
+    
+    .scholar-details-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .scholar-avatar-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .scholar-basic-info h2 {
+        font-size: 20px;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .detail-label {
+        width: auto;
+        color: #64748b;
+    }
+    
+    .detail-value {
+        text-align: left;
+    }
+}

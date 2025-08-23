@@ -2435,3 +2435,160 @@ function handleEditScholar(scholarData, scholarRow) {
     showNotification('Edit modal is not available', 'error');
   }
 }
+
+// Scholar View Functions
+function handleViewScholar(scholarData, scholarRow) {
+  const id = scholarData?.id;
+  if (!id) {
+    showNotification('Cannot view: missing scholar ID', 'error');
+    return;
+  }
+  
+  // Get full scholar data from the global object
+  const raw = (window.scholarRawById || {})[id];
+  if (!raw) {
+    showNotification('Full scholar details not loaded. Please refresh.', 'error');
+    return;
+  }
+  
+  openViewSection(raw);
+}
+
+function openViewSection(scholarData) {
+  // Hide scholars section
+  const scholarsSection = document.getElementById('scholars-section');
+  const viewSection = document.getElementById('scholar-view-section');
+  
+  if (scholarsSection) {
+    scholarsSection.classList.add('hidden');
+  }
+  
+  if (viewSection) {
+    viewSection.classList.remove('hidden');
+  }
+  
+  // Update topbar title
+  updateTopbarTitleAndIcon('Scholar Profile', 'user');
+  
+  // Populate scholar data
+  populateScholarView(scholarData);
+  
+  // Initialize Lucide icons for the new content
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+function populateScholarView(data) {
+  // Helper function to safely set text content
+  const setText = (elementId, value) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.textContent = value || '-';
+    }
+  };
+  
+  // Format the full name
+  const fullName = `${data.last_name || ''}, ${data.first_name || ''}${data.middle_name ? ' ' + data.middle_name : ''}`.trim();
+  
+  // Header information
+  setText('scholar-view-name', fullName);
+  setText('scholar-view-program', data.program || '-');
+  
+  // Update status badge
+  const statusElement = document.getElementById('scholar-view-status');
+  if (statusElement) {
+    statusElement.textContent = data.remarks || 'Active';
+    statusElement.className = 'status done'; // Keep existing status styling
+  }
+  
+  // Personal Information
+  setText('scholar-detail-name', fullName);
+  setText('scholar-detail-batch', data.batch || '-');
+  setText('scholar-detail-birthdate', data.birth_date ? formatDate(data.birth_date) : '-');
+  setText('scholar-detail-sex', data.sex || '-');
+  setText('scholar-detail-contact', data.contact_number || '-');
+  
+  // Address Information
+  setText('scholar-detail-address', data.home_address || '-');
+  setText('scholar-detail-province', data.province || '-');
+  
+  // Academic Information
+  setText('scholar-detail-program', data.program || '-');
+  setText('scholar-detail-course', data.course || '-');
+  setText('scholar-detail-year-level', data.year_level || '-');
+  setText('scholar-detail-school', data.school || '-');
+  setText('scholar-detail-school-address', data.school_address || '-');
+  
+  // Financial Information
+  setText('scholar-detail-bank', data.bank_details || '-');
+  setText('scholar-detail-remarks', data.remarks || '-');
+  
+  // OFW Information
+  setText('scholar-detail-parent', data.parent_name || '-');
+  setText('scholar-detail-relationship', data.relationship || '-');
+  setText('scholar-detail-ofw-name', data.ofw_name || '-');
+  setText('scholar-detail-category', data.category || '-');
+  setText('scholar-detail-jobsite', data.jobsite || '-');
+  setText('scholar-detail-position', data.position || '-');
+}
+
+function backToScholars() {
+  // Hide view section
+  const viewSection = document.getElementById('scholar-view-section');
+  const scholarsSection = document.getElementById('scholars-section');
+  
+  if (viewSection) {
+    viewSection.classList.add('hidden');
+  }
+  
+  if (scholarsSection) {
+    scholarsSection.classList.remove('hidden');
+  }
+  
+  // Update topbar title back to Scholars
+  updateTopbarTitleAndIcon('Scholars', 'users');
+  
+  // Initialize Lucide icons
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+function updateTopbarTitleAndIcon(title, iconName) {
+  const iconElement = document.getElementById("sectionIcon");
+  const titleElement = document.getElementById("sectionTitleText");
+
+  if (iconElement && titleElement) {
+    iconElement.setAttribute("data-lucide", iconName);
+    titleElement.textContent = title;
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  
+  try {
+    const date = new Date(dateString);
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+  } catch (error) {
+    return dateString; // Return original if formatting fails
+  }
+}
+
+// Placeholder functions for other dropdown actions
+function handlePPFScholar(scholarData, scholarRow) {
+  showNotification('PPF functionality not yet implemented', 'info');
+}
+
+function handleGraduateScholar(scholarData, scholarRow) {
+  showNotification('Graduate functionality not yet implemented', 'info');
+}
