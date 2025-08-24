@@ -2438,16 +2438,47 @@ function handleEditScholar(scholarData, scholarRow) {
 
 // Scholar View Functions
 function handleViewScholar(scholarData, scholarRow) {
+  console.log('handleViewScholar called with:', scholarData);
+  
   const id = scholarData?.id;
+  console.log('Scholar ID:', id);
+  
   if (!id) {
     showNotification('Cannot view: missing scholar ID', 'error');
+    // Try using the row data directly if ID is missing
+    const fallbackData = {
+      first_name: scholarData.name?.split(', ')[1]?.split(' ')[0] || 'Unknown',
+      last_name: scholarData.name?.split(', ')[0] || 'Unknown',
+      program: scholarData.program || '-',
+      batch: scholarData.batch || '-',
+      sex: scholarData.sex || '-',
+      contact_number: scholarData.contact || '-',
+      home_address: scholarData.address || '-',
+      bank_details: scholarData.bankDetails || '-'
+    };
+    console.log('Using fallback data:', fallbackData);
+    openViewSection(fallbackData);
     return;
   }
   
   // Get full scholar data from the global object
   const raw = (window.scholarRawById || {})[id];
+  console.log('Raw scholar data:', raw);
+  
   if (!raw) {
-    showNotification('Full scholar details not loaded. Please refresh.', 'error');
+    showNotification('Full scholar details not loaded. Using available data.', 'info');
+    // Use the basic scholar data we have
+    const basicData = {
+      first_name: scholarData.name?.split(', ')[1]?.split(' ')[0] || 'Unknown',
+      last_name: scholarData.name?.split(', ')[0] || 'Unknown', 
+      program: scholarData.program || '-',
+      batch: scholarData.batch || '-',
+      sex: scholarData.sex || '-',
+      contact_number: scholarData.contact || '-',
+      home_address: scholarData.address || '-',
+      bank_details: scholarData.bankDetails || '-'
+    };
+    openViewSection(basicData);
     return;
   }
   
@@ -2455,16 +2486,23 @@ function handleViewScholar(scholarData, scholarRow) {
 }
 
 function openViewSection(scholarData) {
+  console.log('openViewSection called with:', scholarData);
+  
   // Hide scholars section
   const scholarsSection = document.getElementById('scholars-section');
   const viewSection = document.getElementById('scholar-view-section');
   
+  console.log('Scholars section found:', !!scholarsSection);
+  console.log('View section found:', !!viewSection);
+  
   if (scholarsSection) {
     scholarsSection.classList.add('hidden');
+    console.log('Hidden scholars section');
   }
   
   if (viewSection) {
     viewSection.classList.remove('hidden');
+    console.log('Showing view section');
   }
   
   // Update topbar title
@@ -2592,3 +2630,28 @@ function handlePPFScholar(scholarData, scholarRow) {
 function handleGraduateScholar(scholarData, scholarRow) {
   showNotification('Graduate functionality not yet implemented', 'info');
 }
+
+// Test function for Scholar View (can be called from browser console)
+function testScholarView() {
+  const testData = {
+    first_name: "Juan",
+    middle_name: "A",
+    last_name: "Dela Cruz",
+    program: "EDSP1",
+    batch: "2023",
+    birth_date: "2001-04-15",
+    sex: "Male",
+    contact_number: "+639123456789",
+    home_address: "123 Main Street, Zamboanga City",
+    province: "Zamboanga del Sur",
+    course: "Bachelor of Science in Information Technology",
+    school: "Western Mindanao State University",
+    remarks: "Active"
+  };
+  
+  console.log('Testing Scholar View with data:', testData);
+  openViewSection(testData);
+}
+
+// Make test function globally available
+window.testScholarView = testScholarView;
