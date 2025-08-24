@@ -548,14 +548,6 @@ if (!isset($_SESSION['admin_id'])) {
 		<!-- SCHOLAR VIEW SECTION -->
 		<section id="scholar-view-section" class="page-section hidden" style="min-height: 100vh; background-color: #f0f4ff;">
 			<div class="scholar-view-container">
-				<!-- Back Button -->
-				<div class="scholar-view-header">
-					<button class="back-btn" onclick="backToScholars()">
-						<i data-lucide="arrow-left"></i>
-						<span>Back</span>
-					</button>
-				</div>
-
 				<!-- Scholar Profile Content -->
 				<div class="scholar-profile-content">
 					<div class="scholar-profile-header">

@@ -1627,51 +1627,22 @@ main{
 /* Scholar View Section Styles */
 .scholar-view-container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
 }
 
 .scholar-view-header {
-    margin-bottom: 24px;
-}
-
-.back-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    color: #475569;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.back-btn:hover {
-    background-color: #e2e8f0;
-    border-color: #cbd5e1;
-    color: #334155;
-}
-
-.back-btn i {
-    width: 16px;
-    height: 16px;
+    margin-bottom: 10px
 }
 
 .scholar-profile-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 10px;
 }
 
 .scholar-profile-header {
     background-color: #ffffff;
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
 }
@@ -1701,7 +1672,7 @@ main{
 }
 
 .scholar-basic-info h2 {
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 600;
     color: #1e293b;
     margin: 0 0 8px 0;
@@ -1717,7 +1688,7 @@ main{
 .scholar-details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
+    gap: 15px;
 }
 
 .detail-card {
@@ -1796,7 +1767,7 @@ main{
 #scholar-view-status {
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
